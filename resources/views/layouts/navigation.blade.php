@@ -16,7 +16,7 @@
                             <a class="nav-link {{ request()->routeIs('job-seeker.dashboard') ? 'active' : '' }}" href="{{ route('job-seeker.dashboard') }}">Dashboard</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('profile.edit') ? 'active' : '' }}" href="{{ route('profile.edit') }}">My Profile</a>
+                            <a class="nav-link {{ request()->routeIs('job-seeker.profile.*') ? 'active' : '' }}" href="{{ route('job-seeker.profile.edit') }}">Edit Profile</a>
                         </li>
                         <li class="nav-item"><span class="nav-link disabled">Education</span></li>
                         <li class="nav-item"><span class="nav-link disabled">Experience</span></li>

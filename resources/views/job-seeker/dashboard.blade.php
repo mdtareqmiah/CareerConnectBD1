@@ -7,7 +7,7 @@
                 <h1 class="h3 mb-2">Job Seeker Dashboard</h1>
                 <p class="text-muted mb-0">Welcome, {{ $user->name ?? $user->email }}</p>
             </div>
-            <a href="{{ route('profile.edit') }}" class="btn btn-primary mt-3 mt-md-0">Manage Profile</a>
+            <a href="{{ route('job-seeker.profile.edit') }}" class="btn btn-primary mt-3 mt-md-0">Manage Profile</a>
         </div>
 
         @if ($profile)
@@ -83,7 +83,7 @@
                 <div class="card-body">
                     <h2 class="h5">Complete Your Profile</h2>
                     <p class="text-muted mb-3">Your job seeker profile has not been created yet. Add your details to unlock the dashboard experience.</p>
-                    <a href="{{ route('profile.edit') }}" class="btn btn-primary">Complete Your Profile</a>
+                    <a href="{{ route('job-seeker.profile.edit') }}" class="btn btn-primary">Complete Your Profile</a>
                 </div>
             </div>
         @endif

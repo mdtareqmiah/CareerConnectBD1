@@ -49,6 +49,18 @@ Route::middleware(['auth', 'role:employer'])->group(function () {
 Route::middleware(['auth', 'role:job-seeker'])->group(function () {
     Route::get('/job-seeker/dashboard', [App\Http\Controllers\JobSeekerDashboardController::class, 'index'])
         ->name('job-seeker.dashboard');
+
+    Route::get('/job-seeker/profile/create', [App\Http\Controllers\JobSeekerProfileController::class, 'create'])
+        ->name('job-seeker.profile.create');
+
+    Route::post('/job-seeker/profile', [App\Http\Controllers\JobSeekerProfileController::class, 'store'])
+        ->name('job-seeker.profile.store');
+
+    Route::get('/job-seeker/profile/edit/{profile?}', [App\Http\Controllers\JobSeekerProfileController::class, 'edit'])
+        ->name('job-seeker.profile.edit');
+
+    Route::match(['put', 'patch'], '/job-seeker/profile', [App\Http\Controllers\JobSeekerProfileController::class, 'update'])
+        ->name('job-seeker.profile.update');
 });
 
 require __DIR__.'/auth.php';
