@@ -35,7 +35,7 @@ class AuthenticatedSessionController extends Controller
         $redirectTo = match ($roleSlug) {
             'admin' => '/admin',
             'employer' => '/employer',
-            'job-seeker' => '/job-seeker',
+            'job-seeker' => '/job-seeker/dashboard',
             default => '/dashboard',
         };
 

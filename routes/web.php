@@ -32,10 +32,6 @@ Route::middleware(['auth', 'role:employer'])->group(function () {
 });
 
 Route::middleware(['auth', 'role:job-seeker'])->group(function () {
-    Route::get('/job-seeker', function () {
-        return response('Job Seeker access granted', 200);
-    });
-
     Route::get('/job-seeker/dashboard', [App\Http\Controllers\JobSeekerDashboardController::class, 'index'])
         ->name('job-seeker.dashboard');
 });
