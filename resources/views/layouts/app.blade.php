@@ -7,29 +7,25 @@
 
         <title>{{ config('app.name', 'Laravel') }}</title>
 
-        <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-        <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
+    <body class="bg-light">
+        <div class="min-vh-100 d-flex flex-column">
             @include('layouts.navigation')
 
-            <!-- Page Heading -->
             @isset($header)
-                <header class="bg-white shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                <header class="bg-white border-bottom shadow-sm">
+                    <div class="container py-4">
                         {{ $header }}
                     </div>
                 </header>
             @endisset
 
-            <!-- Page Content -->
-            <main>
-                <div class="container py-3">
+            <main class="flex-grow-1 py-4">
+                <div class="container">
                     @if (session('success'))
                         <div class="alert alert-success" role="alert">
                             {{ session('success') }}
@@ -47,13 +43,13 @@
                             {{ session('error') }}
                         </div>
                     @endif
-                </div>
 
-                @hasSection('content')
-                    @yield('content')
-                @else
-                    {{ $slot }}
-                @endif
+                    @hasSection('content')
+                        @yield('content')
+                    @else
+                        {{ $slot }}
+                    @endif
+                </div>
             </main>
         </div>
     </body>
