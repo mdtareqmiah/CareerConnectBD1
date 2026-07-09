@@ -61,6 +61,24 @@ Route::middleware(['auth', 'role:job-seeker'])->group(function () {
 
     Route::match(['put', 'patch'], '/job-seeker/profile', [App\Http\Controllers\JobSeekerProfileController::class, 'update'])
         ->name('job-seeker.profile.update');
+
+    Route::get('/job-seeker/educations', [App\Http\Controllers\EducationController::class, 'index'])
+        ->name('job-seeker.educations.index');
+
+    Route::get('/job-seeker/educations/create', [App\Http\Controllers\EducationController::class, 'create'])
+        ->name('job-seeker.educations.create');
+
+    Route::post('/job-seeker/educations', [App\Http\Controllers\EducationController::class, 'store'])
+        ->name('job-seeker.educations.store');
+
+    Route::get('/job-seeker/educations/{education}/edit', [App\Http\Controllers\EducationController::class, 'edit'])
+        ->name('job-seeker.educations.edit');
+
+    Route::match(['put', 'patch'], '/job-seeker/educations/{education}', [App\Http\Controllers\EducationController::class, 'update'])
+        ->name('job-seeker.educations.update');
+
+    Route::delete('/job-seeker/educations/{education}', [App\Http\Controllers\EducationController::class, 'destroy'])
+        ->name('job-seeker.educations.destroy');
 });
 
 require __DIR__.'/auth.php';
