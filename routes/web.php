@@ -79,6 +79,24 @@ Route::middleware(['auth', 'role:job-seeker'])->group(function () {
 
     Route::delete('/job-seeker/educations/{education}', [App\Http\Controllers\EducationController::class, 'destroy'])
         ->name('job-seeker.educations.destroy');
+
+    Route::get('/job-seeker/experiences', [App\Http\Controllers\ExperienceController::class, 'index'])
+        ->name('job-seeker.experiences.index');
+
+    Route::get('/job-seeker/experiences/create', [App\Http\Controllers\ExperienceController::class, 'create'])
+        ->name('job-seeker.experiences.create');
+
+    Route::post('/job-seeker/experiences', [App\Http\Controllers\ExperienceController::class, 'store'])
+        ->name('job-seeker.experiences.store');
+
+    Route::get('/job-seeker/experiences/{experience}/edit', [App\Http\Controllers\ExperienceController::class, 'edit'])
+        ->name('job-seeker.experiences.edit');
+
+    Route::match(['put', 'patch'], '/job-seeker/experiences/{experience}', [App\Http\Controllers\ExperienceController::class, 'update'])
+        ->name('job-seeker.experiences.update');
+
+    Route::delete('/job-seeker/experiences/{experience}', [App\Http\Controllers\ExperienceController::class, 'destroy'])
+        ->name('job-seeker.experiences.destroy');
 });
 
 require __DIR__.'/auth.php';

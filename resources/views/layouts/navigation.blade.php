@@ -19,7 +19,7 @@
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <div class="collapse navbar-collapse" id="mainNavbar">
+        <div class="navbar-collapse d-flex justify-content-between" id="mainNavbar">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 @guest
                     <li class="nav-item">
@@ -35,15 +35,6 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('job-seeker.educations.*') ? 'active' : '' }}" href="{{ route('job-seeker.educations.index') }}">Education</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link disabled" href="#">Experience</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link disabled" href="#">Skills</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link disabled" href="#">Resume</a>
                         </li>
                     @elseif ($roleSlug === 'employer')
                         <li class="nav-item">
@@ -61,10 +52,6 @@
                             <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">Dashboard</a>
                         </li>
                     @endif
-
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('profile.*') ? 'active' : '' }}" href="{{ route('profile.edit') }}">Profile</a>
-                    </li>
                 @endguest
             </ul>
 
@@ -80,6 +67,7 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <span class="me-2">{{ $user->name }}</span>
+                            <span class="small">▼</span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="userDropdown">
                             <li>

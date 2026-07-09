@@ -12,13 +12,10 @@ class Experience extends Model
 
     protected $fillable = [
         'job_seeker_profile_id',
-        'job_title',
         'company_name',
+        'job_title',
         'employment_type',
-        'industry',
-        'department',
         'location',
-        'workplace_type',
         'start_date',
         'end_date',
         'currently_working',

@@ -7,9 +7,10 @@
                 <h1 class="h3 mb-2">Job Seeker Dashboard</h1>
                 <p class="text-muted mb-0">Welcome, {{ $user->name ?? $user->email }}</p>
             </div>
-            <div class="d-flex gap-2 mt-3 mt-md-0">
+            <div class="d-flex flex-wrap gap-2 mt-3 mt-md-0">
                 <a href="{{ route('job-seeker.profile.edit') }}" class="btn btn-primary">Manage Profile</a>
                 <a href="{{ route('job-seeker.educations.index') }}" class="btn btn-outline-primary">Manage Education</a>
+                <a href="{{ route('job-seeker.experiences.index') }}" class="btn btn-outline-primary">Manage Experience</a>
             </div>
         </div>
 
@@ -86,9 +87,10 @@
                 <div class="card-body">
                     <h2 class="h5">Complete Your Profile</h2>
                     <p class="text-muted mb-3">Your job seeker profile has not been created yet. Add your details to unlock the dashboard experience.</p>
-                    <div class="d-flex gap-2">
+                    <div class="d-flex flex-wrap gap-2">
                         <a href="{{ route('job-seeker.profile.edit') }}" class="btn btn-primary">Complete Your Profile</a>
                         <a href="{{ route('job-seeker.educations.index') }}" class="btn btn-outline-primary">Manage Education</a>
+                        <a href="{{ route('job-seeker.experiences.index') }}" class="btn btn-outline-primary">Manage Experience</a>
                     </div>
                 </div>
             </div>
