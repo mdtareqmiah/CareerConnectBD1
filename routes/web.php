@@ -21,6 +21,8 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin', function () {
         return response('Admin access granted', 200);
     });
+
+    Route::resource('roles', App\Http\Controllers\RoleController::class);
 });
 
 Route::middleware(['auth', 'role:employer'])->group(function () {
