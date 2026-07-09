@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -8,6 +9,20 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
+    $user = Auth::user();
+
+    if ($user?->role?->slug === 'job-seeker') {
+        return redirect()->route('job-seeker.dashboard');
+    }
+
+    if ($user?->role?->slug === 'admin') {
+        return redirect()->to('/admin');
+    }
+
+    if ($user?->role?->slug === 'employer') {
+        return redirect()->to('/employer');
+    }
+
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 

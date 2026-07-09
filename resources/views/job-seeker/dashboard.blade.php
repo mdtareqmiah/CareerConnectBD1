@@ -2,11 +2,12 @@
 
 @section('content')
     <div class="container py-5">
-        <div class="row mb-4">
-            <div class="col-12">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+            <div>
                 <h1 class="h3 mb-2">Job Seeker Dashboard</h1>
-                <p class="text-muted">Welcome, {{ $user->name ?? $user->email }}</p>
+                <p class="text-muted mb-0">Welcome, {{ $user->name ?? $user->email }}</p>
             </div>
+            <a href="{{ route('profile.edit') }}" class="btn btn-primary mt-3 mt-md-0">Manage Profile</a>
         </div>
 
         @if ($profile)
@@ -78,8 +79,12 @@
                 </div>
             </div>
         @else
-            <div class="alert alert-warning" role="alert">
-                You do not have a job seeker profile yet. Please complete your profile setup to access the dashboard.
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h2 class="h5">Complete Your Profile</h2>
+                    <p class="text-muted mb-3">Your job seeker profile has not been created yet. Add your details to unlock the dashboard experience.</p>
+                    <a href="{{ route('profile.edit') }}" class="btn btn-primary">Complete Your Profile</a>
+                </div>
             </div>
         @endif
     </div>

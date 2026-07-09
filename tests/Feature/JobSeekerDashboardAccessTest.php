@@ -41,6 +41,15 @@ class JobSeekerDashboardAccessTest extends TestCase
         $response->assertSee('Welcome');
     }
 
+    public function test_dashboard_route_redirects_job_seekers_to_the_job_seeker_dashboard(): void
+    {
+        $user = $this->createJobSeekerUser();
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertRedirect('/job-seeker/dashboard');
+    }
+
     public function test_authenticated_users_can_open_the_profile_page(): void
     {
         $user = $this->createJobSeekerUser();
