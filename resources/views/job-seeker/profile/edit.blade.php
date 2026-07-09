@@ -2,6 +2,13 @@
 
 @section('content')
     <div class="container py-5">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ route('job-seeker.dashboard') }}">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Profile</li>
+            </ol>
+        </nav>
+
         <div class="row justify-content-center">
             <div class="col-lg-10">
                 <div class="card shadow-sm border-0">
@@ -29,7 +36,7 @@
                             @method('PATCH')
 
                             <div class="col-md-6">
-                                <label for="first_name" class="form-label">First Name</label>
+                                <label for="first_name" class="form-label">First Name <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control @error('first_name') is-invalid @enderror" id="first_name" name="first_name" value="{{ old('first_name', $profile->first_name) }}" required>
                                 @error('first_name')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -37,7 +44,7 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label for="last_name" class="form-label">Last Name</label>
+                                <label for="last_name" class="form-label">Last Name <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control @error('last_name') is-invalid @enderror" id="last_name" name="last_name" value="{{ old('last_name', $profile->last_name) }}" required>
                                 @error('last_name')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -45,7 +52,7 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label for="phone" class="form-label">Phone</label>
+                                <label for="phone" class="form-label">Phone <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control @error('phone') is-invalid @enderror" id="phone" name="phone" value="{{ old('phone', $profile->phone) }}" required>
                                 @error('phone')
                                     <div class="invalid-feedback">{{ $message }}</div>

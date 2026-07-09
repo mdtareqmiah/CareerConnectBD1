@@ -8,7 +8,7 @@
     @endif
 
     <div class="col-md-6">
-        <label for="company_name" class="form-label">Company Name</label>
+        <label for="company_name" class="form-label">Company Name <span class="text-danger">*</span></label>
         <input type="text" class="form-control @error('company_name') is-invalid @enderror" id="company_name" name="company_name" value="{{ old('company_name', $experience?->company_name) }}" required>
         @error('company_name')
             <div class="invalid-feedback">{{ $message }}</div>
@@ -16,7 +16,7 @@
     </div>
 
     <div class="col-md-6">
-        <label for="job_title" class="form-label">Job Title</label>
+        <label for="job_title" class="form-label">Job Title <span class="text-danger">*</span></label>
         <input type="text" class="form-control @error('job_title') is-invalid @enderror" id="job_title" name="job_title" value="{{ old('job_title', $experience?->job_title) }}" required>
         @error('job_title')
             <div class="invalid-feedback">{{ $message }}</div>
@@ -24,7 +24,7 @@
     </div>
 
     <div class="col-md-6">
-        <label for="employment_type" class="form-label">Employment Type</label>
+        <label for="employment_type" class="form-label">Employment Type <span class="text-danger">*</span></label>
         <input type="text" class="form-control @error('employment_type') is-invalid @enderror" id="employment_type" name="employment_type" value="{{ old('employment_type', $experience?->employment_type) }}" required>
         @error('employment_type')
             <div class="invalid-feedback">{{ $message }}</div>
@@ -40,7 +40,7 @@
     </div>
 
     <div class="col-md-6">
-        <label for="start_date" class="form-label">Start Date</label>
+        <label for="start_date" class="form-label">Start Date <span class="text-danger">*</span></label>
         <input type="date" class="form-control @error('start_date') is-invalid @enderror" id="start_date" name="start_date" value="{{ old('start_date', optional($experience?->start_date)->format('Y-m-d')) }}" required>
         @error('start_date')
             <div class="invalid-feedback">{{ $message }}</div>

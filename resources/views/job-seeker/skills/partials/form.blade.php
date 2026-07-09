@@ -8,7 +8,7 @@
     @endif
 
     <div class="col-12">
-        <label for="skill_name" class="form-label">Skill Name</label>
+        <label for="skill_name" class="form-label">Skill Name <span class="text-danger">*</span></label>
         <input type="text" class="form-control @error('skill_name') is-invalid @enderror" id="skill_name" name="skill_name" value="{{ old('skill_name', $skill?->skill_name) }}" required>
         @error('skill_name')
             <div class="invalid-feedback">{{ $message }}</div>
@@ -16,7 +16,7 @@
     </div>
 
     <div class="col-md-6">
-        <label for="proficiency_level" class="form-label">Proficiency Level</label>
+        <label for="proficiency_level" class="form-label">Proficiency Level <span class="text-danger">*</span></label>
         <select class="form-select @error('proficiency_level') is-invalid @enderror" id="proficiency_level" name="proficiency_level" required>
             <option value="">Select proficiency</option>
             @foreach (['Beginner', 'Intermediate', 'Advanced', 'Expert'] as $level)

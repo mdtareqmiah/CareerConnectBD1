@@ -2,28 +2,24 @@
 
 @section('content')
     <div class="container py-5">
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
-            <div>
-                <h1 class="h3 mb-2">Experience</h1>
-                <p class="text-muted mb-0">Manage your professional background.</p>
-            </div>
-            <a href="{{ route('job-seeker.experiences.create') }}" class="btn btn-primary mt-3 mt-md-0">Add Experience</a>
-        </div>
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ route('job-seeker.dashboard') }}">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Experience</li>
+            </ol>
+        </nav>
+
+        <x-page-header title="Experience" description="Manage your professional background.">
+            <a href="{{ route('job-seeker.experiences.create') }}" class="btn btn-primary">Add Experience</a>
+        </x-page-header>
 
         @if ($experiences->isEmpty())
-            <div class="card shadow-sm border-0">
-                <div class="card-body text-center py-5">
-                    <div class="display-6 mb-3">🧾</div>
-                    <h2 class="h5 mb-2">No experience added yet</h2>
-                    <p class="text-muted mb-4">Add your work history to showcase your experience to employers.</p>
-                    <a href="{{ route('job-seeker.experiences.create') }}" class="btn btn-primary">Add Experience</a>
-                </div>
-            </div>
+            <x-empty-state-card title="No experience added yet" description="Add your work history to showcase your experience to employers." action-label="Add Experience" action-route="{{ route('job-seeker.experiences.create') }}" icon="🧾" />
         @else
             <div class="card shadow-sm border-0">
                 <div class="card-body p-0">
                     <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
+                        <table class="table table-striped table-hover align-middle mb-0">
                             <thead class="table-light">
                                 <tr>
                                     <th>Company</th>
@@ -53,8 +49,10 @@
                                             @endif
                                         </td>
                                         <td class="text-end">
-                                            <a href="{{ route('job-seeker.experiences.edit', $experience) }}" class="btn btn-sm btn-outline-primary">Edit</a>
-                                            <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteExperienceModal{{ $experience->id }}">Delete</button>
+                                            <div class="d-flex justify-content-end gap-2">
+                                                <a href="{{ route('job-seeker.experiences.edit', $experience) }}" class="btn btn-sm btn-outline-primary">Edit</a>
+                                                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteExperienceModal{{ $experience->id }}">Delete</button>
+                                            </div>
                                         </td>
                                     </tr>
 

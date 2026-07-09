@@ -2,27 +2,24 @@
 
 @section('content')
     <div class="container py-5">
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
-            <div>
-                <h1 class="h3 mb-2">Education</h1>
-                <p class="text-muted mb-0">Manage your academic background.</p>
-            </div>
-            <a href="{{ route('job-seeker.educations.create') }}" class="btn btn-primary mt-3 mt-md-0">Add Education</a>
-        </div>
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ route('job-seeker.dashboard') }}">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Education</li>
+            </ol>
+        </nav>
+
+        <x-page-header title="Education" description="Manage your academic background.">
+            <a href="{{ route('job-seeker.educations.create') }}" class="btn btn-primary">Add Education</a>
+        </x-page-header>
 
         @if ($educations->isEmpty())
-            <div class="card shadow-sm border-0">
-                <div class="card-body">
-                    <h2 class="h5">No education records yet</h2>
-                    <p class="text-muted mb-3">Add your degrees and academic history to strengthen your profile.</p>
-                    <a href="{{ route('job-seeker.educations.create') }}" class="btn btn-primary">Add Education</a>
-                </div>
-            </div>
+            <x-empty-state-card title="No education records yet" description="Add your degrees and academic history to strengthen your profile." action-label="Add Education" action-route="{{ route('job-seeker.educations.create') }}" icon="🎓" />
         @else
             <div class="card shadow-sm border-0">
                 <div class="card-body p-0">
                     <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
+                        <table class="table table-striped table-hover align-middle mb-0">
                             <thead class="table-light">
                                 <tr>
                                     <th>Degree</th>
@@ -51,8 +48,10 @@
                                             @endif
                                         </td>
                                         <td class="text-end">
-                                            <a href="{{ route('job-seeker.educations.edit', $education) }}" class="btn btn-sm btn-outline-primary">Edit</a>
-                                            <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteEducationModal{{ $education->id }}">Delete</button>
+                                            <div class="d-flex justify-content-end gap-2">
+                                                <a href="{{ route('job-seeker.educations.edit', $education) }}" class="btn btn-sm btn-outline-primary">Edit</a>
+                                                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteEducationModal{{ $education->id }}">Delete</button>
+                                            </div>
                                         </td>
                                     </tr>
 

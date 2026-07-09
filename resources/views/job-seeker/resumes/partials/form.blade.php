@@ -7,7 +7,7 @@
     @endif
 
     <div class="col-12">
-        <label for="title" class="form-label">Resume Title</label>
+        <label for="title" class="form-label">Resume Title <span class="text-danger">*</span></label>
         <input type="text" class="form-control @error('title') is-invalid @enderror" id="title" name="title" value="{{ old('title', $resume?->title) }}" required>
         @error('title')
             <div class="invalid-feedback">{{ $message }}</div>
@@ -15,7 +15,7 @@
     </div>
 
     <div class="col-12">
-        <label for="resume_file" class="form-label">Resume File</label>
+        <label for="resume_file" class="form-label">Resume File <span class="text-danger">*</span></label>
         <input type="file" class="form-control @error('resume_file') is-invalid @enderror" id="resume_file" name="resume_file" {{ $resume ? '' : 'required' }}>
         @error('resume_file')
             <div class="invalid-feedback">{{ $message }}</div>

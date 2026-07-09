@@ -2,6 +2,14 @@
 
 @section('content')
     <div class="container py-5">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ route('job-seeker.dashboard') }}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('job-seeker.educations.index') }}">Education</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Create</li>
+            </ol>
+        </nav>
+
         <div class="row justify-content-center">
             <div class="col-lg-8">
                 <div class="card shadow-sm border-0">
@@ -23,7 +31,7 @@
                             @csrf
 
                             <div class="col-md-6">
-                                <label for="degree" class="form-label">Degree</label>
+                                <label for="degree" class="form-label">Degree <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control @error('degree') is-invalid @enderror" id="degree" name="degree" value="{{ old('degree') }}" required>
                                 @error('degree')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -31,7 +39,7 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label for="field_of_study" class="form-label">Field of Study</label>
+                                <label for="field_of_study" class="form-label">Field of Study <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control @error('field_of_study') is-invalid @enderror" id="field_of_study" name="field_of_study" value="{{ old('field_of_study') }}" required>
                                 @error('field_of_study')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -39,7 +47,7 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label for="institution_name" class="form-label">Institution</label>
+                                <label for="institution_name" class="form-label">Institution <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control @error('institution_name') is-invalid @enderror" id="institution_name" name="institution_name" value="{{ old('institution_name') }}" required>
                                 @error('institution_name')
                                     <div class="invalid-feedback">{{ $message }}</div>
