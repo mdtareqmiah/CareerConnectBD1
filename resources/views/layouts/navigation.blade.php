@@ -28,22 +28,22 @@
                 @else
                     @if ($roleSlug === 'job-seeker')
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('job-seeker.dashboard') ? 'active' : '' }}" href="{{ route('job-seeker.dashboard') }}" {{ request()->routeIs('job-seeker.dashboard') ? 'aria-current=page' : '' }}>Dashboard</a>
+                            <a class="nav-link {{ request()->routeIs('job-seeker.dashboard') ? 'active' : '' }}" href="{{ route('job-seeker.dashboard') }}" @if (request()->routeIs('job-seeker.dashboard')) aria-current="page" @endif>Dashboard</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('job-seeker.profile.*') ? 'active' : '' }}" href="{{ route('job-seeker.profile.edit') }}" {{ request()->routeIs('job-seeker.profile.*') ? 'aria-current=page' : '' }}>Profile</a>
+                            <a class="nav-link {{ request()->routeIs('job-seeker.profile.*') ? 'active' : '' }}" href="{{ route('job-seeker.profile.edit') }}" @if (request()->routeIs('job-seeker.profile.*')) aria-current="page" @endif>Profile</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('job-seeker.educations.*') ? 'active' : '' }}" href="{{ route('job-seeker.educations.index') }}" {{ request()->routeIs('job-seeker.educations.*') ? 'aria-current=page' : '' }}>Education</a>
+                            <a class="nav-link {{ request()->routeIs('job-seeker.educations.*') ? 'active' : '' }}" href="{{ route('job-seeker.educations.index') }}" @if (request()->routeIs('job-seeker.educations.*')) aria-current="page" @endif>Education</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('job-seeker.experiences.*') ? 'active' : '' }}" href="{{ route('job-seeker.experiences.index') }}" {{ request()->routeIs('job-seeker.experiences.*') ? 'aria-current=page' : '' }}>Experience</a>
+                            <a class="nav-link {{ request()->routeIs('job-seeker.experiences.*') ? 'active' : '' }}" href="{{ route('job-seeker.experiences.index') }}" @if (request()->routeIs('job-seeker.experiences.*')) aria-current="page" @endif>Experience</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('job-seeker.skills.*') ? 'active' : '' }}" href="{{ route('job-seeker.skills.index') }}" {{ request()->routeIs('job-seeker.skills.*') ? 'aria-current=page' : '' }}>Skills</a>
+                            <a class="nav-link {{ request()->routeIs('job-seeker.skills.*') ? 'active' : '' }}" href="{{ route('job-seeker.skills.index') }}" @if (request()->routeIs('job-seeker.skills.*')) aria-current="page" @endif>Skills</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('job-seeker.resumes.*') ? 'active' : '' }}" href="{{ route('job-seeker.resumes.index') }}" {{ request()->routeIs('job-seeker.resumes.*') ? 'aria-current=page' : '' }}>Resume</a>
+                            <a class="nav-link {{ request()->routeIs('job-seeker.resumes.*') ? 'active' : '' }}" href="{{ route('job-seeker.resumes.index') }}" @if (request()->routeIs('job-seeker.resumes.*')) aria-current="page" @endif>Resume</a>
                         </li>
                     @elseif ($roleSlug === 'employer')
                         <li class="nav-item">

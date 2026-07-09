@@ -13,6 +13,8 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="bg-light">
+        @include('layouts.navigation')
+
         <div class="min-vh-100 d-flex align-items-center justify-content-center py-5">
             <div class="w-100" style="max-width: 32rem;">
                 <div class="text-center mb-4">
