@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Relations\ProfileSkillsRelation;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -65,11 +66,14 @@ class JobSeekerProfile extends Model
         return $this->hasMany(Experience::class);
     }
 
-    public function skills(): BelongsToMany
+    public function skills(): ProfileSkillsRelation
     {
-        return $this->belongsToMany(Skill::class, 'job_seeker_skills')
-            ->withPivot(['proficiency_level', 'years_of_experience'])
-            ->withTimestamps();
+        return new ProfileSkillsRelation(
+            $this->newRelatedInstance(Skill::class)->newQuery(),
+            $this,
+            'job_seeker_profile_id',
+            $this->getKeyName()
+        );
     }
 
     public function resumes(): HasMany

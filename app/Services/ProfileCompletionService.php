@@ -135,7 +135,7 @@ class ProfileCompletionService
 
     private function hasResume(JobSeekerProfile $profile): bool
     {
-        return $profile->resumes()->exists();
+        return $profile->resumes()->where('is_default', true)->exists() || $profile->resumes()->exists();
     }
 
     private function hasProfilePhoto(JobSeekerProfile $profile): bool

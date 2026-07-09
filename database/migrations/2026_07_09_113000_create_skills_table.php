@@ -13,8 +13,13 @@ return new class extends Migration
     {
         Schema::create('skills', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
-            $table->string('slug')->unique();
+            $table->foreignId('job_seeker_profile_id')->nullable()->constrained()->cascadeOnDelete()->cascadeOnUpdate();
+            $table->string('skill_name');
+            $table->string('proficiency_level');
+            $table->decimal('years_of_experience', 3, 1)->nullable();
+            $table->text('notes')->nullable();
+            $table->string('name')->nullable();
+            $table->string('slug')->nullable();
             $table->string('category')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();

@@ -36,6 +36,12 @@
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('job-seeker.educations.*') ? 'active' : '' }}" href="{{ route('job-seeker.educations.index') }}">Education</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('job-seeker.skills.*') ? 'active' : '' }}" href="{{ route('job-seeker.skills.index') }}">Skills</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('job-seeker.resumes.*') ? 'active' : '' }}" href="{{ route('job-seeker.resumes.index') }}">Resumes</a>
+                        </li>
                     @elseif ($roleSlug === 'employer')
                         <li class="nav-item">
                             <a class="nav-link {{ request()->is('employer') ? 'active' : '' }}" href="/employer">Employer Dashboard</a>

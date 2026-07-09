@@ -15,8 +15,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('job_seeker_profile_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->string('title');
-            $table->string('file_name');
-            $table->string('file_path');
+            $table->string('resume_file')->nullable();
+            $table->string('file_name')->nullable();
+            $table->string('file_path')->nullable();
             $table->string('file_type')->nullable();
             $table->unsignedBigInteger('file_size')->nullable();
             $table->boolean('is_default')->default(false);

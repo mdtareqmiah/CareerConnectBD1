@@ -11,6 +11,8 @@
                 <a href="{{ route('job-seeker.profile.edit') }}" class="btn btn-primary">Manage Profile</a>
                 <a href="{{ route('job-seeker.educations.index') }}" class="btn btn-outline-primary">Manage Education</a>
                 <a href="{{ route('job-seeker.experiences.index') }}" class="btn btn-outline-primary">Manage Experience</a>
+                <a href="{{ route('job-seeker.skills.index') }}" class="btn btn-outline-primary">Manage Skills</a>
+                <a href="{{ route('job-seeker.resumes.index') }}" class="btn btn-outline-primary">Manage Resume</a>
             </div>
         </div>
 
@@ -78,6 +80,11 @@
                         <div class="card-body">
                             <h3 class="h6">Resumes</h3>
                             <p class="display-6 mb-0">{{ $resumeCount }}</p>
+                            @if ($defaultResume)
+                                <small class="text-muted">Default: {{ Str::limit($defaultResume->title, 20) }}</small>
+                            @else
+                                <small class="text-muted">No default resume</small>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -91,6 +98,8 @@
                         <a href="{{ route('job-seeker.profile.edit') }}" class="btn btn-primary">Complete Your Profile</a>
                         <a href="{{ route('job-seeker.educations.index') }}" class="btn btn-outline-primary">Manage Education</a>
                         <a href="{{ route('job-seeker.experiences.index') }}" class="btn btn-outline-primary">Manage Experience</a>
+                        <a href="{{ route('job-seeker.skills.index') }}" class="btn btn-outline-primary">Manage Skills</a>
+                        <a href="{{ route('job-seeker.resumes.index') }}" class="btn btn-outline-primary">Manage Resume</a>
                     </div>
                 </div>
             </div>

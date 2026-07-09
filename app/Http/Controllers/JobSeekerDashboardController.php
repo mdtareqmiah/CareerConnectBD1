@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Services\ProfileCompletionService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class JobSeekerDashboardController extends Controller
@@ -37,6 +38,7 @@ class JobSeekerDashboardController extends Controller
         $experienceCount = $profile?->experiences->count() ?? 0;
         $skillsCount = $profile?->skills->count() ?? 0;
         $resumeCount = $profile?->resumes->count() ?? 0;
+        $defaultResume = $profile?->resumes()->where('is_default', true)->first();
 
         return view('job-seeker.dashboard', [
             'user' => $user,
@@ -46,6 +48,7 @@ class JobSeekerDashboardController extends Controller
             'experienceCount' => $experienceCount,
             'skillsCount' => $skillsCount,
             'resumeCount' => $resumeCount,
+            'defaultResume' => $defaultResume,
             'profileStatus' => $profile ? 'Complete' : 'Not Created',
             'availabilityStatus' => $profile?->is_available_for_work ? 'Available for Work' : 'Not Available',
         ]);

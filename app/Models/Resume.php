@@ -13,6 +13,7 @@ class Resume extends Model
     protected $fillable = [
         'job_seeker_profile_id',
         'title',
+        'resume_file',
         'file_name',
         'file_path',
         'file_type',

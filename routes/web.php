@@ -80,6 +80,45 @@ Route::middleware(['auth', 'role:job-seeker'])->group(function () {
     Route::delete('/job-seeker/educations/{education}', [App\Http\Controllers\EducationController::class, 'destroy'])
         ->name('job-seeker.educations.destroy');
 
+    Route::get('/job-seeker/skills', [App\Http\Controllers\SkillController::class, 'index'])
+        ->name('job-seeker.skills.index');
+
+    Route::get('/job-seeker/skills/create', [App\Http\Controllers\SkillController::class, 'create'])
+        ->name('job-seeker.skills.create');
+
+    Route::post('/job-seeker/skills', [App\Http\Controllers\SkillController::class, 'store'])
+        ->name('job-seeker.skills.store');
+
+    Route::get('/job-seeker/skills/{skill}/edit', [App\Http\Controllers\SkillController::class, 'edit'])
+        ->name('job-seeker.skills.edit');
+
+    Route::match(['put', 'patch'], '/job-seeker/skills/{skill}', [App\Http\Controllers\SkillController::class, 'update'])
+        ->name('job-seeker.skills.update');
+
+    Route::delete('/job-seeker/skills/{skill}', [App\Http\Controllers\SkillController::class, 'destroy'])
+        ->name('job-seeker.skills.destroy');
+
+    Route::get('/job-seeker/resumes', [App\Http\Controllers\ResumeController::class, 'index'])
+        ->name('job-seeker.resumes.index');
+
+    Route::get('/job-seeker/resumes/create', [App\Http\Controllers\ResumeController::class, 'create'])
+        ->name('job-seeker.resumes.create');
+
+    Route::post('/job-seeker/resumes', [App\Http\Controllers\ResumeController::class, 'store'])
+        ->name('job-seeker.resumes.store');
+
+    Route::get('/job-seeker/resumes/{resume}/edit', [App\Http\Controllers\ResumeController::class, 'edit'])
+        ->name('job-seeker.resumes.edit');
+
+    Route::match(['put', 'patch'], '/job-seeker/resumes/{resume}', [App\Http\Controllers\ResumeController::class, 'update'])
+        ->name('job-seeker.resumes.update');
+
+    Route::delete('/job-seeker/resumes/{resume}', [App\Http\Controllers\ResumeController::class, 'destroy'])
+        ->name('job-seeker.resumes.destroy');
+
+    Route::get('/job-seeker/resumes/{resume}/download', [App\Http\Controllers\ResumeController::class, 'download'])
+        ->name('job-seeker.resumes.download');
+
     Route::get('/job-seeker/experiences', [App\Http\Controllers\ExperienceController::class, 'index'])
         ->name('job-seeker.experiences.index');
 
