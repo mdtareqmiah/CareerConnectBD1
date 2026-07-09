@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Auth;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -40,6 +41,72 @@ class AuthenticationTest extends TestCase
         ]);
 
         $this->assertGuest();
+    }
+
+    public function test_admin_users_are_redirected_to_admin_after_login(): void
+    {
+        $role = Role::create([
+            'name' => 'Admin',
+            'slug' => 'admin',
+            'description' => 'Administrator',
+            'is_active' => true,
+        ]);
+        $user = User::factory()->create(['role_id' => $role->id]);
+
+        $response = $this->post('/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ]);
+
+        $response->assertRedirect('/admin');
+    }
+
+    public function test_employer_users_are_redirected_to_employer_after_login(): void
+    {
+        $role = Role::create([
+            'name' => 'Employer',
+            'slug' => 'employer',
+            'description' => 'Employer',
+            'is_active' => true,
+        ]);
+        $user = User::factory()->create(['role_id' => $role->id]);
+
+        $response = $this->post('/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ]);
+
+        $response->assertRedirect('/employer');
+    }
+
+    public function test_job_seeker_users_are_redirected_to_job_seeker_after_login(): void
+    {
+        $role = Role::create([
+            'name' => 'Job Seeker',
+            'slug' => 'job-seeker',
+            'description' => 'Job Seeker',
+            'is_active' => true,
+        ]);
+        $user = User::factory()->create(['role_id' => $role->id]);
+
+        $response = $this->post('/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ]);
+
+        $response->assertRedirect('/job-seeker');
+    }
+
+    public function test_users_without_role_are_redirected_to_dashboard_after_login(): void
+    {
+        $user = User::factory()->create(['role_id' => null]);
+
+        $response = $this->post('/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ]);
+
+        $response->assertRedirect('/dashboard');
     }
 
     public function test_users_can_logout(): void
