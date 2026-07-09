@@ -17,4 +17,22 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/admin', function () {
+        return response('Admin access granted', 200);
+    });
+});
+
+Route::middleware(['auth', 'role:employer'])->group(function () {
+    Route::get('/employer', function () {
+        return response('Employer access granted', 200);
+    });
+});
+
+Route::middleware(['auth', 'role:job-seeker'])->group(function () {
+    Route::get('/job-seeker', function () {
+        return response('Job Seeker access granted', 200);
+    });
+});
+
 require __DIR__.'/auth.php';
