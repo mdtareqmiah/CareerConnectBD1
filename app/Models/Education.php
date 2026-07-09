@@ -10,8 +10,10 @@ class Education extends Model
 {
     use HasFactory;
 
+    protected $table = 'educations';
+
     protected $fillable = [
-        'user_id',
+        'job_seeker_profile_id',
         'degree',
         'field_of_study',
         'institution_name',
@@ -33,8 +35,8 @@ class Education extends Model
         'end_date' => 'date',
     ];
 
-    public function user(): BelongsTo
+    public function jobSeekerProfile(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(JobSeekerProfile::class);
     }
 }

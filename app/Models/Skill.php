@@ -23,7 +23,7 @@ class Skill extends Model
 
     public function jobSeekerProfiles(): BelongsToMany
     {
-        return $this->belongsToMany(JobSeekerProfile::class)
+        return $this->belongsToMany(JobSeekerProfile::class, 'job_seeker_skills')
             ->withPivot(['proficiency_level', 'years_of_experience'])
             ->withTimestamps();
     }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\ProfileCompletionService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -67,7 +68,7 @@ class JobSeekerProfile extends Model
 
     public function skills(): BelongsToMany
     {
-        return $this->belongsToMany(Skill::class)
+        return $this->belongsToMany(Skill::class, 'job_seeker_skills')
             ->withPivot(['proficiency_level', 'years_of_experience'])
             ->withTimestamps();
     }
@@ -75,5 +76,15 @@ class JobSeekerProfile extends Model
     public function resumes(): HasMany
     {
         return $this->hasMany(Resume::class);
+    }
+
+    public function getCompletionDetailsAttribute(): array
+    {
+        return app(ProfileCompletionService::class)->getCompletionDetails($this);
+    }
+
+    public function getCompletionPercentageAttribute(): int
+    {
+        return app(ProfileCompletionService::class)->getCompletionPercentage($this);
     }
 }
