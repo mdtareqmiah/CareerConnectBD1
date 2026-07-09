@@ -71,4 +71,9 @@ class JobSeekerProfile extends Model
             ->withPivot(['proficiency_level', 'years_of_experience'])
             ->withTimestamps();
     }
+
+    public function resumes(): HasMany
+    {
+        return $this->hasMany(Resume::class);
+    }
 }
