@@ -79,7 +79,7 @@ class AuthenticationTest extends TestCase
         $response->assertRedirect('/employer');
     }
 
-    public function test_job_seeker_users_are_redirected_to_job_seeker_after_login(): void
+    public function test_job_seeker_users_are_redirected_to_the_dashboard_after_login(): void
     {
         $role = Role::create([
             'name' => 'Job Seeker',
@@ -94,7 +94,7 @@ class AuthenticationTest extends TestCase
             'password' => 'password',
         ]);
 
-        $response->assertRedirect('/job-seeker');
+        $response->assertRedirect('/job-seeker/dashboard');
     }
 
     public function test_users_without_role_are_redirected_to_dashboard_after_login(): void
