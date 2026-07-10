@@ -41,8 +41,16 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 });
 
 Route::middleware(['auth', 'role:employer'])->group(function () {
-    Route::get('/employer', function () {
-        return response('Employer access granted', 200);
+    Route::get('/employer/dashboard', [App\Http\Controllers\EmployerDashboardController::class, 'index'])
+        ->name('employer.dashboard');
+
+    Route::middleware('ensure.employer.has.company')->group(function () {
+        Route::resource('company', App\Http\Controllers\CompanyController::class)
+            ->except(['index', 'destroy'])
+            ->names('company');
+
+        Route::delete('/company/{company}', [App\Http\Controllers\CompanyController::class, 'destroy'])
+            ->name('company.destroy');
     });
 });
 
