@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\User;
 use App\Relations\ProfileSkillsRelation;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 
 class JobSeekerProfile extends Model
 {
@@ -79,5 +81,23 @@ class JobSeekerProfile extends Model
     public function resumes(): HasMany
     {
         return $this->hasMany(Resume::class);
+    }
+
+    protected static function booted(): void
+    {
+        static::deleting(function (JobSeekerProfile $profile): void {
+            if ($profile->profile_photo && Storage::disk('public')->exists($profile->profile_photo)) {
+                Storage::disk('public')->delete($profile->profile_photo);
+            }
+        });
+    }
+
+    public function getProfilePhotoUrlAttribute(): string
+    {
+        if ($this->profile_photo && Storage::disk('public')->exists($this->profile_photo)) {
+            return Storage::url($this->profile_photo);
+        }
+
+        return asset('images/default-avatar.svg');
     }
 }

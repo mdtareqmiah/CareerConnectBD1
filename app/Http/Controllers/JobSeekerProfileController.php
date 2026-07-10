@@ -7,6 +7,8 @@ use App\Http\Requests\UpdateJobSeekerProfileRequest;
 use App\Models\JobSeekerProfile;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class JobSeekerProfileController extends Controller
@@ -55,11 +57,17 @@ class JobSeekerProfileController extends Controller
             abort(403);
         }
 
+        $data = $request->validated();
+
+        if ($request->hasFile('profile_photo')) {
+            $data['profile_photo'] = $this->storeProfilePhoto($request->file('profile_photo'));
+        }
+
         if ($user->jobSeekerProfile()->exists()) {
             return redirect()->route('job-seeker.profile.edit');
         }
 
-        JobSeekerProfile::create(array_merge($request->validated(), [
+        JobSeekerProfile::create(array_merge($data, [
             'user_id' => $user->id,
             'is_profile_completed' => true,
             'is_available_for_work' => $request->boolean('is_available_for_work'),
@@ -82,11 +90,28 @@ class JobSeekerProfileController extends Controller
             return redirect()->route('job-seeker.profile.create')->with('info', 'Create your profile first to continue.');
         }
 
-        $profile->update(array_merge($request->validated(), [
+        $data = $request->validated();
+
+        if ($request->hasFile('profile_photo')) {
+            $data['profile_photo'] = $this->storeProfilePhoto($request->file('profile_photo'), $profile->profile_photo);
+        }
+
+        $profile->update(array_merge($data, [
             'is_profile_completed' => true,
             'is_available_for_work' => $request->boolean('is_available_for_work'),
         ]));
 
         return redirect()->route('job-seeker.dashboard')->with('success', 'Profile updated successfully.');
+    }
+
+    private function storeProfilePhoto($photo, ?string $previousPath = null): string
+    {
+        if ($previousPath && Storage::disk('public')->exists($previousPath)) {
+            Storage::disk('public')->delete($previousPath);
+        }
+
+        $filename = Str::uuid()->toString() . '.' . $photo->getClientOriginalExtension();
+
+        return $photo->storeAs('profile-photos', $filename, 'public');
     }
 }

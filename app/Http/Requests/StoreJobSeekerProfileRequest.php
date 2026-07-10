@@ -26,6 +26,7 @@ class StoreJobSeekerProfileRequest extends FormRequest
             'professional_title' => ['nullable', 'string', 'max:255'],
             'professional_summary' => ['nullable', 'string'],
             'is_available_for_work' => ['nullable', 'boolean'],
+            'profile_photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ];
     }
 }

@@ -39,6 +39,7 @@ class UpdateJobSeekerProfileRequest extends FormRequest
             'portfolio_url' => ['nullable', 'url', 'max:255'],
             'website_url' => ['nullable', 'url', 'max:255'],
             'is_available_for_work' => ['nullable', 'boolean'],
+            'profile_photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ];
     }
 }

@@ -6,6 +6,8 @@ use App\Models\JobSeekerProfile;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class JobSeekerProfileEditTest extends TestCase
@@ -114,5 +116,32 @@ class JobSeekerProfileEditTest extends TestCase
             'professional_title' => 'Senior Developer',
             'is_available_for_work' => true,
         ]);
+    }
+
+    public function test_job_seeker_profile_photo_can_be_uploaded_during_profile_update(): void
+    {
+        Storage::fake('public');
+        $user = $this->createJobSeekerUser();
+        $profile = JobSeekerProfile::create([
+            'user_id' => $user->id,
+            'first_name' => 'Ayesha',
+            'last_name' => 'Rahman',
+            'phone' => '01700000000',
+        ]);
+
+        $photo = UploadedFile::fake()->image('avatar.png');
+
+        $response = $this->actingAs($user)->patch('/job-seeker/profile', [
+            'first_name' => 'Ayesha',
+            'last_name' => 'Rahman',
+            'phone' => '01700000000',
+            'profile_photo' => $photo,
+        ]);
+
+        $response->assertRedirect('/job-seeker/dashboard');
+        $profile->refresh();
+
+        $this->assertNotNull($profile->profile_photo);
+        Storage::disk('public')->assertExists($profile->profile_photo);
     }
 }

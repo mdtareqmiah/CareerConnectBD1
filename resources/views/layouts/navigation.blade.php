@@ -75,6 +75,9 @@
                 @else
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span class="me-2 d-flex align-items-center">
+                                <img src="{{ optional($user->jobSeekerProfile)->profile_photo_url ?? asset('images/default-avatar.svg') }}" alt="Avatar" class="rounded-circle border" width="32" height="32">
+                            </span>
                             <span class="me-2">{{ $user->name }}</span>
                             <span class="small text-muted">▼</span>
                         </a>

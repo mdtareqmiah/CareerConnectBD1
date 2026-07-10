@@ -26,8 +26,16 @@
                             </div>
                         @endif
 
-                        <form action="{{ route('job-seeker.profile.store') }}" method="POST" class="row g-3">
+                        <form action="{{ route('job-seeker.profile.store') }}" method="POST" enctype="multipart/form-data" class="row g-3">
                             @csrf
+
+                            <div class="col-12">
+                                <label for="profile_photo" class="form-label">Profile Photo</label>
+                                <input type="file" class="form-control @error('profile_photo') is-invalid @enderror" id="profile_photo" name="profile_photo" accept="image/png,image/jpeg,image/jpg,image/webp">
+                                @error('profile_photo')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
 
                             <div class="col-md-6">
                                 <label for="first_name" class="form-label">First Name <span class="text-danger">*</span></label>
