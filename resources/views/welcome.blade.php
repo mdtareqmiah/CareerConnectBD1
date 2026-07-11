@@ -13,6 +13,7 @@
             <div class="d-flex flex-wrap gap-3">
                 @guest
                     <a href="{{ route('register') }}" class="btn btn-primary btn-lg">Create Account</a>
+                    <a href="{{ route('employer.register') }}" class="btn btn-outline-primary btn-lg">Register as Employer</a>
                     <a href="{{ route('login') }}" class="btn btn-outline-secondary btn-lg">Login</a>
                 @else
                     <a href="{{ auth()->user()?->role?->slug === 'job-seeker' ? route('job-seeker.dashboard') : (auth()->user()?->role?->slug === 'admin' ? '/admin' : (auth()->user()?->role?->slug === 'employer' ? '/employer' : route('dashboard'))) }}" class="btn btn-primary btn-lg">Go to Dashboard</a>

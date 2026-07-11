@@ -26,6 +26,18 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::middleware(['auth', 'role:employer'])->group(function () {
+    Route::get('/employer', function () {
+        $user = auth()->user();
+
+        if ($user->company) {
+            return redirect()->route('employer.dashboard');
+        }
+
+        return redirect()->route('company.create');
+    });
+});
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -51,7 +63,25 @@ Route::middleware(['auth', 'role:employer'])->group(function () {
 
         Route::delete('/company/{company}', [App\Http\Controllers\CompanyController::class, 'destroy'])
             ->name('company.destroy');
+
+        Route::resource('jobs', App\Http\Controllers\JobController::class)
+            ->except(['index', 'show']);
+
+        Route::get('/employer/jobs/trash', [App\Http\Controllers\JobController::class, 'trash'])
+            ->name('jobs.trash');
+
+        Route::post('/employer/jobs/{job}/restore', [App\Http\Controllers\JobController::class, 'restore'])
+            ->name('jobs.restore');
+
+        Route::delete('/employer/jobs/{job}/force-delete', [App\Http\Controllers\JobController::class, 'forceDelete'])
+            ->name('jobs.forceDelete');
+
+        Route::post('/employer/jobs/{job}/duplicate', [App\Http\Controllers\JobController::class, 'duplicate'])
+            ->name('jobs.duplicate');
     });
+
+    Route::resource('jobs', App\Http\Controllers\JobController::class)
+        ->only(['index', 'show']);
 });
 
 Route::middleware(['auth', 'role:job-seeker'])->group(function () {

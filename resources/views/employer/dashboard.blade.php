@@ -90,16 +90,14 @@
                             @endif
                         </div>
                         <div class="col-md-4 mb-2">
-                            <a href="#" class="btn btn-outline-secondary w-100" disabled>
+                            <a href="{{ route('jobs.create') }}" class="btn btn-outline-primary w-100">
                                 <i class="fas fa-briefcase"></i> Post a Job
                             </a>
-                            <small class="text-muted d-block mt-1">Coming Soon</small>
                         </div>
                         <div class="col-md-4 mb-2">
-                            <a href="#" class="btn btn-outline-secondary w-100" disabled>
-                                <i class="fas fa-inbox"></i> View Applications
+                            <a href="{{ route('jobs.index') }}" class="btn btn-outline-primary w-100">
+                                <i class="fas fa-briefcase"></i> Manage Jobs
                             </a>
-                            <small class="text-muted d-block mt-1">Coming Soon</small>
                         </div>
                     </div>
                 </div>
