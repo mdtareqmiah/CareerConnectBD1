@@ -59,13 +59,12 @@ class ResumeController extends Controller
         }
 
         $validated = $request->validated();
-        $file = $request->file('resume_file');
+        $file = $request->file('file_path');
 
         $path = $file->store('resumes', 'public');
 
         $resume = $profile->resumes()->create([
             'title' => $validated['title'],
-            'resume_file' => $path,
             'file_name' => $file->getClientOriginalName(),
             'file_path' => $path,
             'file_type' => $file->getClientOriginalExtension(),
@@ -110,17 +109,16 @@ class ResumeController extends Controller
 
         $validated = $request->validated();
 
-        if ($request->hasFile('resume_file')) {
-            if ($resume->resume_file && Storage::disk('public')->exists($resume->resume_file)) {
-                Storage::disk('public')->delete($resume->resume_file);
+        if ($request->hasFile('file_path')) {
+            if ($resume->file_path && Storage::disk('public')->exists($resume->file_path)) {
+                Storage::disk('public')->delete($resume->file_path);
             }
 
-            $file = $request->file('resume_file');
+            $file = $request->file('file_path');
             $path = $file->store('resumes', 'public');
 
-            $validated['resume_file'] = $path;
-            $validated['file_name'] = $file->getClientOriginalName();
             $validated['file_path'] = $path;
+            $validated['file_name'] = $file->getClientOriginalName();
             $validated['file_type'] = $file->getClientOriginalExtension();
             $validated['file_size'] = $file->getSize();
             $validated['uploaded_at'] = now();
@@ -147,8 +145,8 @@ class ResumeController extends Controller
             abort(403);
         }
 
-        if ($resume->resume_file && Storage::disk('public')->exists($resume->resume_file)) {
-            Storage::disk('public')->delete($resume->resume_file);
+        if ($resume->file_path && Storage::disk('public')->exists($resume->file_path)) {
+            Storage::disk('public')->delete($resume->file_path);
         }
 
         $resume->delete();
@@ -168,10 +166,10 @@ class ResumeController extends Controller
             abort(403);
         }
 
-        if (! $resume->resume_file || ! Storage::disk('public')->exists($resume->resume_file)) {
+        if (! $resume->file_path || ! Storage::disk('public')->exists($resume->file_path)) {
             abort(404);
         }
 
-        return Storage::disk('public')->download($resume->resume_file, $resume->file_name ?: basename($resume->resume_file));
+        return Storage::disk('public')->download($resume->file_path, $resume->file_name ?: basename($resume->file_path));
     }
 }

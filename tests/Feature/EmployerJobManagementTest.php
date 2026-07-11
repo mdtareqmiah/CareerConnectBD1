@@ -83,11 +83,11 @@ class EmployerJobManagementTest extends TestCase
         $this->assertDatabaseMissing('job_listings', ['id' => $job->id]);
     }
 
-    public function test_employer_cannot_access_another_employers_job()
+    public function test_employer_cannot_access_another_employers_private_job()
     {
         $other = User::factory()->create(['role_id' => Role::where('slug', 'employer')->first()->id]);
         $company = Company::factory()->create(['employer_id' => $other->id]);
-        $job = Job::factory()->create(['company_id' => $company->id]);
+        $job = Job::factory()->create(['company_id' => $company->id, 'status' => 'draft']);
 
         $this->actingAs($this->employer);
 

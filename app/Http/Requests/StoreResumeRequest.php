@@ -15,7 +15,7 @@ class StoreResumeRequest extends FormRequest
     {
         return [
             'title' => ['required', 'string', 'max:255'],
-            'resume_file' => ['required', 'file', 'mimes:pdf,doc,docx', 'max:5120'],
+            'file_path' => ['required', 'file', 'mimes:pdf,doc,docx', 'max:5120'],
             'is_default' => ['nullable', 'boolean'],
         ];
     }

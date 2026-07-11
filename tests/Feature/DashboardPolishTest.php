@@ -65,7 +65,7 @@ class DashboardPolishTest extends TestCase
 
         $profile->resumes()->create([
             'title' => 'Main Resume',
-            'resume_file' => 'resumes/main.pdf',
+            'file_path' => 'resumes/main.pdf',
             'file_name' => 'main.pdf',
             'file_path' => 'resumes/main.pdf',
             'file_type' => 'pdf',

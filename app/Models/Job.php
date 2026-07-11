@@ -4,7 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\JobApplication;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
@@ -50,6 +53,31 @@ class Job extends Model
         return $this->belongsTo(Company::class);
     }
 
+    public function applications(): HasMany
+    {
+        return $this->hasMany(JobApplication::class, 'job_id');
+    }
+
+    public function isPublished(): bool
+    {
+        return $this->status === 'published';
+    }
+
+    public function isExpired(): bool
+    {
+        return $this->status === 'published' && $this->deadline->isBefore(today());
+    }
+
+    public function isOpen(): bool
+    {
+        return $this->isPublished() && ! $this->deadline->isBefore(today());
+    }
+
+    public function alreadyAppliedBy(User $user): bool
+    {
+        return $this->applications()->where('user_id', $user->id)->exists();
+    }
+
     public function scopeForEmployer($query, $employer)
     {
         return $query->whereHas('company', fn ($query) => $query->where('employer_id', $employer->id));
@@ -66,8 +94,31 @@ class Job extends Model
                 ->orWhere('location', 'like', "%{$term}%")
                 ->orWhere('job_type', 'like', "%{$term}%")
                 ->orWhere('employment_status', 'like', "%{$term}%")
-                ->orWhere('status', 'like', "%{$term}%");
+                ->orWhere('status', 'like', "%{$term}%")
+                ->orWhereHas('company', fn ($query) => $query->where('company_name', 'like', "%{$term}%"));
         });
+    }
+
+    public function scopeJobTypeFilter($query, ?string $jobType)
+    {
+        if (empty($jobType)) {
+            return $query;
+        }
+
+        return $query->where('job_type', $jobType);
+    }
+
+    public function scopeSalaryRange($query, ?int $min, ?int $max)
+    {
+        if (filled($min)) {
+            $query->where('salary_max', '>=', $min);
+        }
+
+        if (filled($max)) {
+            $query->where('salary_min', '<=', $max);
+        }
+
+        return $query;
     }
 
     public function scopeStatusFilter($query, ?string $status)

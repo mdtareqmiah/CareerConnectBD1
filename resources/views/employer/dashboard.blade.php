@@ -42,10 +42,35 @@
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
                             <p class="text-muted mb-1 small">Applications Received</p>
-                            <h3 class="mb-0">{{ $stats['total_applications'] }}</h3>
+                            <h3 class="mb-0">{{ $applicationStats['total_applications'] }}</h3>
                         </div>
                         <div class="badge bg-success p-2">
                             <i class="fas fa-inbox"></i>
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <div class="row text-center">
+                            <div class="col-6 mb-2">
+                                <span class="badge bg-secondary">Pending</span>
+                                <div class="fw-semibold">{{ $applicationStats['pending_applications'] }}</div>
+                            </div>
+                            <div class="col-6 mb-2">
+                                <span class="badge bg-info">Reviewed</span>
+                                <div class="fw-semibold">{{ $applicationStats['reviewed_applications'] }}</div>
+                            </div>
+                            <div class="col-6 mb-2">
+                                <span class="badge bg-primary">Shortlisted</span>
+                                <div class="fw-semibold">{{ $applicationStats['shortlisted_applications'] }}</div>
+                            </div>
+                            <div class="col-6 mb-2">
+                                <span class="badge bg-danger">Rejected</span>
+                                <div class="fw-semibold">{{ $applicationStats['rejected_applications'] }}</div>
+                            </div>
+                            <div class="col-12">
+                                <span class="badge bg-success">Hired</span>
+                                <div class="fw-semibold">{{ $applicationStats['hired_applications'] }}</div>
+                            </div>
                         </div>
                     </div>
                 </div>

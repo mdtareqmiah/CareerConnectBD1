@@ -40,7 +40,7 @@ class ResumeCrudTest extends TestCase
 
         $response = $this->actingAs($user)->post('/job-seeker/resumes', [
             'title' => 'Main Resume',
-            'resume_file' => UploadedFile::fake()->create('resume.pdf', 2048, 'application/pdf'),
+            'file_path' => UploadedFile::fake()->create('resume.pdf', 2048, 'application/pdf'),
         ]);
 
         $response->assertRedirect('/job-seeker/resumes');
@@ -55,7 +55,7 @@ class ResumeCrudTest extends TestCase
 
         $response = $this->actingAs($user)->post('/job-seeker/resumes', [
             'title' => '',
-            'resume_file' => UploadedFile::fake()->create('resume.txt', 2048, 'text/plain'),
+            'file_path' => UploadedFile::fake()->create('resume.txt', 2048, 'text/plain'),
         ]);
 
         $response->assertSessionHasErrors(['title']);
@@ -68,7 +68,7 @@ class ResumeCrudTest extends TestCase
         $resume = Resume::create([
             'job_seeker_profile_id' => $profile->id,
             'title' => 'Old Resume',
-            'resume_file' => 'resumes/old.pdf',
+            'file_path' => 'resumes/old.pdf',
             'file_type' => 'pdf',
             'file_size' => 1024,
             'is_default' => true,
@@ -90,7 +90,7 @@ class ResumeCrudTest extends TestCase
         $resume = Resume::create([
             'job_seeker_profile_id' => $profile->id,
             'title' => 'Delete Me',
-            'resume_file' => 'resumes/delete-me.pdf',
+            'file_path' => 'resumes/delete-me.pdf',
             'file_type' => 'pdf',
             'file_size' => 1024,
         ]);
@@ -108,7 +108,7 @@ class ResumeCrudTest extends TestCase
         $resume = Resume::create([
             'job_seeker_profile_id' => $profile->id,
             'title' => 'Download Me',
-            'resume_file' => 'resumes/download-me.pdf',
+            'file_path' => 'resumes/download-me.pdf',
             'file_type' => 'pdf',
             'file_size' => 1024,
         ]);
@@ -145,7 +145,7 @@ class ResumeCrudTest extends TestCase
         Resume::create([
             'job_seeker_profile_id' => $profile->id,
             'title' => 'Primary Resume',
-            'resume_file' => 'resumes/primary.pdf',
+            'file_path' => 'resumes/primary.pdf',
             'file_type' => 'pdf',
             'file_size' => 1024,
             'is_default' => true,

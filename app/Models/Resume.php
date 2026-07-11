@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use App\Models\JobApplication;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Resume extends Model
 {
@@ -13,7 +15,6 @@ class Resume extends Model
     protected $fillable = [
         'job_seeker_profile_id',
         'title',
-        'resume_file',
         'file_name',
         'file_path',
         'file_type',
@@ -32,5 +33,10 @@ class Resume extends Model
     public function jobSeekerProfile(): BelongsTo
     {
         return $this->belongsTo(JobSeekerProfile::class);
+    }
+
+    public function jobApplications(): HasMany
+    {
+        return $this->hasMany(JobApplication::class, 'resume_id');
     }
 }

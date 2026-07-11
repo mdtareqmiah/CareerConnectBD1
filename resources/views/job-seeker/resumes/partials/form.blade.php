@@ -15,13 +15,13 @@
     </div>
 
     <div class="col-12">
-        <label for="resume_file" class="form-label">Resume File <span class="text-danger">*</span></label>
-        <input type="file" class="form-control @error('resume_file') is-invalid @enderror" id="resume_file" name="resume_file" {{ $resume ? '' : 'required' }}>
-        @error('resume_file')
+        <label for="file_path" class="form-label">Resume File <span class="text-danger">*</span></label>
+        <input type="file" class="form-control @error('file_path') is-invalid @enderror" id="file_path" name="file_path" {{ $resume ? '' : 'required' }}>
+        @error('file_path')
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
-        @if ($resume?->resume_file)
-            <div class="form-text">Current file: {{ $resume->file_name ?? basename($resume->resume_file) }}</div>
+        @if ($resume?->file_path)
+            <div class="form-text">Current file: {{ $resume->file_name ?? basename($resume->file_path) }}</div>
         @endif
     </div>
 

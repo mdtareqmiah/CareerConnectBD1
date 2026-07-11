@@ -26,6 +26,9 @@
                         <a class="nav-link {{ request()->is('/') ? 'active' : '' }}" href="/">Home</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('jobs.index') ? 'active' : '' }}" href="{{ route('jobs.index') }}">Jobs</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('register') ? 'active' : '' }}" href="{{ route('register') }}">Register as Job Seeker</a>
                     </li>
                     <li class="nav-item">
@@ -35,6 +38,12 @@
                     @if ($roleSlug === 'job-seeker')
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('job-seeker.dashboard') ? 'active' : '' }}" href="{{ route('job-seeker.dashboard') }}" @if (request()->routeIs('job-seeker.dashboard')) aria-current="page" @endif>Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('jobs.index') ? 'active' : '' }}" href="{{ route('jobs.index') }}">Jobs</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('job-seeker.applications.*') ? 'active' : '' }}" href="{{ route('job-seeker.applications.index') }}">My Applications</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('job-seeker.profile.*') ? 'active' : '' }}" href="{{ route('job-seeker.profile.edit') }}" @if (request()->routeIs('job-seeker.profile.*')) aria-current="page" @endif>Profile</a>
@@ -54,6 +63,15 @@
                     @elseif ($roleSlug === 'employer')
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('jobs.index') ? 'active' : '' }}" href="{{ route('jobs.index') }}">Manage Jobs</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('employer.applications.*') ? 'active' : '' }}" href="{{ route('employer.applications.index') }}">Applications</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('jobs.create') ? 'active' : '' }}" href="{{ route('jobs.create') }}">Post Job</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('company.*') ? 'active' : '' }}" href="{{ auth()->user()->company ? route('company.show', auth()->user()->company) : route('company.create') }}">Company</a>
@@ -103,11 +121,20 @@
                                     <a class="dropdown-item {{ request()->routeIs('job-seeker.dashboard') ? 'active' : '' }}" href="{{ route('job-seeker.dashboard') }}">Dashboard</a>
                                 </li>
                                 <li>
+                                    <a class="dropdown-item {{ request()->routeIs('jobs.index') ? 'active' : '' }}" href="{{ route('jobs.index') }}">Jobs</a>
+                                </li>
+                                <li>
                                     <a class="dropdown-item {{ request()->routeIs('job-seeker.profile.*') ? 'active' : '' }}" href="{{ route('job-seeker.profile.edit') }}">Profile</a>
                                 </li>
                             @elseif ($roleSlug === 'employer')
                                 <li>
                                     <a class="dropdown-item {{ request()->routeIs('employer.dashboard') ? 'active' : '' }}" href="{{ route('employer.dashboard') }}">Dashboard</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item {{ request()->routeIs('jobs.index') ? 'active' : '' }}" href="{{ route('jobs.index') }}">Manage Jobs</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item {{ request()->routeIs('jobs.create') ? 'active' : '' }}" href="{{ route('jobs.create') }}">Post Job</a>
                                 </li>
                                 <li>
                                     <a class="dropdown-item {{ request()->routeIs('company.*') ? 'active' : '' }}" href="{{ auth()->user()->company ? route('company.show', auth()->user()->company) : route('company.create') }}">Company</a>

@@ -64,25 +64,48 @@ Route::middleware(['auth', 'role:employer'])->group(function () {
         Route::delete('/company/{company}', [App\Http\Controllers\CompanyController::class, 'destroy'])
             ->name('company.destroy');
 
-        Route::resource('jobs', App\Http\Controllers\JobController::class)
-            ->except(['index', 'show']);
+        Route::prefix('employer')->group(function () {
+            Route::resource('jobs', App\Http\Controllers\JobController::class)
+                ->except(['index', 'show']);
 
-        Route::get('/employer/jobs/trash', [App\Http\Controllers\JobController::class, 'trash'])
-            ->name('jobs.trash');
+            Route::get('/applications', [App\Http\Controllers\EmployerApplicationController::class, 'index'])
+                ->name('employer.applications.index');
 
-        Route::post('/employer/jobs/{job}/restore', [App\Http\Controllers\JobController::class, 'restore'])
-            ->name('jobs.restore');
+            Route::get('/applications/{jobApplication}', [App\Http\Controllers\EmployerApplicationController::class, 'show'])
+                ->name('employer.applications.show');
 
-        Route::delete('/employer/jobs/{job}/force-delete', [App\Http\Controllers\JobController::class, 'forceDelete'])
-            ->name('jobs.forceDelete');
+            Route::patch('/applications/{jobApplication}/status', [App\Http\Controllers\EmployerApplicationController::class, 'updateStatus'])
+                ->name('employer.applications.update_status');
 
-        Route::post('/employer/jobs/{job}/duplicate', [App\Http\Controllers\JobController::class, 'duplicate'])
-            ->name('jobs.duplicate');
+            Route::get('/applications/{jobApplication}/resume/preview', [App\Http\Controllers\EmployerApplicationController::class, 'previewResume'])
+                ->name('employer.applications.resume.preview');
+
+            Route::get('/applications/{jobApplication}/resume', [App\Http\Controllers\EmployerApplicationController::class, 'downloadResume'])
+                ->name('employer.applications.resume.download');
+
+            Route::get('/jobs/trash', [App\Http\Controllers\JobController::class, 'trash'])
+                ->name('jobs.trash');
+
+            Route::post('/jobs/{job}/restore', [App\Http\Controllers\JobController::class, 'restore'])
+                ->name('jobs.restore');
+
+            Route::delete('/jobs/{job}/force-delete', [App\Http\Controllers\JobController::class, 'forceDelete'])
+                ->name('jobs.forceDelete');
+
+            Route::post('/jobs/{job}/duplicate', [App\Http\Controllers\JobController::class, 'duplicate'])
+                ->name('jobs.duplicate');
+        });
     });
-
-    Route::resource('jobs', App\Http\Controllers\JobController::class)
-        ->only(['index', 'show']);
 });
+
+Route::get('/jobs', [App\Http\Controllers\JobController::class, 'index'])
+    ->name('jobs.index');
+
+Route::get('/jobs/{job}/apply', [App\Http\Controllers\JobApplicationController::class, 'redirectToLogin'])
+    ->name('jobs.apply');
+
+Route::get('/jobs/{job}', [App\Http\Controllers\JobController::class, 'show'])
+    ->name('jobs.show');
 
 Route::middleware(['auth', 'role:job-seeker'])->group(function () {
     Route::get('/job-seeker/dashboard', [App\Http\Controllers\JobSeekerDashboardController::class, 'index'])
@@ -90,6 +113,18 @@ Route::middleware(['auth', 'role:job-seeker'])->group(function () {
 
     Route::get('/job-seeker/profile/create', [App\Http\Controllers\JobSeekerProfileController::class, 'create'])
         ->name('job-seeker.profile.create');
+
+    Route::resource('job-applications', App\Http\Controllers\JobApplicationController::class)
+        ->only(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy'])
+        ->names([
+            'index' => 'job-applications.index',
+            'create' => 'job-applications.create',
+            'store' => 'job-applications.store',
+            'show' => 'job-applications.show',
+            'edit' => 'job-applications.edit',
+            'update' => 'job-applications.update',
+            'destroy' => 'job-applications.destroy',
+        ]);
 
     Route::post('/job-seeker/profile', [App\Http\Controllers\JobSeekerProfileController::class, 'store'])
         ->name('job-seeker.profile.store');
@@ -156,6 +191,12 @@ Route::middleware(['auth', 'role:job-seeker'])->group(function () {
 
     Route::get('/job-seeker/resumes/{resume}/download', [App\Http\Controllers\ResumeController::class, 'download'])
         ->name('job-seeker.resumes.download');
+
+    Route::get('/job-seeker/applications', [App\Http\Controllers\JobSeekerApplicationController::class, 'index'])
+        ->name('job-seeker.applications.index');
+
+    Route::get('/job-seeker/applications/{jobApplication}', [App\Http\Controllers\JobSeekerApplicationController::class, 'show'])
+        ->name('job-seeker.applications.show');
 
     Route::get('/job-seeker/experiences', [App\Http\Controllers\ExperienceController::class, 'index'])
         ->name('job-seeker.experiences.index');

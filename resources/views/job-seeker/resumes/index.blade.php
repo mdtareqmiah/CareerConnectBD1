@@ -24,7 +24,7 @@
                                 <div class="d-flex justify-content-between align-items-start mb-3">
                                     <div>
                                         <h2 class="h5 mb-1">{{ $resume->title }}</h2>
-                                        <p class="text-muted mb-0">{{ $resume->file_name ?? $resume->resume_file }}</p>
+                                        <p class="text-muted mb-0">{{ $resume->file_name ?? basename($resume->file_path) }}</p>
                                     </div>
                                     @if ($resume->is_default)
                                         <span class="badge bg-success">Default</span>
