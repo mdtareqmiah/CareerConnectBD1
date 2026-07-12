@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\ResumeBuilder;
 use App\Models\User;
 use App\Relations\ProfileSkillsRelation;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -81,6 +82,11 @@ class JobSeekerProfile extends Model
     public function resumes(): HasMany
     {
         return $this->hasMany(Resume::class);
+    }
+
+    public function resumeBuilders(): HasMany
+    {
+        return $this->hasMany(ResumeBuilder::class);
     }
 
     protected static function booted(): void

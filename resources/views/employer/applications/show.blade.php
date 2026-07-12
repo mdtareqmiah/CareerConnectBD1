@@ -138,15 +138,76 @@
                             <div class="small text-muted">Uploaded {{ optional($jobApplication->resume->uploaded_at)->format('M d, Y') ?? 'Unknown' }}</div>
                             <div class="small text-muted">{{ strtoupper($jobApplication->resume->file_type) }} &bull; {{ number_format($jobApplication->resume->file_size / 1024, 1) }} KB</div>
                         </div>
-                        <div class="d-flex flex-wrap gap-2">
+                        <div class="d-flex flex-wrap gap-2 mb-3">
                             @if($jobApplication->resume->file_type === 'pdf')
                                 <a href="{{ route('employer.applications.resume.preview', $jobApplication) }}" target="_blank" class="btn btn-outline-primary">Preview Resume</a>
                             @endif
                             <a href="{{ route('employer.applications.resume.download', $jobApplication) }}" class="btn btn-primary">Download Resume</a>
                         </div>
+
+                        @if(! empty($resumeAnalysis))
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <div class="border rounded-3 p-3 bg-light">
+                                        <div class="small text-muted">ATS Score</div>
+                                        <div class="fw-semibold">{{ $resumeAnalysis['atsScore'] ?? 0 }}%</div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="border rounded-3 p-3 bg-light">
+                                        <div class="small text-muted">ATS Readiness</div>
+                                        <div class="fw-semibold">{{ $resumeAnalysis['estimatedATS'] ?? 'Low' }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="border rounded-3 p-3 bg-light">
+                                        <div class="small text-muted">ATS Keywords</div>
+                                        <div class="fw-semibold">{{ $resumeAnalysis['keywordCount'] ?? 0 }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
                     @endif
                 </div>
             </div>
+
+            @if(! empty($matchedSkills) || ! empty($missingSkills))
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body">
+                        <h3 class="h6 mb-3">Skill Match</h3>
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <div class="border rounded-3 p-3 h-100">
+                                    <div class="small text-muted mb-2">Matched Skills</div>
+                                    @if($matchedSkills->isEmpty())
+                                        <div class="text-muted">No matched skills found.</div>
+                                    @else
+                                        <div class="d-flex flex-wrap gap-2">
+                                            @foreach($matchedSkills as $skill)
+                                                <span class="badge bg-success">{{ ucfirst($skill) }}</span>
+                                            @endforeach
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="border rounded-3 p-3 h-100">
+                                    <div class="small text-muted mb-2">Missing Skills</div>
+                                    @if($missingSkills->isEmpty())
+                                        <div class="text-muted">No missing skills detected.</div>
+                                    @else
+                                        <div class="d-flex flex-wrap gap-2">
+                                            @foreach($missingSkills as $skill)
+                                                <span class="badge bg-warning text-dark">{{ ucfirst($skill) }}</span>
+                                            @endforeach
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
         </div>
 
         <div class="col-xl-4">

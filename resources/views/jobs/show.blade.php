@@ -80,7 +80,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const copyLinkButton = document.getElementById('copyLinkButton');
-        const jobUrl = '{{ route('jobs.show', $job) }}';
+        const jobUrl = @json(route('jobs.show', $job));
 
         if (copyLinkButton) {
             copyLinkButton.addEventListener('click', function () {
@@ -120,10 +120,16 @@
         @if(! empty($matchData))
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-body">
-                    <h5 class="mb-3">Your Match Score</h5>
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h5 class="mb-1">Your Match Score</h5>
+                            <div class="text-muted">Based on your profile, resume, and job requirements.</div>
+                        </div>
+                        <span class="badge bg-success">{{ $matchData['recommendationLevel'] ?? 'Match' }}</span>
+                    </div>
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <div class="fs-1 fw-bold">{{ $matchData['score'] }}%</div>
-                        <div class="text-muted">Based on your profile, resume, and job requirements.</div>
+                        <div class="text-muted">Recommended score: {{ $matchData['recommendationScore'] ?? $matchData['score'] }}%</div>
                     </div>
                     <div class="mb-3">
                         <div class="fw-semibold mb-2">Matched Skills</div>
@@ -162,14 +168,26 @@
                                 <div class="fw-semibold">{{ $matchData['resumeUploaded'] ? 'Yes' : 'No' }}</div>
                             </div>
                         </div>
+                        <div class="col-sm-12">
+                            <div class="border rounded-3 p-3">
+                                <div class="small text-muted">Recommendation</div>
+                                <div class="fw-semibold">{{ $matchData['recommendationReason'] ?? 'Matches your profile and job requirements.' }}</div>
+                            </div>
+                        </div>
                         @if(! empty($matchData['resumeAnalysis']))
-                            <div class="col-sm-6">
+                            <div class="col-sm-4">
+                                <div class="border rounded-3 p-3">
+                                    <div class="small text-muted">ATS Score</div>
+                                    <div class="fw-semibold">{{ $matchData['resumeAnalysis']['atsScore'] ?? 0 }}%</div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
                                 <div class="border rounded-3 p-3">
                                     <div class="small text-muted">ATS Readiness</div>
                                     <div class="fw-semibold">{{ $matchData['resumeAnalysis']['estimatedATS'] }}</div>
                                 </div>
                             </div>
-                            <div class="col-sm-6">
+                            <div class="col-sm-4">
                                 <div class="border rounded-3 p-3">
                                     <div class="small text-muted">ATS Keywords</div>
                                     <div class="fw-semibold">{{ $matchData['resumeAnalysis']['keywordCount'] }}</div>

@@ -14,6 +14,7 @@ class ResumeAnalysisResult
         public string $lastAnalyzed,
         public int $keywordCount,
         public string $estimatedATS,
+        public int $atsScore,
         public ?int $resumeAgeDays
     ) {
     }
@@ -30,6 +31,7 @@ class ResumeAnalysisResult
             'lastAnalyzed' => $this->lastAnalyzed,
             'keywordCount' => $this->keywordCount,
             'estimatedATS' => $this->estimatedATS,
+            'atsScore' => $this->atsScore,
             'resumeAgeDays' => $this->resumeAgeDays,
         ];
     }

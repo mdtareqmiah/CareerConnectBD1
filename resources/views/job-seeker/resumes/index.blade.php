@@ -45,6 +45,7 @@
                                 @php
                                     $analysis = $resumeAnalysis[$resume->id] ?? null;
                                     $resumeScore = (int) data_get($analysis, 'resume_score', 0);
+                                    $atsScore = (int) data_get($analysis, 'atsScore', 0);
                                     $readiness = data_get($analysis, 'readiness', 'Incomplete');
                                     $keywordCount = (int) data_get($analysis, 'keywordCount', 0);
                                     $estimatedATS = data_get($analysis, 'estimatedATS', 'Low');
@@ -74,7 +75,13 @@
                                                     </div>
                                                 </div>
 
-                                                <div class="row row-cols-1 row-cols-md-2 g-3 mb-3">
+                                                <div class="row row-cols-1 row-cols-md-3 g-3 mb-3">
+                                                    <div class="col">
+                                                        <div class="border rounded-3 p-3 bg-white">
+                                                            <div class="small text-muted">ATS Score</div>
+                                                            <div class="fw-semibold">{{ $atsScore }}%</div>
+                                                        </div>
+                                                    </div>
                                                     <div class="col">
                                                         <div class="border rounded-3 p-3 bg-white">
                                                             <div class="small text-muted">ATS Keywords</div>

@@ -54,8 +54,10 @@ class ResumeAnalysisServiceTest extends TestCase
         $analysis = $service->analyze($resume);
 
         $this->assertArrayHasKey('resume_score', $analysis);
+        $this->assertArrayHasKey('atsScore', $analysis);
         $this->assertArrayHasKey('strengths', $analysis);
         $this->assertArrayHasKey('suggestions', $analysis);
+        $this->assertGreaterThanOrEqual(0, $analysis['atsScore']);
         $this->assertGreaterThan(0, $analysis['resume_score']);
         $this->assertContains('Resume uploaded', $analysis['strengths']);
     }

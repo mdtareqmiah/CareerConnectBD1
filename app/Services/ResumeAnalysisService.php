@@ -77,6 +77,7 @@ class ResumeAnalysisService
         $missingSections = $analysisAvailable ? array_values(array_diff($this->requiredSections, $sectionsFound)) : $this->requiredSections;
         $keywordCount = $analysisAvailable ? $this->countKeywords($text) : 0;
         $estimatedATS = $this->estimateATSReadiness($keywordCount, $sectionsFound, $metadata['validType']);
+        $atsScore = $this->calculateATSScore($analysisAvailable, $metadata, $sectionsFound, $keywordCount, $completionPercentage);
         $resumeAgeDays = $resume->uploaded_at ? $resume->uploaded_at->diffInDays(now()) : null;
         $hasPortfolioLinks = $this->hasPortfolioLinks($profile);
 
@@ -96,8 +97,37 @@ class ResumeAnalysisService
             now()->toDateTimeString(),
             $keywordCount,
             $estimatedATS,
+            $atsScore,
             $resumeAgeDays
         );
+    }
+
+    protected function calculateATSScore(bool $analysisAvailable, array $metadata, array $sectionsFound, int $keywordCount, int $completionPercentage): int
+    {
+        if (! $analysisAvailable) {
+            return 0;
+        }
+
+        $score = 0;
+        $score += 20;
+        $score += $metadata['validSize'] ? 10 : 0;
+        $score += min(30, count($sectionsFound) * 6);
+        $score += min(30, $keywordCount * 3);
+        $score += min(10, (int) round($completionPercentage / 10));
+
+        if (count($sectionsFound) >= 4 && $keywordCount >= 8) {
+            $score += 10;
+        }
+
+        if ($keywordCount === 0) {
+            $score -= 5;
+        }
+
+        if (count($sectionsFound) < 3) {
+            $score -= 5;
+        }
+
+        return max(0, min(100, $score));
     }
 
     protected function extractMetadata(Resume $resume): array

@@ -6,13 +6,15 @@ use App\Models\Job;
 use App\Models\JobSeekerProfile;
 use App\Models\Resume;
 use App\Services\CandidateMatchService;
+use App\Services\JobRecommendationService;
 use App\Services\ResumeAnalyzerService;
 
 class RuleBasedAIService implements AIServiceInterface
 {
     public function __construct(
         private CandidateMatchService $candidateMatchService,
-        private ResumeAnalyzerService $resumeAnalyzerService
+        private ResumeAnalyzerService $resumeAnalyzerService,
+        private JobRecommendationService $jobRecommendationService
     ) {
     }
 
@@ -38,6 +40,6 @@ class RuleBasedAIService implements AIServiceInterface
 
     public function recommendJobs(Job $job, JobSeekerProfile $profile): array
     {
-        return [];
+        return $this->jobRecommendationService->recommendForJob($job, $profile);
     }
 }

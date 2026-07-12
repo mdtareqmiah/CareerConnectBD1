@@ -132,6 +132,7 @@ class ResumeAnalyzerService
             $weaknesses[] = 'Add more skills to your profile.';
         }
 
+        $atsScore = $this->calculateATSScore($hasText, $metadata, $sectionsFound, $keywordCount, $completionPercentage);
         $score = $this->scoreResume(
             $metadata,
             $hasText,
@@ -154,6 +155,7 @@ class ResumeAnalyzerService
             now()->toDateTimeString(),
             $keywordCount,
             $estimatedATS,
+            $atsScore,
             $resumeAgeDays
         );
     }
@@ -168,6 +170,33 @@ class ResumeAnalyzerService
             'validType' => in_array($fileType, ['pdf', 'doc', 'docx'], true),
             'validSize' => is_int($resume->file_size) && $resume->file_size > 0 && $resume->file_size <= 5242880,
         ];
+    }
+
+    protected function calculateATSScore(bool $hasText, array $metadata, array $sectionsFound, int $keywordCount, int $completionPercentage): int
+    {
+        if (! $hasText || ! $metadata['uploaded'] || ! $metadata['validType']) {
+            return 0;
+        }
+
+        $score = 20;
+        $score += $metadata['validSize'] ? 10 : 0;
+        $score += min(30, count($sectionsFound) * 6);
+        $score += min(30, $keywordCount * 3);
+        $score += min(10, (int) round($completionPercentage / 10));
+
+        if (count($sectionsFound) >= 4 && $keywordCount >= 8) {
+            $score += 10;
+        }
+
+        if ($keywordCount === 0) {
+            $score -= 5;
+        }
+
+        if (count($sectionsFound) < 3) {
+            $score -= 5;
+        }
+
+        return max(0, min(100, $score));
     }
 
     protected function extractText(Resume $resume): string

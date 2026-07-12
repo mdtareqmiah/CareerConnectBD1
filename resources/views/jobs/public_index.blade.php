@@ -31,6 +31,12 @@
             <div class="col-md-2 d-grid">
                 <button type="submit" class="btn btn-primary">Search</button>
             </div>
+            <div class="col-md-2">
+                <select name="recommended" class="form-select">
+                    <option value="">All jobs</option>
+                    <option value="1" {{ request('recommended') === '1' ? 'selected' : '' }}>Recommended only</option>
+                </select>
+            </div>
             <div class="col-12 text-end">
                 <a href="{{ route('jobs.index') }}" class="btn btn-outline-secondary btn-sm">Reset</a>
             </div>

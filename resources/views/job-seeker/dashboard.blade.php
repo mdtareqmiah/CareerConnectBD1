@@ -193,6 +193,57 @@
             </div>
 
             <div class="mt-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h2 class="h5 mb-1">Recommended Jobs</h2>
+                        <p class="text-muted mb-0">Jobs we think match your profile best.</p>
+                    </div>
+                    <a href="{{ route('jobs.index', ['recommended' => 1]) }}" class="btn btn-outline-primary btn-sm">Explore All Recommended</a>
+                </div>
+
+                <div class="row g-4 mb-4">
+                    @forelse ($recommendedJobs as $recommendation)
+                        @php($job = $recommendation['job'])
+                        <div class="col-12 col-md-6">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body d-flex flex-column">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div>
+                                            <h3 class="h6 mb-1">{{ $job->title }}</h3>
+                                            <div class="text-muted small">{{ optional($job->company)->company_name }}</div>
+                                        </div>
+                                        <span class="badge bg-success">{{ $recommendation['level'] }}</span>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <p class="mb-1 text-muted small">{{ $job->location }} · {{ $job->job_type }}</p>
+                                        <p class="mb-0"><strong>Score:</strong> {{ $recommendation['score'] }}%</p>
+                                    </div>
+
+                                    <p class="text-muted mb-3 small">{{ $recommendation['reason'] }}</p>
+
+                                    <div class="mt-auto d-flex justify-content-between align-items-center">
+                                        <a href="{{ route('jobs.show', $job) }}" class="btn btn-primary btn-sm">View Job</a>
+                                        <span class="text-muted small">Salary: {{ $job->salary_type }} {{ number_format($job->salary_min) }} - {{ number_format($job->salary_max) }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="col-12">
+                            <div class="card border-0 shadow-sm p-4 text-center">
+                                <div class="mb-3">
+                                    <span class="fs-1">🔍</span>
+                                </div>
+                                <h5 class="card-title">No recommended jobs yet</h5>
+                                <p class="text-muted mb-0">Update your profile or add more skills to get tailored suggestions.</p>
+                            </div>
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+
+            <div class="mt-4">
                 <h2 class="h5 mb-3">Your Highlights</h2>
                 <div class="row g-4">
                     <div class="col-12 col-lg-6">

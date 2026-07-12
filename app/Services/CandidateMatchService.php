@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Job;
 use App\Models\JobSeekerProfile;
 use App\Models\Skill;
+use App\Services\ProfileCompletionService;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 
@@ -44,7 +45,7 @@ class CandidateMatchService
         return $this->calculateProfileScore($profile);
     }
 
-    private function calculateSkillsScore(Job $job, JobSeekerProfile $profile): int
+    public function calculateSkillsScore(Job $job, JobSeekerProfile $profile): int
     {
         $jobSkills = $this->normalizeJobSkills($job);
         $profileSkills = $this->normalizeProfileSkills($profile);
@@ -56,7 +57,7 @@ class CandidateMatchService
         return (int) round($profileSkills->intersect($jobSkills)->count() / $jobSkills->count() * 100);
     }
 
-    private function calculateExperienceScore(Job $job, JobSeekerProfile $profile): int
+    public function calculateExperienceScore(Job $job, JobSeekerProfile $profile): int
     {
         $requiredLevel = strtolower($job->experience_level ?: 'entry level');
         $profileYears = (int) $profile->years_of_experience;
@@ -69,7 +70,7 @@ class CandidateMatchService
         };
     }
 
-    private function calculateEducationScore(Job $job, JobSeekerProfile $profile): int
+    public function calculateEducationScore(Job $job, JobSeekerProfile $profile): int
     {
         if (empty($job->education_level)) {
             return 100;

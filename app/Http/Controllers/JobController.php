@@ -8,6 +8,7 @@ use App\Http\Requests\EmployerJobTrashRequest;
 use App\Models\Company;
 use App\Models\Job;
 use App\Services\EmployerJobService;
+use App\Services\JobRecommendationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -16,10 +17,12 @@ use Illuminate\View\View;
 class JobController extends Controller
 {
     private EmployerJobService $jobService;
+    private JobRecommendationService $jobRecommendationService;
 
-    public function __construct(EmployerJobService $jobService)
+    public function __construct(EmployerJobService $jobService, JobRecommendationService $jobRecommendationService)
     {
         $this->jobService = $jobService;
+        $this->jobRecommendationService = $jobRecommendationService;
     }
 
     public function index(Request $request): View
@@ -43,6 +46,7 @@ class JobController extends Controller
             'salary_min' => ['nullable', 'numeric', 'min:0'],
             'salary_max' => ['nullable', 'numeric', 'min:0'],
             'sort' => ['nullable', Rule::in(['newest', 'oldest'])],
+            'recommended' => ['nullable', Rule::in(['1', '0'])],
         ]);
 
         $jobTypes = Job::query()
@@ -52,16 +56,28 @@ class JobController extends Controller
             ->orderBy('job_type')
             ->pluck('job_type');
 
-        $jobs = Job::with('company')
+        $recommendedJobIds = null;
+
+        if (($validated['recommended'] ?? '0') === '1' && $request->user()?->role?->slug === 'job-seeker' && $request->user()->jobSeekerProfile) {
+            $recommendedJobIds = $this->jobRecommendationService
+                ->recommendForProfile($request->user()->jobSeekerProfile, 100)
+                ->pluck('job.id')
+                ->all();
+        }
+
+        $jobsQuery = Job::with('company')
             ->where('status', 'published')
             ->whereDate('deadline', '>=', today())
+            ->when($recommendedJobIds !== null, fn ($query) => $query->whereIn('id', $recommendedJobIds))
             ->search($validated['search'] ?? null)
             ->jobTypeFilter($validated['job_type'] ?? null)
             ->salaryRange(
                 isset($validated['salary_min']) ? (int) $validated['salary_min'] : null,
                 isset($validated['salary_max']) ? (int) $validated['salary_max'] : null,
             )
-            ->sortBy($validated['sort'] ?? 'newest')
+            ->sortBy($validated['sort'] ?? 'newest');
+
+        $jobs = $jobsQuery
             ->paginate(10)
             ->appends($request->query());
 
@@ -109,6 +125,8 @@ class JobController extends Controller
                     : (array) $analysis;
             }
 
+            $recommendation = $this->jobRecommendationService->recommendForJob($job, $profile);
+
             $matchData = [
                 'score' => $matchService->calculate($job, $profile),
                 'matchedSkills' => $matchService->matchedSkills($job, $profile),
@@ -116,6 +134,9 @@ class JobController extends Controller
                 'profileCompletion' => $matchService->profileStrength($profile),
                 'resumeUploaded' => $profile->resumes()->whereNotNull('file_path')->exists(),
                 'resumeAnalysis' => $resumeAnalysis,
+                'recommendationScore' => $recommendation['score'],
+                'recommendationLevel' => $recommendation['level'],
+                'recommendationReason' => $recommendation['reason'],
             ];
         }
 
