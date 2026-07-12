@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container py-5">
+    <div class="container py-4 py-lg-5">
         <nav aria-label="breadcrumb" class="mb-4">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ route('job-seeker.dashboard') }}">Dashboard</a></li>
@@ -9,18 +9,38 @@
             </ol>
         </nav>
 
-        <x-page-header title="Resumes" description="Upload and manage your resume documents.">
-            <a href="{{ route('job-seeker.resumes.create') }}" class="btn btn-primary">Upload Resume</a>
-        </x-page-header>
+        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+            <div>
+                <div class="d-inline-flex align-items-center gap-2 rounded-pill bg-primary-subtle text-primary px-3 py-2 mb-3">
+                    <i class="bi bi-file-earmark-richtext"></i>
+                    <span class="fw-semibold">Resume library</span>
+                </div>
+                <h1 class="h3 mb-1">Resumes</h1>
+                <p class="text-muted mb-0">Upload and manage your resume documents.</p>
+            </div>
+            <div class="d-flex flex-wrap align-items-center gap-2">
+                <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-2">{{ $resumes->count() }} resume{{ $resumes->count() === 1 ? '' : 's' }}</span>
+                <a href="{{ route('job-seeker.resumes.create') }}" class="btn btn-primary">Upload resume</a>
+            </div>
+        </div>
 
         @if ($resumes->isEmpty())
-            <x-empty-state-card title="No resumes uploaded yet" description="Add your latest resume to make a strong impression." action-label="Upload Resume" action-route="{{ route('job-seeker.resumes.create') }}" icon="📄" />
+            <div class="card border-0 shadow-soft overflow-hidden">
+                <div class="card-body text-center py-5">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary-subtle text-primary mb-3" style="width: 56px; height: 56px;">
+                        <span class="display-6">📄</span>
+                    </div>
+                    <h2 class="h5">No resumes uploaded yet</h2>
+                    <p class="text-muted">Add your latest resume to make a strong impression across recruiter workflows.</p>
+                    <a href="{{ route('job-seeker.resumes.create') }}" class="btn btn-primary">Upload resume</a>
+                </div>
+            </div>
         @else
             <div class="row g-4">
                 @foreach ($resumes as $resume)
                     <div class="col-lg-6">
-                        <div class="card shadow-sm border-0 h-100">
-                            <div class="card-body">
+                        <div class="card border-0 shadow-soft h-100">
+                            <div class="card-body p-4">
                                 <div class="d-flex justify-content-between align-items-start mb-3">
                                     <div>
                                         <h2 class="h5 mb-1">{{ $resume->title }}</h2>

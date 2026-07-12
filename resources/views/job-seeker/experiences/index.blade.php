@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container py-5">
+    <div class="container py-4 py-lg-5">
         <nav aria-label="breadcrumb" class="mb-4">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ route('job-seeker.dashboard') }}">Dashboard</a></li>
@@ -9,14 +9,34 @@
             </ol>
         </nav>
 
-        <x-page-header title="Experience" description="Manage your professional background.">
-            <a href="{{ route('job-seeker.experiences.create') }}" class="btn btn-primary">Add Experience</a>
-        </x-page-header>
+        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+            <div>
+                <div class="d-inline-flex align-items-center gap-2 rounded-pill bg-primary-subtle text-primary px-3 py-2 mb-3">
+                    <i class="bi bi-briefcase"></i>
+                    <span class="fw-semibold">Career history</span>
+                </div>
+                <h1 class="h3 mb-1">Experience</h1>
+                <p class="text-muted mb-0">Manage your professional background.</p>
+            </div>
+            <div class="d-flex flex-wrap align-items-center gap-2">
+                <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-2">{{ $experiences->count() }} entry{{ $experiences->count() === 1 ? '' : 'ies' }}</span>
+                <a href="{{ route('job-seeker.experiences.create') }}" class="btn btn-primary">Add experience</a>
+            </div>
+        </div>
 
         @if ($experiences->isEmpty())
-            <x-empty-state-card title="No experience added yet" description="Add your work history to showcase your experience to employers." action-label="Add Experience" action-route="{{ route('job-seeker.experiences.create') }}" icon="🧾" />
+            <div class="card border-0 shadow-soft rounded-4 overflow-hidden">
+                <div class="card-body text-center py-5">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary-subtle text-primary mb-3" style="width: 56px; height: 56px;">
+                        <span class="display-6">🧾</span>
+                    </div>
+                    <h2 class="h5">No experience added yet</h2>
+                    <p class="text-muted">Add your work history to showcase your experience to employers.</p>
+                    <a href="{{ route('job-seeker.experiences.create') }}" class="btn btn-primary rounded-pill">Add experience</a>
+                </div>
+            </div>
         @else
-            <div class="card shadow-sm border-0">
+            <div class="card border-0 shadow-soft rounded-4">
                 <div class="card-body p-0">
                     <div class="table-responsive">
                         <table class="table table-striped table-hover align-middle mb-0">

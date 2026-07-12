@@ -5,29 +5,32 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <title>{{ config('app.name', 'CareerConnectBD') }}</title>
 
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="bg-light">
+    <body class="auth-body">
         @include('layouts.navigation')
 
-        <div class="min-vh-100 d-flex align-items-center justify-content-center py-5">
-            <div class="w-100" style="max-width: 32rem;">
+        <div class="auth-shell min-vh-100 d-flex align-items-center justify-content-center py-5">
+            <div class="w-100" style="max-width: 34rem;">
                 <div class="text-center mb-4">
                     <a href="/" class="text-decoration-none text-dark">
                         <div class="d-inline-flex align-items-center justify-content-center rounded-circle border shadow-sm bg-white" style="width: 72px; height: 72px;">
                             <span class="fw-bold fs-4 text-primary">CC</span>
                         </div>
                     </a>
-                    <h1 class="h4 mt-3 mb-0">CareerConnectBD</h1>
+                    <h1 class="h3 mt-3 mb-2 fw-semibold">CareerConnectBD</h1>
+                    <p class="text-muted mb-0">Modern recruitment for ambitious teams and talent.</p>
                 </div>
 
-                <div class="card shadow-sm border-0">
-                    <div class="card-body p-4">
+                <div class="card border-0 shadow-soft auth-card">
+                    <div class="card-body p-4 p-lg-5">
                         {{ $slot }}
                     </div>
                 </div>

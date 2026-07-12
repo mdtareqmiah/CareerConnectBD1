@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container py-5">
+    <div class="container py-4 py-lg-5">
         <nav aria-label="breadcrumb" class="mb-4">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ route('job-seeker.dashboard') }}">Dashboard</a></li>
@@ -12,9 +12,13 @@
 
         <div class="row justify-content-center">
             <div class="col-lg-8">
-                <div class="card shadow-sm border-0">
+                <div class="card border-0 shadow-soft">
                     <div class="card-body p-4 p-lg-5">
-                        <h1 class="h3 mb-2">Upload Resume</h1>
+                        <div class="d-inline-flex align-items-center gap-2 rounded-pill bg-primary-subtle text-primary px-3 py-2 mb-3">
+                            <i class="bi bi-file-earmark-arrow-up"></i>
+                            <span class="fw-semibold">Resume upload</span>
+                        </div>
+                        <h1 class="h3 mb-2">Upload resume</h1>
                         <p class="text-muted mb-4">Upload a PDF, DOC, or DOCX resume.</p>
 
                         @if ($errors->any())

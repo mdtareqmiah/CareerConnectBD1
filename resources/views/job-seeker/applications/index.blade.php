@@ -9,15 +9,19 @@
         </ol>
     </nav>
 
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3 mb-4">
+    <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
         <div>
-            <h1 class="h3 mb-1">My Applications</h1>
+            <div class="d-inline-flex align-items-center gap-2 rounded-pill bg-primary-subtle text-primary px-3 py-2 mb-3">
+                <i class="bi bi-send-check"></i>
+                <span class="fw-semibold">Applications</span>
+            </div>
+            <h1 class="h3 mb-1">My applications</h1>
             <p class="text-muted mb-0">Track your job applications, status updates, and resume submissions.</p>
         </div>
-        <a href="{{ route('jobs.index') }}" class="btn btn-primary">Browse Jobs</a>
+        <a href="{{ route('jobs.index') }}" class="btn btn-primary">Browse jobs</a>
     </div>
 
-    <div class="card border-0 shadow-sm mb-4">
+    <div class="card border-0 shadow-soft mb-4">
         <div class="card-body">
             <form class="row gx-3 gy-3" method="GET" action="{{ route('job-seeker.applications.index') }}">
                 <div class="col-md-4">
@@ -49,16 +53,18 @@
     </div>
 
     @if($applications->isEmpty())
-        <div class="card border-0 shadow-sm py-5">
+        <div class="card border-0 shadow-soft overflow-hidden py-5">
             <div class="card-body text-center">
-                <div class="mb-3 display-6">📭</div>
+                <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary-subtle text-primary mb-3" style="width: 56px; height: 56px;">
+                    <span class="display-6">📭</span>
+                </div>
                 <h2 class="h5">No applications yet.</h2>
                 <p class="text-muted">Browse jobs and submit your first application.</p>
-                <a href="{{ route('jobs.index') }}" class="btn btn-primary">Browse Jobs</a>
+                <a href="{{ route('jobs.index') }}" class="btn btn-primary">Browse jobs</a>
             </div>
         </div>
     @else
-        <div class="card border-0 shadow-sm">
+        <div class="card border-0 shadow-soft">
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-light">

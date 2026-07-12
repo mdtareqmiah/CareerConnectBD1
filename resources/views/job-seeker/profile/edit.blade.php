@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container py-5">
+    <div class="container py-4 py-lg-5">
         <nav aria-label="breadcrumb" class="mb-4">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ route('job-seeker.dashboard') }}">Dashboard</a></li>
@@ -11,18 +11,32 @@
 
         <div class="row justify-content-center">
             <div class="col-lg-10">
-                <div class="card shadow-sm border-0">
+                <div class="card border-0 shadow-soft">
                     <div class="card-body p-4 p-lg-5">
                         <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
                             <div>
-                                <h1 class="h3 mb-2">Edit Your Profile</h1>
-                                <p class="text-muted mb-0">Keep your professional details up to date.</p>
+                                <div class="d-inline-flex align-items-center gap-2 rounded-pill bg-primary-subtle text-primary px-3 py-2 mb-3">
+                                    <i class="bi bi-person-lines-fill"></i>
+                                    <span class="fw-semibold">Profile editor</span>
+                                </div>
+                                <h1 class="h3 mb-2">Edit your profile</h1>
+                                <p class="text-muted mb-0">Keep your professional details up to date and ready for new opportunities.</p>
                             </div>
-                            <a href="{{ route('job-seeker.dashboard') }}" class="btn btn-outline-secondary mt-3 mt-md-0">Back to Dashboard</a>
+                            <a href="{{ route('job-seeker.dashboard') }}" class="btn btn-outline-secondary mt-3 mt-md-0">Back to dashboard</a>
+                        </div>
+
+                        <div class="border rounded-4 bg-light p-3 p-md-4 mb-4">
+                            <div class="d-flex align-items-start gap-2">
+                                <i class="bi bi-info-circle-fill text-primary mt-1"></i>
+                                <div>
+                                    <p class="fw-semibold mb-1">Your profile is your first impression.</p>
+                                    <p class="text-muted small mb-0">Refresh your title, summary, and availability whenever your goals change.</p>
+                                </div>
+                            </div>
                         </div>
 
                         @if ($errors->any())
-                            <div class="alert alert-danger" role="alert">
+                            <div class="alert alert-danger rounded-4 border-0 shadow-sm" role="alert">
                                 <ul class="mb-0">
                                     @foreach ($errors->all() as $error)
                                         <li>{{ $error }}</li>

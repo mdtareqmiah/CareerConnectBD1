@@ -9,10 +9,14 @@
     };
 @endphp
 
-<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
+<nav class="navbar navbar-expand-lg navbar-light sticky-top border-bottom shadow-sm">
     <div class="container">
-        <a class="navbar-brand fw-semibold" href="{{ auth()->check() ? $homeRoute : '/' }}">
-            <span class="me-2">💼</span>CareerConnectBD
+        <a class="navbar-brand d-flex align-items-center gap-3 fw-semibold text-dark" href="{{ auth()->check() ? $homeRoute : '/' }}">
+            <span class="brand-mark d-inline-flex align-items-center justify-content-center rounded-circle text-white">CC</span>
+            <span class="d-flex flex-column">
+                <span class="fw-bold">CareerConnectBD</span>
+                <span class="small text-muted">AI-powered hiring</span>
+            </span>
         </a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -28,7 +32,6 @@
                     <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('jobs.index') ? 'active' : '' }}" href="{{ route('jobs.index') }}">Jobs</a>
                     </li>
-
                 @else
                     @if ($roleSlug === 'job-seeker')
                         <li class="nav-item">
@@ -86,27 +89,29 @@
                 @endguest
             </ul>
 
-            <ul class="navbar-nav ms-auto align-items-lg-center">
+            <ul class="navbar-nav ms-auto align-items-lg-center gap-2">
                 @guest
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('register') ? 'active' : '' }}" href="{{ route('register') }}">Register as Job Seeker</a>
+                        <a class="nav-link {{ request()->routeIs('register') ? 'active' : '' }}" href="{{ route('register') }}">Register</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('employer.register') ? 'active' : '' }}" href="{{ route('employer.register') }}">Register as Employer</a>
+                        <a class="nav-link {{ request()->routeIs('employer.register') ? 'active' : '' }}" href="{{ route('employer.register') }}">Employer</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('login') ? 'active' : '' }}" href="{{ route('login') }}">Login</a>
+                        <a class="btn btn-outline-primary btn-sm rounded-pill px-3" href="{{ route('login') }}">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-primary btn-sm rounded-pill px-3" href="{{ route('register') }}">Join now</a>
                     </li>
                 @else
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center rounded-pill px-3 py-2" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <span class="me-2 d-flex align-items-center">
                                 <img src="{{ optional($user->jobSeekerProfile)->profile_photo_url ?? asset('images/default-avatar.svg') }}" alt="Avatar" class="rounded-circle border" width="32" height="32">
                             </span>
-                            <span class="me-2">{{ $user->name }}</span>
-                            <span class="small text-muted">▼</span>
+                            <span class="me-2 fw-semibold">{{ $user->name }}</span>
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="userDropdown">
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-4" aria-labelledby="userDropdown">
                             <li>
                                 <h6 class="dropdown-header">{{ $user->name }}</h6>
                             </li>

@@ -1,104 +1,116 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
-    <div>
-        <h1 class="h3 mb-0">My Jobs</h1>
-        <p class="text-muted mb-0">Manage your company job postings.</p>
+<div class="container py-4 py-lg-5">
+    <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center mb-4 gap-3">
+        <div>
+            <div class="d-inline-flex align-items-center gap-2 rounded-pill bg-primary-subtle text-primary px-3 py-2 mb-3">
+                <i class="bi bi-briefcase-fill"></i>
+                <span class="fw-semibold">Job management</span>
+            </div>
+            <h1 class="h3 mb-1">My jobs</h1>
+            <p class="text-muted mb-0">Manage your company job postings.</p>
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+            <a href="{{ route('jobs.trash') }}" class="btn btn-outline-secondary">View trash</a>
+            <a href="{{ route('jobs.create') }}" class="btn btn-primary">Create new job</a>
+        </div>
     </div>
-    <div class="d-flex gap-2">
-        <a href="{{ route('jobs.trash') }}" class="btn btn-outline-secondary">View Trash</a>
-        <a href="{{ route('jobs.create') }}" class="btn btn-primary">Create New Job</a>
-    </div>
-</div>
 
-<div class="card border-0 shadow-sm mb-4">
-    <div class="card-body">
-        <form method="GET" action="{{ route('jobs.index') }}" class="row g-3">
-            <div class="col-md-4">
-                <input type="text" name="search" value="{{ request('search') }}" class="form-control" placeholder="Search title, location, type, status">
-            </div>
-            <div class="col-md-3">
-                <select name="status" class="form-select">
-                    <option value="">All Statuses</option>
-                    <option value="draft" {{ request('status') === 'draft' ? 'selected' : '' }}>Draft</option>
-                    <option value="published" {{ request('status') === 'published' ? 'selected' : '' }}>Published</option>
-                    <option value="closed" {{ request('status') === 'closed' ? 'selected' : '' }}>Closed</option>
-                    <option value="expired" {{ request('status') === 'expired' ? 'selected' : '' }}>Expired</option>
-                </select>
-            </div>
-            <div class="col-md-3">
-                <select name="sort" class="form-select">
-                    <option value="newest" {{ request('sort') === 'newest' ? 'selected' : '' }}>Newest</option>
-                    <option value="oldest" {{ request('sort') === 'oldest' ? 'selected' : '' }}>Oldest</option>
-                </select>
-            </div>
-            <div class="col-md-2 d-grid">
-                <button type="submit" class="btn btn-primary">Filter</button>
-            </div>
-        </form>
+    <div class="card border-0 shadow-soft mb-4">
+        <div class="card-body p-4">
+            <form method="GET" action="{{ route('jobs.index') }}" class="row g-3">
+                <div class="col-md-4">
+                    <input type="text" name="search" value="{{ request('search') }}" class="form-control" placeholder="Search title, location, type, status">
+                </div>
+                <div class="col-md-3">
+                    <select name="status" class="form-select">
+                        <option value="">All statuses</option>
+                        <option value="draft" {{ request('status') === 'draft' ? 'selected' : '' }}>Draft</option>
+                        <option value="published" {{ request('status') === 'published' ? 'selected' : '' }}>Published</option>
+                        <option value="closed" {{ request('status') === 'closed' ? 'selected' : '' }}>Closed</option>
+                        <option value="expired" {{ request('status') === 'expired' ? 'selected' : '' }}>Expired</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select name="sort" class="form-select">
+                        <option value="newest" {{ request('sort') === 'newest' ? 'selected' : '' }}>Newest</option>
+                        <option value="oldest" {{ request('sort') === 'oldest' ? 'selected' : '' }}>Oldest</option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-grid">
+                    <button type="submit" class="btn btn-primary">Filter</button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 
-<div class="row g-4 mb-4">
-    <div class="col-lg-3 col-sm-6">
-        <div class="card border-0 shadow-sm p-3 text-center">
-            <div class="text-muted small">Total Jobs</div>
-            <div class="h4 mb-0">{{ $stats['total_jobs'] }}</div>
+    <div class="row g-4 mb-4">
+        <div class="col-lg-3 col-sm-6">
+            <div class="card border-0 shadow-soft p-3 text-center h-100">
+                <div class="text-muted small">Total jobs</div>
+                <div class="h4 mb-0">{{ $stats['total_jobs'] }}</div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-sm-6">
+            <div class="card border-0 shadow-soft p-3 text-center h-100">
+                <div class="text-muted small">Published jobs</div>
+                <div class="h4 mb-0">{{ $stats['published_jobs'] }}</div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-sm-6">
+            <div class="card border-0 shadow-soft p-3 text-center h-100">
+                <div class="text-muted small">Draft jobs</div>
+                <div class="h4 mb-0">{{ $stats['draft_jobs'] }}</div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-sm-6">
+            <div class="card border-0 shadow-soft p-3 text-center h-100">
+                <div class="text-muted small">Closed / expired</div>
+                <div class="h4 mb-0">{{ $stats['closed_jobs'] + $stats['expired_jobs'] }}</div>
+            </div>
         </div>
     </div>
-    <div class="col-lg-3 col-sm-6">
-        <div class="card border-0 shadow-sm p-3 text-center">
-            <div class="text-muted small">Published Jobs</div>
-            <div class="h4 mb-0">{{ $stats['published_jobs'] }}</div>
-        </div>
-    </div>
-    <div class="col-lg-3 col-sm-6">
-        <div class="card border-0 shadow-sm p-3 text-center">
-            <div class="text-muted small">Draft Jobs</div>
-            <div class="h4 mb-0">{{ $stats['draft_jobs'] }}</div>
-        </div>
-    </div>
-    <div class="col-lg-3 col-sm-6">
-        <div class="card border-0 shadow-sm p-3 text-center">
-            <div class="text-muted small">Closed / Expired Jobs</div>
-            <div class="h4 mb-0">{{ $stats['closed_jobs'] + $stats['expired_jobs'] }}</div>
-        </div>
-    </div>
-</div>
 
-<div class="row g-4">
-    <div class="col-12">
-        @forelse ($jobs as $job)
-            <div class="card mb-3 shadow-sm">
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col-md-8">
-                            <h5 class="card-title mb-1">{{ $job->title }}</h5>
-                            <p class="text-muted mb-1">{{ $job->location }} · {{ $job->job_type }} · {{ ucfirst($job->display_status) }}</p>
-                            <p class="mb-1">Deadline: {{ $job->deadline->format('F j, Y') }}</p>
-                            <span class="badge bg-{{ $job->status_badge_color }} text-uppercase">{{ $job->display_status }}</span>
-                        </div>
-                        <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                            <a href="{{ route('jobs.show', $job) }}" class="btn btn-sm btn-outline-primary">View</a>
-                            <a href="{{ route('jobs.edit', $job) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
-                            <form action="{{ route('jobs.duplicate', $job) }}" method="POST" class="d-inline-block">
-                                @csrf
-                                <button type="submit" class="btn btn-sm btn-outline-info">Duplicate</button>
-                            </form>
+    <div class="row g-4">
+        <div class="col-12">
+            @forelse ($jobs as $job)
+                <div class="card border-0 shadow-soft mb-3">
+                    <div class="card-body p-4">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h5 class="card-title mb-1">{{ $job->title }}</h5>
+                                <p class="text-muted mb-2">{{ $job->location }} · {{ $job->job_type }} · {{ ucfirst($job->display_status) }}</p>
+                                <p class="mb-2">Deadline: {{ $job->deadline->format('F j, Y') }}</p>
+                                <span class="badge bg-{{ $job->status_badge_color }} text-uppercase">{{ $job->display_status }}</span>
+                            </div>
+                            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                                <a href="{{ route('jobs.show', $job) }}" class="btn btn-sm btn-outline-primary">View</a>
+                                <a href="{{ route('jobs.edit', $job) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                <form action="{{ route('jobs.duplicate', $job) }}" method="POST" class="d-inline-block">
+                                    @csrf
+                                    <button type="submit" class="btn btn-sm btn-outline-info">Duplicate</button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        @empty
-            <div class="alert alert-info">
-                You have no jobs yet. Start by creating a new job posting.
-            </div>
-        @endforelse
+            @empty
+                <div class="card border-0 shadow-soft overflow-hidden">
+                    <div class="card-body text-center py-5">
+                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary-subtle text-primary mb-3" style="width: 56px; height: 56px;">
+                            <i class="bi bi-briefcase"></i>
+                        </div>
+                        <h5 class="mb-2">No jobs yet</h5>
+                        <p class="text-muted mb-0">Start by creating a new job posting to begin hiring.</p>
+                    </div>
+                </div>
+            @endforelse
+        </div>
     </div>
-</div>
 
-<div class="mt-4">
-    {{ $jobs->links() }}
+    <div class="mt-4">
+        {{ $jobs->links() }}
+    </div>
 </div>
 @endsection

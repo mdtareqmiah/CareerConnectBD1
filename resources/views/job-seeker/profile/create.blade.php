@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container py-5">
+    <div class="container py-4 py-lg-5">
         <nav aria-label="breadcrumb" class="mb-4">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ route('job-seeker.dashboard') }}">Dashboard</a></li>
@@ -11,13 +11,27 @@
 
         <div class="row justify-content-center">
             <div class="col-lg-8">
-                <div class="card shadow-sm border-0">
+                <div class="card border-0 shadow-soft">
                     <div class="card-body p-4 p-lg-5">
-                        <h1 class="h3 mb-2">Create Your Profile</h1>
+                        <div class="d-inline-flex align-items-center gap-2 rounded-pill bg-primary-subtle text-primary px-3 py-2 mb-3">
+                            <i class="bi bi-person-badge"></i>
+                            <span class="fw-semibold">Candidate profile</span>
+                        </div>
+                        <h1 class="h3 mb-2">Create your profile</h1>
                         <p class="text-muted mb-4">Complete your profile to unlock the full dashboard experience.</p>
 
+                        <div class="border rounded-4 bg-light p-3 p-md-4 mb-4">
+                            <div class="d-flex align-items-start gap-2">
+                                <i class="bi bi-info-circle-fill text-primary mt-1"></i>
+                                <div>
+                                    <p class="fw-semibold mb-1">A complete profile helps employers discover you faster.</p>
+                                    <p class="text-muted small mb-0">Add accurate details so your experience and availability feel clear and trustworthy.</p>
+                                </div>
+                            </div>
+                        </div>
+
                         @if ($errors->any())
-                            <div class="alert alert-danger" role="alert">
+                            <div class="alert alert-danger rounded-4 border-0 shadow-sm" role="alert">
                                 <ul class="mb-0">
                                     @foreach ($errors->all() as $error)
                                         <li>{{ $error }}</li>

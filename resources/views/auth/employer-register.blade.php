@@ -1,4 +1,12 @@
 <x-guest-layout>
+    <div class="text-center mb-4">
+        <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary-subtle text-primary mb-3" style="width: 48px; height: 48px;">
+            <i class="bi bi-building-gear"></i>
+        </div>
+        <h2 class="h4 fw-semibold mb-2">Employer sign up</h2>
+        <p class="text-muted mb-0">Create a secure employer account and start building your hiring pipeline.</p>
+    </div>
+
     <form method="POST" action="{{ route('employer.register') }}">
         @csrf
 
@@ -28,7 +36,7 @@
 
         <div class="form-check mb-4">
             <input class="form-check-input" type="checkbox" name="terms" id="terms" required>
-            <label class="form-check-label" for="terms">
+            <label class="form-check-label text-muted" for="terms">
                 {{ __('I accept the terms and conditions') }}
             </label>
             @error('terms')
@@ -36,9 +44,9 @@
             @enderror
         </div>
 
-        <div class="d-flex justify-content-between align-items-center">
-            <a class="text-decoration-none" href="{{ route('login') }}">{{ __('Already registered? Login') }}</a>
-            <x-primary-button class="btn btn-primary">
+        <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3">
+            <a class="text-decoration-none small text-muted" href="{{ route('login') }}">{{ __('Already registered? Login') }}</a>
+            <x-primary-button class="w-100 w-sm-auto">
                 {{ __('Register as Employer') }}
             </x-primary-button>
         </div>

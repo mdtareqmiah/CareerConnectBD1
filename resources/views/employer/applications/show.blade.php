@@ -3,28 +3,32 @@
 @section('title', 'Applicant Review')
 
 @section('content')
-<div class="container py-4">
-    <div class="mb-4 d-flex flex-column flex-md-row justify-content-between align-items-start gap-3">
+<div class="container py-4 py-lg-5">
+    <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-start gap-3 mb-4">
         <div>
-            <h1 class="h3 mb-1">Applicant Review</h1>
+            <div class="d-inline-flex align-items-center gap-2 rounded-pill bg-primary-subtle text-primary px-3 py-2 mb-3">
+                <i class="bi bi-person-lines-fill"></i>
+                <span class="fw-semibold">Applicant review</span>
+            </div>
+            <h1 class="h3 mb-1">Applicant review</h1>
             <p class="text-muted mb-0">Recruiter dashboard for reviewing applicants, resumes, and hiring decisions.</p>
         </div>
         <div class="d-flex gap-2 flex-wrap">
-            <a href="{{ route('jobs.show', $jobApplication->job) }}" class="btn btn-outline-primary">View Public Job</a>
-            <a href="{{ route('company.edit', $jobApplication->job->company) }}" class="btn btn-outline-secondary">View Company</a>
-            <a href="{{ route('employer.applications.index') }}" class="btn btn-secondary">Back to Applications</a>
+            <a href="{{ route('jobs.show', $jobApplication->job) }}" class="btn btn-outline-primary">View public job</a>
+            <a href="{{ route('company.edit', $jobApplication->job->company) }}" class="btn btn-outline-secondary">View company</a>
+            <a href="{{ route('employer.applications.index') }}" class="btn btn-secondary">Back to applications</a>
         </div>
     </div>
 
     @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
+        <div class="alert alert-success rounded-4 border-0 shadow-sm">{{ session('success') }}</div>
     @endif
 
     <div class="row gy-4">
         <div class="col-xl-8">
             @php $profile = $jobApplication->user->jobSeekerProfile; @endphp
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-body">
+            <div class="card border-0 shadow-soft mb-4">
+                <div class="card-body p-4 p-lg-5">
                     <div class="d-flex align-items-center gap-3 mb-4">
                         <img src="{{ $profile?->profile_photo_url ?? asset('images/default-avatar.svg') }}" alt="Profile photo" class="rounded-circle border" width="96" height="96">
                         <div>
@@ -72,8 +76,8 @@
 
             <div class="row gy-4">
                 <div class="col-lg-6">
-                    <div class="card border-0 shadow-sm mb-4">
-                        <div class="card-body">
+                    <div class="card border-0 shadow-soft mb-4">
+                        <div class="card-body p-4">
                             <h3 class="h6 mb-3">Education</h3>
                             @if(! $profile || $profile->educations->isEmpty())
                                 <div class="border rounded-3 p-4 text-center text-muted">No education records available.</div>
@@ -92,8 +96,8 @@
                 </div>
 
                 <div class="col-lg-6">
-                    <div class="card border-0 shadow-sm mb-4">
-                        <div class="card-body">
+                    <div class="card border-0 shadow-soft mb-4">
+                        <div class="card-body p-4">
                             <h3 class="h6 mb-3">Experience</h3>
                             @if(!$profile || $profile->experiences->isEmpty())
                                 <div class="border rounded-3 p-4 text-center text-muted">No experience records available.</div>
@@ -112,8 +116,8 @@
                 </div>
             </div>
 
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-body">
+            <div class="card border-0 shadow-soft mb-4">
+                <div class="card-body p-4">
                     <h3 class="h6 mb-3">Skills</h3>
                     @if(!$profile || $profile->skills->isEmpty())
                         <div class="border rounded-3 p-4 text-center text-muted">No skills added yet.</div>
@@ -127,8 +131,8 @@
                 </div>
             </div>
 
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-body">
+            <div class="card border-0 shadow-soft mb-4">
+                <div class="card-body p-4">
                     <h3 class="h6 mb-3">Resume</h3>
                     @if(! $jobApplication->resume)
                         <div class="border rounded-3 p-4 text-center text-muted">No resume uploaded.</div>
@@ -140,9 +144,9 @@
                         </div>
                         <div class="d-flex flex-wrap gap-2">
                             @if($jobApplication->resume->file_type === 'pdf')
-                                <a href="{{ route('employer.applications.resume.preview', $jobApplication) }}" target="_blank" class="btn btn-outline-primary">Preview Resume</a>
+                                <a href="{{ route('employer.applications.resume.preview', $jobApplication) }}" target="_blank" class="btn btn-outline-primary">Preview resume</a>
                             @endif
-                            <a href="{{ route('employer.applications.resume.download', $jobApplication) }}" class="btn btn-primary">Download Resume</a>
+                            <a href="{{ route('employer.applications.resume.download', $jobApplication) }}" class="btn btn-primary">Download resume</a>
                         </div>
                     @endif
                 </div>
@@ -150,31 +154,31 @@
         </div>
 
         <div class="col-xl-4">
-            <div class="card border-0 shadow-sm mb-4 sticky-top" style="top: 1rem;">
-                <div class="card-body">
-                    <h3 class="h6 mb-3">Job Information</h3>
+            <div class="card border-0 shadow-soft mb-4 sticky-top" style="top: 1rem;">
+                <div class="card-body p-4">
+                    <h3 class="h6 mb-3">Job information</h3>
                     <div class="mb-3">
                         <div class="fw-semibold">{{ $jobApplication->job->title }}</div>
                         <div class="small text-muted">{{ $jobApplication->job->company->company_name }}</div>
                     </div>
                     <div class="mb-3">
-                        <div class="text-muted small">Applied Date</div>
+                        <div class="text-muted small">Applied date</div>
                         <div>{{ optional($jobApplication->applied_at)->format('M d, Y') ?? $jobApplication->created_at->format('M d, Y') }}</div>
                     </div>
                     <div class="mb-3">
-                        <div class="text-muted small">Current Status</div>
+                        <div class="text-muted small">Current status</div>
                         <div>{!! $jobApplication->statusBadge() !!}</div>
                     </div>
                     <div class="mb-3">
-                        <div class="text-muted small">Cover Letter</div>
+                        <div class="text-muted small">Cover letter</div>
                         <div class="text-break">{{ $jobApplication->cover_letter ?: 'No cover letter provided.' }}</div>
                     </div>
                 </div>
             </div>
 
-            <div class="card border-0 shadow-sm mb-4 sticky-top" style="top: 1rem;">
-                <div class="card-body">
-                    <h3 class="h6 mb-3">Application Timeline</h3>
+            <div class="card border-0 shadow-soft mb-4 sticky-top" style="top: 1rem;">
+                <div class="card-body p-4">
+                    <h3 class="h6 mb-3">Application timeline</h3>
                     <div class="timeline">
                         @foreach($timeline as $event)
                             <div class="d-flex mb-3">
@@ -191,19 +195,19 @@
                 </div>
             </div>
 
-            <div class="card border-0 shadow-sm sticky-top" style="top: 1rem;">
-                <div class="card-body">
-                    <h3 class="h6 mb-3">Quick Actions</h3>
+            <div class="card border-0 shadow-soft sticky-top" style="top: 1rem;">
+                <div class="card-body p-4">
+                    <h3 class="h6 mb-3">Quick actions</h3>
                     <div class="d-grid gap-2">
                         @if($jobApplication->resume && $jobApplication->resume->file_type === 'pdf')
-                            <a href="{{ route('employer.applications.resume.preview', $jobApplication) }}" target="_blank" class="btn btn-outline-primary">Preview Resume</a>
+                            <a href="{{ route('employer.applications.resume.preview', $jobApplication) }}" target="_blank" class="btn btn-outline-primary">Preview resume</a>
                         @endif
                         @if($jobApplication->resume)
-                            <a href="{{ route('employer.applications.resume.download', $jobApplication) }}" class="btn btn-primary">Download Resume</a>
+                            <a href="{{ route('employer.applications.resume.download', $jobApplication) }}" class="btn btn-primary">Download resume</a>
                         @endif
-                        <a href="{{ route('jobs.show', $jobApplication->job) }}" class="btn btn-outline-secondary">View Public Job</a>
-                        <a href="{{ route('company.show', $jobApplication->job->company) }}" class="btn btn-outline-secondary">View Company</a>
-                        <a href="{{ route('employer.applications.index') }}" class="btn btn-secondary">Back to Applications</a>
+                        <a href="{{ route('jobs.show', $jobApplication->job) }}" class="btn btn-outline-secondary">View public job</a>
+                        <a href="{{ route('company.show', $jobApplication->job->company) }}" class="btn btn-outline-secondary">View company</a>
+                        <a href="{{ route('employer.applications.index') }}" class="btn btn-secondary">Back to applications</a>
                     </div>
                 </div>
             </div>

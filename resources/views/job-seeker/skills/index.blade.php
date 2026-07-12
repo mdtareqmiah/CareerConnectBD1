@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container py-5">
+    <div class="container py-4 py-lg-5">
         <nav aria-label="breadcrumb" class="mb-4">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ route('job-seeker.dashboard') }}">Dashboard</a></li>
@@ -9,14 +9,34 @@
             </ol>
         </nav>
 
-        <x-page-header title="Skills" description="Manage your technical and professional skills.">
-            <a href="{{ route('job-seeker.skills.create') }}" class="btn btn-primary">Add Skill</a>
-        </x-page-header>
+        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+            <div>
+                <div class="d-inline-flex align-items-center gap-2 rounded-pill bg-primary-subtle text-primary px-3 py-2 mb-3">
+                    <i class="bi bi-tools"></i>
+                    <span class="fw-semibold">Skill profile</span>
+                </div>
+                <h1 class="h3 mb-1">Skills</h1>
+                <p class="text-muted mb-0">Manage your technical and professional skills.</p>
+            </div>
+            <div class="d-flex flex-wrap align-items-center gap-2">
+                <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-2">{{ $skills->count() }} skill{{ $skills->count() === 1 ? '' : 's' }}</span>
+                <a href="{{ route('job-seeker.skills.create') }}" class="btn btn-primary">Add skill</a>
+            </div>
+        </div>
 
         @if ($skills->isEmpty())
-            <x-empty-state-card title="No skills added yet" description="Add your key skills to strengthen your profile." action-label="Add Skill" action-route="{{ route('job-seeker.skills.create') }}" icon="🛠️" />
+            <div class="card border-0 shadow-soft rounded-4 overflow-hidden">
+                <div class="card-body text-center py-5">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary-subtle text-primary mb-3" style="width: 56px; height: 56px;">
+                        <span class="display-6">🛠️</span>
+                    </div>
+                    <h2 class="h5">No skills added yet</h2>
+                    <p class="text-muted">Add your key skills to strengthen your profile and signal fit clearly.</p>
+                    <a href="{{ route('job-seeker.skills.create') }}" class="btn btn-primary rounded-pill">Add skill</a>
+                </div>
+            </div>
         @else
-            <div class="card shadow-sm border-0">
+            <div class="card border-0 shadow-soft rounded-4">
                 <div class="card-body p-0">
                     <div class="table-responsive">
                         <table class="table table-striped table-hover align-middle mb-0">
