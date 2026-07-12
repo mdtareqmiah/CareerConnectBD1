@@ -28,12 +28,7 @@
                     <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('jobs.index') ? 'active' : '' }}" href="{{ route('jobs.index') }}">Jobs</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('register') ? 'active' : '' }}" href="{{ route('register') }}">Register as Job Seeker</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('employer.register') ? 'active' : '' }}" href="{{ route('employer.register') }}">Register as Employer</a>
-                    </li>
+
                 @else
                     @if ($roleSlug === 'job-seeker')
                         <li class="nav-item">
@@ -94,10 +89,13 @@
             <ul class="navbar-nav ms-auto align-items-lg-center">
                 @guest
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('login') ? 'active' : '' }}" href="{{ route('login') }}">Login</a>
+                        <a class="nav-link {{ request()->routeIs('register') ? 'active' : '' }}" href="{{ route('register') }}">Register as Job Seeker</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('register') ? 'active' : '' }}" href="{{ route('register') }}">Register</a>
+                        <a class="nav-link {{ request()->routeIs('employer.register') ? 'active' : '' }}" href="{{ route('employer.register') }}">Register as Employer</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('login') ? 'active' : '' }}" href="{{ route('login') }}">Login</a>
                     </li>
                 @else
                     <li class="nav-item dropdown">
