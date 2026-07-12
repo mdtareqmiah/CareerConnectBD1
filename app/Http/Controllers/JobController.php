@@ -90,11 +90,42 @@ class JobController extends Controller
 
     public function show(Request $request, Job $job): View
     {
-        if ($request->user()?->can('view', $job) || $this->isPubliclyVisible($job)) {
-            return view('jobs.show', compact('job'));
+        if (! ($request->user()?->can('view', $job) || $this->isPubliclyVisible($job))) {
+            abort(403);
         }
 
-        abort(403);
+        $matchData = null;
+
+        if ($request->user()?->role?->slug === 'job-seeker' && $request->user()->jobSeekerProfile) {
+            $matchService = app(\App\Services\CandidateMatchService::class);
+            $profile = $request->user()->jobSeekerProfile;
+            $defaultResume = $profile->resumes()->where('is_default', true)->first() ?? $profile->resumes()->latest('uploaded_at')->first();
+            $resumeAnalysis = null;
+
+            if ($defaultResume) {
+                $analysis = app(\App\Services\ResumeAnalysisService::class)->analyze($defaultResume);
+                $resumeAnalysis = is_object($analysis) && method_exists($analysis, 'toArray')
+                    ? $analysis->toArray()
+                    : (array) $analysis;
+            }
+
+            $matchData = [
+                'score' => $matchService->calculate($job, $profile),
+                'matchedSkills' => $matchService->matchedSkills($job, $profile),
+                'missingSkills' => $matchService->missingSkills($job, $profile),
+                'profileCompletion' => $matchService->profileStrength($profile),
+                'resumeUploaded' => $profile->resumes()->whereNotNull('file_path')->exists(),
+                'resumeAnalysis' => $resumeAnalysis,
+            ];
+        }
+
+        $saved = false;
+
+        if ($request->user()?->role?->slug === 'job-seeker') {
+            $saved = $request->user()->hasSavedJob($job);
+        }
+
+        return view('jobs.show', compact('job', 'matchData', 'saved'));
     }
 
     private function isPubliclyVisible(Job $job): bool

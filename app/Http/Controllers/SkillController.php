@@ -59,6 +59,8 @@ class SkillController extends Controller
 
         $profile->skills()->create($request->validated());
 
+        app(\App\Services\ResumeAnalysisService::class)->invalidateByProfile($profile);
+
         return redirect()->route('job-seeker.skills.index')->with('success', 'Skill created successfully.');
     }
 
@@ -91,6 +93,8 @@ class SkillController extends Controller
 
         $skill->update($request->validated());
 
+        app(\App\Services\ResumeAnalysisService::class)->invalidateByProfile($skill->jobSeekerProfile);
+
         return redirect()->route('job-seeker.skills.index')->with('success', 'Skill updated successfully.');
     }
 
@@ -106,7 +110,10 @@ class SkillController extends Controller
             abort(403);
         }
 
+        $profile = $skill->jobSeekerProfile;
         $skill->delete();
+
+        app(\App\Services\ResumeAnalysisService::class)->invalidateByProfile($profile);
 
         return redirect()->route('job-seeker.skills.index')->with('success', 'Skill deleted successfully.');
     }

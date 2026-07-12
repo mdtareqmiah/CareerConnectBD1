@@ -108,6 +108,11 @@ Route::get('/jobs/{job}', [App\Http\Controllers\JobController::class, 'show'])
     ->name('jobs.show');
 
 Route::middleware(['auth', 'role:job-seeker'])->group(function () {
+    Route::get('/saved-jobs', [App\Http\Controllers\SavedJobController::class, 'index'])
+        ->name('job-seeker.saved-jobs.index');
+
+    Route::post('/jobs/{job}/save', [App\Http\Controllers\SavedJobController::class, 'toggle'])
+        ->name('jobs.saved.toggle');
     Route::get('/job-seeker/dashboard', [App\Http\Controllers\JobSeekerDashboardController::class, 'index'])
         ->name('job-seeker.dashboard');
 

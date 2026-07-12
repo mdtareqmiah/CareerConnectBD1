@@ -60,6 +60,8 @@ class EducationController extends Controller
 
         $profile->educations()->create($request->validated());
 
+        app(\App\Services\ResumeAnalysisService::class)->invalidateByProfile($profile);
+
         return redirect()->route('job-seeker.educations.index')->with('success', 'Education created successfully.');
     }
 
@@ -92,6 +94,8 @@ class EducationController extends Controller
 
         $education->update($request->validated());
 
+        app(\App\Services\ResumeAnalysisService::class)->invalidateByProfile($education->jobSeekerProfile);
+
         return redirect()->route('job-seeker.educations.index')->with('success', 'Education updated successfully.');
     }
 
@@ -107,7 +111,10 @@ class EducationController extends Controller
             abort(403);
         }
 
+        $profile = $education->jobSeekerProfile;
         $education->delete();
+
+        app(\App\Services\ResumeAnalysisService::class)->invalidateByProfile($profile);
 
         return redirect()->route('job-seeker.educations.index')->with('success', 'Education deleted successfully.');
     }

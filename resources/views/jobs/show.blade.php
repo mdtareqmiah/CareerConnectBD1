@@ -23,7 +23,7 @@
                 <span class="text-muted">{{ $job->employment_status }}</span>
             </div>
         </div>
-        <div class="d-flex flex-wrap gap-2">
+        <div class="d-flex flex-wrap gap-2 align-items-center">
             <a href="{{ route('jobs.index') }}" class="btn btn-outline-secondary">Back to Jobs</a>
             @php
                 $user = auth()->user();
@@ -37,14 +37,150 @@
                 <a href="{{ route('jobs.apply', $job) }}" class="btn btn-primary">Apply Now</a>
             @endif
 
-            <button type="button" class="btn btn-outline-primary" disabled>Save Job</button>
-            <button type="button" class="btn btn-outline-secondary">Share</button>
+            @if (! $user)
+                <a href="{{ route('login') }}" class="btn btn-outline-primary">Login to Save</a>
+            @elseif ($user->role?->slug !== 'job-seeker')
+                <button type="button" class="btn btn-outline-secondary" disabled>Save Job</button>
+            @else
+                <form method="POST" action="{{ route('jobs.saved.toggle', $job) }}" class="d-inline">
+                    @csrf
+                    <button type="submit" class="btn btn-outline-primary">
+                        {{ $saved ? 'Unsave Job' : 'Save Job' }}
+                    </button>
+                </form>
+            @endif
+
+            <div class="dropdown">
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="shareDropdownButton" data-bs-toggle="dropdown" aria-expanded="false">
+                    Share
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="shareDropdownButton">
+                    <li>
+                        <button type="button" id="copyLinkButton" class="dropdown-item">Copy Link</button>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <a class="dropdown-item" href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(route('jobs.show', $job)) }}" target="_blank" rel="noopener">Facebook</a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="https://www.linkedin.com/sharing/share-offsite/?url={{ urlencode(route('jobs.show', $job)) }}" target="_blank" rel="noopener">LinkedIn</a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="https://twitter.com/intent/tweet?url={{ urlencode(route('jobs.show', $job)) }}&text={{ urlencode('Check out this job: ' . $job->title) }}" target="_blank" rel="noopener">Twitter/X</a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="mailto:?subject={{ urlencode('Job opportunity: ' . $job->title) }}&body={{ urlencode(route('jobs.show', $job)) }}">Email</a>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
 </div>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const copyLinkButton = document.getElementById('copyLinkButton');
+        const jobUrl = '{{ route('jobs.show', $job) }}';
+
+        if (copyLinkButton) {
+            copyLinkButton.addEventListener('click', function () {
+                navigator.clipboard.writeText(jobUrl).then(function () {
+                    alert('Link copied to clipboard.');
+                }, function () {
+                    prompt('Copy this link:', jobUrl);
+                });
+            });
+        }
+
+        if (navigator.share) {
+            const shareButton = document.getElementById('shareDropdownButton');
+
+            if (shareButton) {
+                shareButton.addEventListener('click', async function (event) {
+                    if (window.innerWidth <= 768) {
+                        event.preventDefault();
+                        try {
+                            await navigator.share({
+                                title: '{{ addslashes($job->title) }}',
+                                text: 'Check out this job opportunity',
+                                url: jobUrl,
+                            });
+                        } catch (error) {
+                            // User canceled or not supported
+                        }
+                    }
+                });
+            }
+        }
+    });
+</script>
+
 <div class="row gy-4">
     <div class="col-xl-8">
+        @if(! empty($matchData))
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="mb-3">Your Match Score</h5>
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="fs-1 fw-bold">{{ $matchData['score'] }}%</div>
+                        <div class="text-muted">Based on your profile, resume, and job requirements.</div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="fw-semibold mb-2">Matched Skills</div>
+                        @if($matchData['matchedSkills']->isEmpty())
+                            <div class="text-muted">No matched skills yet.</div>
+                        @else
+                            <div class="d-flex flex-column gap-2">
+                                @foreach($matchData['matchedSkills'] as $skill)
+                                    <div><span class="text-success">&check;</span> {{ ucfirst($skill) }}</div>
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
+                    <div class="mb-3">
+                        <div class="fw-semibold mb-2">Missing Skills</div>
+                        @if($matchData['missingSkills']->isEmpty())
+                            <div class="text-muted">No missing skills detected.</div>
+                        @else
+                            <div class="d-flex flex-column gap-2">
+                                @foreach($matchData['missingSkills'] as $skill)
+                                    <div>{{ ucfirst($skill) }}</div>
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <div class="border rounded-3 p-3">
+                                <div class="small text-muted">Profile Completion</div>
+                                <div class="fw-semibold">{{ $matchData['profileCompletion'] }}%</div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="border rounded-3 p-3">
+                                <div class="small text-muted">Resume Uploaded</div>
+                                <div class="fw-semibold">{{ $matchData['resumeUploaded'] ? 'Yes' : 'No' }}</div>
+                            </div>
+                        </div>
+                        @if(! empty($matchData['resumeAnalysis']))
+                            <div class="col-sm-6">
+                                <div class="border rounded-3 p-3">
+                                    <div class="small text-muted">ATS Readiness</div>
+                                    <div class="fw-semibold">{{ $matchData['resumeAnalysis']['estimatedATS'] }}</div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="border rounded-3 p-3">
+                                    <div class="small text-muted">ATS Keywords</div>
+                                    <div class="fw-semibold">{{ $matchData['resumeAnalysis']['keywordCount'] }}</div>
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        @endif
+
         <div class="card border-0 shadow-sm mb-4">
             <div class="card-body">
                 <div class="row g-4">

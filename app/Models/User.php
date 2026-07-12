@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\JobApplication;
+use App\Models\SavedJob;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -55,5 +56,15 @@ class User extends Authenticatable
     public function jobApplications(): HasMany
     {
         return $this->hasMany(JobApplication::class, 'user_id');
+    }
+
+    public function savedJobs(): HasMany
+    {
+        return $this->hasMany(SavedJob::class, 'user_id');
+    }
+
+    public function hasSavedJob(Job $job): bool
+    {
+        return $this->savedJobs()->where('job_id', $job->id)->exists();
     }
 }

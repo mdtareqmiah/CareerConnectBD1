@@ -101,6 +101,8 @@ class JobSeekerProfileController extends Controller
             'is_available_for_work' => $request->boolean('is_available_for_work'),
         ]));
 
+        app(\App\Services\ResumeAnalysisService::class)->invalidateByProfile($profile);
+
         return redirect()->route('job-seeker.dashboard')->with('success', 'Profile updated successfully.');
     }
 

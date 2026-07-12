@@ -51,8 +51,12 @@ class EmployerApplicationController extends Controller
         $profile = $jobApplication->user->jobSeekerProfile;
         $profileCompletion = $this->calculateProfileCompletion($profile);
         $timeline = $this->buildApplicationTimeline($jobApplication);
+        $matchScore = app(\App\Services\CandidateMatchService::class)->calculate(
+            $jobApplication->job,
+            $profile ?? new \App\Models\JobSeekerProfile()
+        );
 
-        return view('employer.applications.show', compact('jobApplication', 'profileCompletion', 'timeline'));
+        return view('employer.applications.show', compact('jobApplication', 'profileCompletion', 'timeline', 'matchScore'));
     }
 
     public function previewResume(JobApplication $jobApplication)

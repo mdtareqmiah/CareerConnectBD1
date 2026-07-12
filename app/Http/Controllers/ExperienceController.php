@@ -69,6 +69,8 @@ class ExperienceController extends Controller
 
         $profile->experiences()->create($validated);
 
+        app(\App\Services\ResumeAnalysisService::class)->invalidateByProfile($profile);
+
         return redirect()->route('job-seeker.experiences.index')->with('success', 'Experience created successfully.');
     }
 
@@ -112,6 +114,8 @@ class ExperienceController extends Controller
 
         $experience->update($validated);
 
+        app(\App\Services\ResumeAnalysisService::class)->invalidateByProfile($experience->jobSeekerProfile);
+
         return redirect()->route('job-seeker.experiences.index')->with('success', 'Experience updated successfully.');
     }
 
@@ -127,7 +131,10 @@ class ExperienceController extends Controller
             abort(403);
         }
 
+        $profile = $experience->jobSeekerProfile;
         $experience->delete();
+
+        app(\App\Services\ResumeAnalysisService::class)->invalidateByProfile($profile);
 
         return redirect()->route('job-seeker.experiences.index')->with('success', 'Experience deleted successfully.');
     }

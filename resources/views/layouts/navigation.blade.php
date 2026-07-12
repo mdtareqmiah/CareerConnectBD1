@@ -41,6 +41,14 @@
                             <a class="nav-link {{ request()->routeIs('job-seeker.applications.*') ? 'active' : '' }}" href="{{ route('job-seeker.applications.index') }}">My Applications</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('job-seeker.saved-jobs.index') ? 'active' : '' }}" href="{{ route('job-seeker.saved-jobs.index') }}">
+                                Saved Jobs
+                                @if (! empty($savedJobsCount))
+                                    <span class="badge bg-primary rounded-pill ms-1">{{ $savedJobsCount }}</span>
+                                @endif
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('job-seeker.profile.*') ? 'active' : '' }}" href="{{ route('job-seeker.profile.edit') }}" @if (request()->routeIs('job-seeker.profile.*')) aria-current="page" @endif>Profile</a>
                         </li>
                         <li class="nav-item">

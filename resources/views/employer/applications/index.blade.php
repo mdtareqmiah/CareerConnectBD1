@@ -52,6 +52,7 @@
                         <th>Applicant</th>
                         <th>Job</th>
                         <th>Status</th>
+                        <th>Match Score</th>
                         <th>Applied</th>
                         <th></th>
                     </tr>
@@ -65,6 +66,10 @@
                             </td>
                             <td>{{ $application->job->title }}</td>
                             <td>{!! $application->statusBadge() !!}</td>
+                            <td>
+                                <div class="fw-semibold">{{ $application->match_score ?? 0 }}%</div>
+                                <small class="text-muted">Candidate Match</small>
+                            </td>
                             <td>{{ $application->created_at->diffForHumans() }}</td>
                             <td>
                                 <a href="{{ route('employer.applications.show', $application) }}" class="btn btn-sm btn-outline-primary">View</a>

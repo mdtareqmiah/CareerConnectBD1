@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\JobApplication;
+use App\Models\SavedJob;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -56,6 +57,20 @@ class Job extends Model
     public function applications(): HasMany
     {
         return $this->hasMany(JobApplication::class, 'job_id');
+    }
+
+    public function savedJobs(): HasMany
+    {
+        return $this->hasMany(SavedJob::class, 'job_id');
+    }
+
+    public function isSavedBy(?User $user): bool
+    {
+        if (! $user) {
+            return false;
+        }
+
+        return $this->savedJobs()->where('user_id', $user->id)->exists();
     }
 
     public function isPublished(): bool
