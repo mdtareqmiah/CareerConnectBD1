@@ -15,7 +15,7 @@
             <span class="brand-mark d-inline-flex align-items-center justify-content-center rounded-circle text-white">CC</span>
             <span class="d-flex flex-column">
                 <span class="fw-bold">CareerConnectBD</span>
-                <span class="small text-muted">AI-powered hiring</span>
+
             </span>
         </a>
 
@@ -92,17 +92,15 @@
             <ul class="navbar-nav ms-auto align-items-lg-center gap-2">
                 @guest
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('register') ? 'active' : '' }}" href="{{ route('register') }}">Register</a>
+                        <a class="nav-link {{ request()->routeIs('register') ? 'active' : '' }}" href="{{ route('register') }}">Register as job seeker</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('employer.register') ? 'active' : '' }}" href="{{ route('employer.register') }}">Employer</a>
+                        <a class="nav-link {{ request()->routeIs('employer.register') ? 'active' : '' }}" href="{{ route('employer.register') }}">Register as Employer</a>
                     </li>
                     <li class="nav-item">
                         <a class="btn btn-outline-primary btn-sm rounded-pill px-3" href="{{ route('login') }}">Login</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="btn btn-primary btn-sm rounded-pill px-3" href="{{ route('register') }}">Join now</a>
-                    </li>
+
                 @else
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle d-flex align-items-center rounded-pill px-3 py-2" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
