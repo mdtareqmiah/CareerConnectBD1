@@ -51,8 +51,22 @@ class EmployerApplicationController extends Controller
         $profile = $jobApplication->user->jobSeekerProfile;
         $profileCompletion = $this->calculateProfileCompletion($profile);
         $timeline = $this->buildApplicationTimeline($jobApplication);
+        $matchService = app(\App\Services\CandidateMatchService::class);
+        $matchScore = $matchService->calculate(
+            $jobApplication->job,
+            $profile ?? new \App\Models\JobSeekerProfile()
+        );
 
-        return view('employer.applications.show', compact('jobApplication', 'profileCompletion', 'timeline'));
+        $resumeAnalysis = null;
+        if ($jobApplication->resume) {
+            $analysis = app(\App\Services\ResumeAnalysisService::class)->analyze($jobApplication->resume);
+            $resumeAnalysis = is_object($analysis) && method_exists($analysis, 'toArray') ? $analysis->toArray() : (array) $analysis;
+        }
+
+        $matchedSkills = $profile ? $matchService->matchedSkills($jobApplication->job, $profile) : collect();
+        $missingSkills = $profile ? $matchService->missingSkills($jobApplication->job, $profile) : collect();
+
+        return view('employer.applications.show', compact('jobApplication', 'profileCompletion', 'timeline', 'matchScore', 'resumeAnalysis', 'matchedSkills', 'missingSkills'));
     }
 
     public function previewResume(JobApplication $jobApplication)

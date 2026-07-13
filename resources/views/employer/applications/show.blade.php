@@ -142,72 +142,159 @@
                             <div class="small text-muted">Uploaded {{ optional($jobApplication->resume->uploaded_at)->format('M d, Y') ?? 'Unknown' }}</div>
                             <div class="small text-muted">{{ strtoupper($jobApplication->resume->file_type) }} &bull; {{ number_format($jobApplication->resume->file_size / 1024, 1) }} KB</div>
                         </div>
-                        <div class="d-flex flex-wrap gap-2">
+                        <div class="d-flex flex-wrap gap-2 mb-3">
                             @if($jobApplication->resume->file_type === 'pdf')
                                 <a href="{{ route('employer.applications.resume.preview', $jobApplication) }}" target="_blank" class="btn btn-outline-primary">Preview resume</a>
                             @endif
                             <a href="{{ route('employer.applications.resume.download', $jobApplication) }}" class="btn btn-primary">Download resume</a>
                         </div>
+
+                        @if(! empty($resumeAnalysis))
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <div class="border rounded-3 p-3 bg-light">
+                                        <div class="small text-muted">ATS Score</div>
+                                        <div class="fw-semibold">{{ $resumeAnalysis['atsScore'] ?? 0 }}%</div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="border rounded-3 p-3 bg-light">
+                                        <div class="small text-muted">ATS Readiness</div>
+                                        <div class="fw-semibold">{{ $resumeAnalysis['estimatedATS'] ?? 'Low' }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="border rounded-3 p-3 bg-light">
+                                        <div class="small text-muted">ATS Keywords</div>
+                                        <div class="fw-semibold">{{ $resumeAnalysis['keywordCount'] ?? 0 }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
                     @endif
                 </div>
             </div>
+
+            @if(! empty($matchedSkills) || ! empty($missingSkills))
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body">
+                        <h3 class="h6 mb-3">Skill Match</h3>
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <div class="border rounded-3 p-3 h-100">
+                                    <div class="small text-muted mb-2">Matched Skills</div>
+                                    @if($matchedSkills->isEmpty())
+                                        <div class="text-muted">No matched skills found.</div>
+                                    @else
+                                        <div class="d-flex flex-wrap gap-2">
+                                            @foreach($matchedSkills as $skill)
+                                                <span class="badge bg-success">{{ ucfirst($skill) }}</span>
+                                            @endforeach
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="border rounded-3 p-3 h-100">
+                                    <div class="small text-muted mb-2">Missing Skills</div>
+                                    @if($missingSkills->isEmpty())
+                                        <div class="text-muted">No missing skills detected.</div>
+                                    @else
+                                        <div class="d-flex flex-wrap gap-2">
+                                            @foreach($missingSkills as $skill)
+                                                <span class="badge bg-warning text-dark">{{ ucfirst($skill) }}</span>
+                                            @endforeach
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
         </div>
 
         <div class="col-xl-4">
-            <div class="card border-0 shadow-soft mb-4 sticky-top" style="top: 1rem;">
-                <div class="card-body p-4">
-                    <h3 class="h6 mb-3">Job information</h3>
-                    <div class="mb-3">
-                        <div class="fw-semibold">{{ $jobApplication->job->title }}</div>
-                        <div class="small text-muted">{{ $jobApplication->job->company->company_name }}</div>
-                    </div>
-                    <div class="mb-3">
-                        <div class="text-muted small">Applied date</div>
-                        <div>{{ optional($jobApplication->applied_at)->format('M d, Y') ?? $jobApplication->created_at->format('M d, Y') }}</div>
-                    </div>
-                    <div class="mb-3">
-                        <div class="text-muted small">Current status</div>
-                        <div>{!! $jobApplication->statusBadge() !!}</div>
-                    </div>
-                    <div class="mb-3">
-                        <div class="text-muted small">Cover letter</div>
-                        <div class="text-break">{{ $jobApplication->cover_letter ?: 'No cover letter provided.' }}</div>
-                    </div>
-                </div>
-            </div>
+            <div class="position-sticky" style="top: 1rem;">
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body">
+                        <h3 class="h6 mb-3">Update Application Status</h3>
+                        <form method="POST" action="{{ route('employer.applications.update_status', $jobApplication) }}">
+                            @csrf
+                            @method('PATCH')
 
-            <div class="card border-0 shadow-soft mb-4 sticky-top" style="top: 1rem;">
-                <div class="card-body p-4">
-                    <h3 class="h6 mb-3">Application timeline</h3>
-                    <div class="timeline">
-                        @foreach($timeline as $event)
-                            <div class="d-flex mb-3">
-                                <div class="me-3 mt-1">
-                                    <span class="badge rounded-circle bg-primary" style="width: 12px; height: 12px;"></span>
-                                </div>
-                                <div>
-                                    <div class="fw-semibold">{{ $event['label'] }}</div>
-                                    <div class="small text-muted">{{ $event['time'] }}</div>
-                                </div>
+                            <div class="mb-3">
+                                <label for="status" class="form-label">Status</label>
+                                <select id="status" name="status" class="form-select">
+                                    @foreach(\App\Models\JobApplication::statusOptions() as $status => $label)
+                                        <option value="{{ $status }}" {{ $jobApplication->status === $status ? 'selected' : '' }}>{{ $label }}</option>
+                                    @endforeach
+                                </select>
                             </div>
-                        @endforeach
+
+                            <button type="submit" class="btn btn-primary w-100">Save Status</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body">
+                        <h3 class="h6 mb-3">Job Information</h3>
+                        <div class="mb-3">
+                            <div class="fw-semibold">{{ $jobApplication->job->title }}</div>
+                            <div class="small text-muted">{{ $jobApplication->job->company->company_name }}</div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="text-muted small">Applied Date</div>
+                            <div>{{ optional($jobApplication->applied_at)->format('M d, Y') ?? $jobApplication->created_at->format('M d, Y') }}</div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="text-muted small">Current Status</div>
+                            <div>{!! $jobApplication->statusBadge() !!}</div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="text-muted small">Cover Letter</div>
+                            <div class="text-break">{{ $jobApplication->cover_letter ?: 'No cover letter provided.' }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body">
+                        <h3 class="h6 mb-3">Application Timeline</h3>
+                        <div class="timeline">
+                            @foreach($timeline as $event)
+                                <div class="d-flex mb-3">
+                                    <div class="me-3 mt-1">
+                                        <span class="badge rounded-circle bg-primary" style="width: 12px; height: 12px;"></span>
+                                    </div>
+                                    <div>
+                                        <div class="fw-semibold">{{ $event['label'] }}</div>
+                                        <div class="small text-muted">{{ $event['time'] }}</div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <h3 class="h6 mb-3">Quick Actions</h3>
+                        <div class="d-grid gap-2">
+                            @if($jobApplication->resume && $jobApplication->resume->file_type === 'pdf')
+                                <a href="{{ route('employer.applications.resume.preview', $jobApplication) }}" target="_blank" class="btn btn-outline-primary">Preview Resume</a>
+                            @endif
+                            @if($jobApplication->resume)
+                                <a href="{{ route('employer.applications.resume.download', $jobApplication) }}" class="btn btn-primary">Download Resume</a>
+                            @endif
+                            <a href="{{ route('jobs.show', $jobApplication->job) }}" class="btn btn-outline-secondary">View Public Job</a>
+                            <a href="{{ route('company.show', $jobApplication->job->company) }}" class="btn btn-outline-secondary">View Company</a>
+                            <a href="{{ route('employer.applications.index') }}" class="btn btn-secondary">Back to Applications</a>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <div class="card border-0 shadow-soft sticky-top" style="top: 1rem;">
-                <div class="card-body p-4">
-                    <h3 class="h6 mb-3">Quick actions</h3>
-                    <div class="d-grid gap-2">
-                        @if($jobApplication->resume && $jobApplication->resume->file_type === 'pdf')
-                            <a href="{{ route('employer.applications.resume.preview', $jobApplication) }}" target="_blank" class="btn btn-outline-primary">Preview resume</a>
-                        @endif
-                        @if($jobApplication->resume)
-                            <a href="{{ route('employer.applications.resume.download', $jobApplication) }}" class="btn btn-primary">Download resume</a>
-                        @endif
-                        <a href="{{ route('jobs.show', $jobApplication->job) }}" class="btn btn-outline-secondary">View public job</a>
-                        <a href="{{ route('company.show', $jobApplication->job->company) }}" class="btn btn-outline-secondary">View company</a>
-                        <a href="{{ route('employer.applications.index') }}" class="btn btn-secondary">Back to applications</a>
                     </div>
                 </div>
             </div>

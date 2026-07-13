@@ -23,8 +23,17 @@ class ResumeController extends Controller
 
         $profile = $user->jobSeekerProfile()->first();
         $resumes = $profile ? $profile->resumes()->orderByDesc('is_default')->orderByDesc('created_at')->get() : collect();
+        $analysisService = app(\App\Services\ResumeAnalysisService::class);
+        $resumeAnalysis = [];
 
-        return view('job-seeker.resumes.index', compact('resumes'));
+        foreach ($resumes as $resume) {
+            $analysis = $analysisService->analyze($resume);
+            $resumeAnalysis[$resume->id] = is_object($analysis) && method_exists($analysis, 'toArray')
+                ? $analysis->toArray()
+                : (array) $analysis;
+        }
+
+        return view('job-seeker.resumes.index', compact('resumes', 'resumeAnalysis'));
     }
 
     public function create(Request $request): View|RedirectResponse
@@ -77,6 +86,8 @@ class ResumeController extends Controller
             $profile->resumes()->where('id', '!=', $resume->id)->update(['is_default' => false]);
         }
 
+        app(\App\Services\ResumeAnalysisService::class)->invalidateByProfile($profile);
+
         return redirect()->route('job-seeker.resumes.index')->with('success', 'Resume uploaded successfully.');
     }
 
@@ -126,6 +137,8 @@ class ResumeController extends Controller
 
         $resume->update($validated);
 
+        app(\App\Services\ResumeAnalysisService::class)->invalidateByProfile($resume->jobSeekerProfile);
+
         if ($resume->is_default) {
             $resume->jobSeekerProfile->resumes()->where('id', '!=', $resume->id)->update(['is_default' => false]);
         }
@@ -148,6 +161,8 @@ class ResumeController extends Controller
         if ($resume->file_path && Storage::disk('public')->exists($resume->file_path)) {
             Storage::disk('public')->delete($resume->file_path);
         }
+
+        app(\App\Services\ResumeAnalysisService::class)->invalidateByProfile($resume->jobSeekerProfile);
 
         $resume->delete();
 

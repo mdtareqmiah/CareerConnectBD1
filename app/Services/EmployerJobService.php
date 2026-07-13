@@ -7,6 +7,8 @@ use App\Models\JobApplication;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Pagination\LengthAwarePaginator as PaginatorLengthAware;
+use Illuminate\Pagination\Paginator;
 
 class EmployerJobService
 {
@@ -48,7 +50,13 @@ class EmployerJobService
     public function listApplications(User $employer, array $filters): LengthAwarePaginator
     {
         $query = $this->applicationQuery($employer)
-            ->with(['job.company', 'user.jobSeekerProfile', 'resume']);
+            ->with([
+                'job.company',
+                'user.jobSeekerProfile.skills',
+                'user.jobSeekerProfile.educations',
+                'user.jobSeekerProfile.resumes',
+                'resume',
+            ]);
 
         if (! empty($filters['status'])) {
             $query->where('status', $filters['status']);
@@ -62,10 +70,35 @@ class EmployerJobService
             $query->whereHas('user', fn ($query) => $query->where('name', 'like', '%' . $filters['search'] . '%'));
         }
 
-        $sort = $filters['sort'] ?? 'newest';
-        $query = $sort === 'oldest' ? $query->orderBy('applied_at') : $query->orderByDesc('applied_at');
+        $applications = $query->get();
+        $matchService = app(CandidateMatchService::class);
 
-        return $query->paginate(10)->appends(request()->query());
+        $applications->each(function ($application) use ($matchService) {
+            $application->match_score = $matchService->calculate(
+                $application->job,
+                $application->user->jobSeekerProfile ?? new \App\Models\JobSeekerProfile()
+            );
+        });
+
+        $sort = $filters['sort'] ?? null;
+
+        if ($sort === 'oldest') {
+            $applications = $applications->sortBy('applied_at');
+        } elseif ($sort === 'newest') {
+            $applications = $applications->sortByDesc('applied_at');
+        } else {
+            $applications = $applications->sortByDesc('match_score');
+        }
+
+        $page = Paginator::resolveCurrentPage();
+        $perPage = 10;
+        $items = $applications->forPage($page, $perPage)->values();
+        $paginator = new PaginatorLengthAware($items, $applications->count(), $perPage, $page, [
+            'path' => request()->url(),
+            'query' => request()->query(),
+        ]);
+
+        return $paginator;
     }
 
     public function applicationJobs(User $employer)

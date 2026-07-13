@@ -3,14 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Services\JobRecommendationService;
 use App\Services\ProfileCompletionService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class JobSeekerDashboardController extends Controller
 {
-    public function __construct(private readonly ProfileCompletionService $profileCompletionService)
-    {
+    public function __construct(
+        private readonly ProfileCompletionService $profileCompletionService,
+        private readonly JobRecommendationService $jobRecommendationService
+    ) {
     }
 
     public function index(Request $request): View
@@ -46,6 +49,10 @@ class JobSeekerDashboardController extends Controller
         $profileStatus = $completionDetails['percentage'] >= 100 ? 'Complete' : 'Incomplete';
         $profileStatusClass = $completionDetails['percentage'] >= 100 ? 'success' : 'warning';
         $completionBadgeClass = $completionDetails['percentage'] >= 75 ? 'success' : ($completionDetails['percentage'] >= 40 ? 'warning' : 'secondary');
+
+        $recommendedJobs = $profile
+            ? $this->jobRecommendationService->recommendForProfile($profile)
+            : collect();
 
         $recentActivities = collect()
             ->merge($educations->map(fn ($education) => [
@@ -94,6 +101,7 @@ class JobSeekerDashboardController extends Controller
             'experiences' => $experiences,
             'skills' => $skills,
             'resumes' => $resumes,
+            'recommendedJobs' => $recommendedJobs,
         ]);
     }
 }

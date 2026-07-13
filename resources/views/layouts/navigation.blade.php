@@ -44,6 +44,14 @@
                             <a class="nav-link {{ request()->routeIs('job-seeker.applications.*') ? 'active' : '' }}" href="{{ route('job-seeker.applications.index') }}">My Applications</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('job-seeker.saved-jobs.index') ? 'active' : '' }}" href="{{ route('job-seeker.saved-jobs.index') }}">
+                                Saved Jobs
+                                @if (! empty($savedJobsCount))
+                                    <span class="badge bg-primary rounded-pill ms-1">{{ $savedJobsCount }}</span>
+                                @endif
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('job-seeker.profile.*') ? 'active' : '' }}" href="{{ route('job-seeker.profile.edit') }}" @if (request()->routeIs('job-seeker.profile.*')) aria-current="page" @endif>Profile</a>
                         </li>
                         <li class="nav-item">
@@ -57,6 +65,9 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('job-seeker.resumes.*') ? 'active' : '' }}" href="{{ route('job-seeker.resumes.index') }}" @if (request()->routeIs('job-seeker.resumes.*')) aria-current="page" @endif>Resume</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('job-seeker.resume-builders.*') ? 'active' : '' }}" href="{{ route('job-seeker.resume-builders.index') }}" @if (request()->routeIs('job-seeker.resume-builders.*')) aria-current="page" @endif>Resume Builder</a>
                         </li>
                     @elseif ($roleSlug === 'employer')
                         <li class="nav-item">

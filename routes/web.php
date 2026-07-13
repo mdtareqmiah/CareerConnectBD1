@@ -108,6 +108,11 @@ Route::get('/jobs/{job}', [App\Http\Controllers\JobController::class, 'show'])
     ->name('jobs.show');
 
 Route::middleware(['auth', 'role:job-seeker'])->group(function () {
+    Route::get('/saved-jobs', [App\Http\Controllers\SavedJobController::class, 'index'])
+        ->name('job-seeker.saved-jobs.index');
+
+    Route::post('/jobs/{job}/save', [App\Http\Controllers\SavedJobController::class, 'toggle'])
+        ->name('jobs.saved.toggle');
     Route::get('/job-seeker/dashboard', [App\Http\Controllers\JobSeekerDashboardController::class, 'index'])
         ->name('job-seeker.dashboard');
 
@@ -191,6 +196,24 @@ Route::middleware(['auth', 'role:job-seeker'])->group(function () {
 
     Route::get('/job-seeker/resumes/{resume}/download', [App\Http\Controllers\ResumeController::class, 'download'])
         ->name('job-seeker.resumes.download');
+
+    Route::get('/job-seeker/resume-builders', [App\Http\Controllers\ResumeBuilderController::class, 'index'])
+        ->name('job-seeker.resume-builders.index');
+
+    Route::get('/job-seeker/resume-builders/create', [App\Http\Controllers\ResumeBuilderController::class, 'create'])
+        ->name('job-seeker.resume-builders.create');
+
+    Route::post('/job-seeker/resume-builders', [App\Http\Controllers\ResumeBuilderController::class, 'store'])
+        ->name('job-seeker.resume-builders.store');
+
+    Route::get('/job-seeker/resume-builders/{resumeBuilder}/edit', [App\Http\Controllers\ResumeBuilderController::class, 'edit'])
+        ->name('job-seeker.resume-builders.edit');
+
+    Route::match(['put', 'patch'], '/job-seeker/resume-builders/{resumeBuilder}', [App\Http\Controllers\ResumeBuilderController::class, 'update'])
+        ->name('job-seeker.resume-builders.update');
+
+    Route::delete('/job-seeker/resume-builders/{resumeBuilder}', [App\Http\Controllers\ResumeBuilderController::class, 'destroy'])
+        ->name('job-seeker.resume-builders.destroy');
 
     Route::get('/job-seeker/applications', [App\Http\Controllers\JobSeekerApplicationController::class, 'index'])
         ->name('job-seeker.applications.index');
