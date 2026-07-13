@@ -11,6 +11,7 @@
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @yield('styles')
     </head>
     <body class="bg-light">
         <div class="min-vh-100 d-flex flex-column">
@@ -38,5 +39,6 @@
 
             @include('components.footer')
         </div>
+        @yield('scripts')
     </body>
 </html>

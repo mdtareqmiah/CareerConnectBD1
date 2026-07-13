@@ -6,6 +6,7 @@ use App\Http\Requests\StoreResumeBuilderRequest;
 use App\Http\Requests\UpdateResumeBuilderRequest;
 use App\Models\JobSeekerProfile;
 use App\Models\ResumeBuilder;
+use App\Services\ResumePdfService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -29,7 +30,13 @@ class ResumeBuilderController extends Controller
 
         abort_unless($profile, 403);
 
-        return view('job-seeker.resume-builders.create');
+        $duplicateBuilder = null;
+        if ($request->query('duplicate')) {
+            $duplicateBuilder = $profile->resumeBuilders()->find($request->query('duplicate'));
+            abort_unless($duplicateBuilder, 404);
+        }
+
+        return view('job-seeker.resume-builders.create', compact('duplicateBuilder'));
     }
 
     public function store(StoreResumeBuilderRequest $request)
@@ -95,5 +102,47 @@ class ResumeBuilderController extends Controller
         $resumeBuilder->delete();
 
         return redirect()->route('job-seeker.resume-builders.index')->with('success', 'Resume builder deleted successfully.');
+    }
+
+    public function preview(Request $request, ResumeBuilder $resumeBuilder): View
+    {
+        $profile = $request->user()?->jobSeekerProfile;
+
+        abort_unless($profile && $resumeBuilder->job_seeker_profile_id === $profile->id, 403);
+
+        $template = $request->query('template', $resumeBuilder->template ?: 'modern');
+        if (! in_array($template, ResumePdfService::TEMPLATES, true)) {
+            abort(404);
+        }
+
+        return view('job-seeker.resume-builder.preview', [
+            'builder' => $resumeBuilder,
+            'template' => $template,
+            'templates' => ResumePdfService::TEMPLATES,
+        ]);
+    }
+
+    public function downloadPdf(Request $request, ResumeBuilder $resumeBuilder, ResumePdfService $pdfService)
+    {
+        $profile = $request->user()?->jobSeekerProfile;
+
+        abort_unless($profile && $resumeBuilder->job_seeker_profile_id === $profile->id, 403);
+
+        $template = $request->query('template', $resumeBuilder->template ?: 'modern');
+
+        return $pdfService->download($resumeBuilder, $template);
+    }
+
+    public function print(Request $request, ResumeBuilder $resumeBuilder, ResumePdfService $pdfService)
+    {
+        $profile = $request->user()?->jobSeekerProfile;
+
+        abort_unless($profile && $resumeBuilder->job_seeker_profile_id === $profile->id, 403);
+
+        $template = $request->query('template', $resumeBuilder->template ?: 'modern');
+
+        $html = $pdfService->renderHtml($resumeBuilder, $template);
+
+        return response($html)->header('Content-Type', 'text/html');
     }
 }

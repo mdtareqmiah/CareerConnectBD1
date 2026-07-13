@@ -14,10 +14,12 @@ use App\Services\AI\GeminiService;
 use App\Services\AI\OpenAIService;
 use App\Services\AI\RuleBasedAIService;
 use App\Models\SavedJob;
+use App\Models\User;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use App\Policies\UserPolicy;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -47,6 +49,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Company::class, CompanyPolicy::class);
         Gate::policy(Job::class, JobPolicy::class);
         Gate::policy(JobApplication::class, JobApplicationPolicy::class);
+        Gate::policy(User::class, UserPolicy::class);
 
         View::composer('layouts.navigation', function ($view) {
             $user = auth()->user();

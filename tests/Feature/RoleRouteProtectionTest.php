@@ -35,8 +35,7 @@ class RoleRouteProtectionTest extends TestCase
 
         $response = $this->actingAs($user)->get('/admin');
 
-        $response->assertStatus(200);
-        $response->assertSee('Admin access granted');
+        $response->assertRedirect('/admin/dashboard');
     }
 
     public function test_users_with_the_wrong_role_receive_forbidden_for_admin_routes(): void

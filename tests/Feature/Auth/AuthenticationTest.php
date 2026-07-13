@@ -58,7 +58,7 @@ class AuthenticationTest extends TestCase
             'password' => 'password',
         ]);
 
-        $response->assertRedirect('/admin');
+        $response->assertRedirect('/admin/dashboard');
     }
 
     public function test_employer_users_are_redirected_to_employer_after_login(): void
@@ -76,7 +76,7 @@ class AuthenticationTest extends TestCase
             'password' => 'password',
         ]);
 
-        $response->assertRedirect('/employer');
+        $response->assertRedirect('/employer/dashboard');
     }
 
     public function test_job_seeker_users_are_redirected_to_the_dashboard_after_login(): void

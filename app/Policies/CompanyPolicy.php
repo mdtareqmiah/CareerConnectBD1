@@ -8,6 +8,15 @@ use Illuminate\Auth\Access\Response;
 
 class CompanyPolicy
 {
+    public function before(User $user, string $ability): bool|null
+    {
+        if ($user->role?->slug === 'admin') {
+            return true;
+        }
+
+        return null;
+    }
+
     /**
      * Determine whether the user can view any models.
      */

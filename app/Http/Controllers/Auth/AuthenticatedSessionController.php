@@ -7,6 +7,7 @@ use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
@@ -30,13 +31,17 @@ class AuthenticatedSessionController extends Controller
 
         $user = $request->user();
 
+        if ($user) {
+            $user->forceFill(['last_login_at' => now()])->save();
+        }
+
         $roleSlug = $user?->role?->slug;
 
         $redirectTo = match ($roleSlug) {
-            'admin' => '/admin',
-            'employer' => '/employer',
-            'job-seeker' => '/job-seeker/dashboard',
-            default => '/dashboard',
+            'admin' => route('admin.dashboard'),
+            'employer' => route('employer.dashboard'),
+            'job-seeker' => route('job-seeker.dashboard'),
+            default => route('dashboard'),
         };
 
         return redirect()->intended($redirectTo);
