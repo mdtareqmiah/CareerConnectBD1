@@ -47,8 +47,8 @@
 <div class="row row-cols-1 row-cols-md-2 g-4">
     @forelse ($jobs as $job)
         <div class="col">
-            <div class="card h-100 shadow-sm border-0">
-                <div class="card-body d-flex flex-column">
+            <div class="card h-100 shadow-sm border-0 job-card">
+                <div class="card-body p-4 d-flex flex-column">
                     <div class="mb-3">
                         <h5 class="card-title mb-1">{{ $job->title }}</h5>
                         <div class="text-muted small">{{ $job->company->company_name }}</div>
@@ -62,7 +62,7 @@
                     <p class="mb-1 text-muted">{{ $job->location }}</p>
                     <p class="mb-3"><strong>Salary:</strong> {{ $job->salary_type }} {{ number_format($job->salary_min) }} - {{ number_format($job->salary_max) }}</p>
 
-                    <div class="mt-auto">
+                    <div class="job-card__footer">
                         <p class="mb-1 text-muted small">Deadline: {{ $job->deadline->format('F j, Y') }}</p>
                         <p class="mb-3 text-muted small">Published: {{ $job->published_at?->format('F j, Y') ?? 'N/A' }}</p>
                         <a href="{{ route('jobs.show', $job) }}" class="btn btn-primary btn-sm">View Details</a>

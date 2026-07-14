@@ -3,12 +3,23 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\ApplicationManagementController;
+use App\Http\Controllers\Admin\CommunicationInboxController;
 use App\Http\Controllers\Admin\CompanyManagementController;
+use App\Http\Controllers\Admin\EmailCommunicationController;
 use App\Http\Controllers\Admin\EmployerManagementController;
+use App\Http\Controllers\Admin\FeedbackManagementController;
 use App\Http\Controllers\Admin\JobManagementController;
 use App\Http\Controllers\Admin\ReportController;
+use App\Http\Controllers\Admin\SupportTicketManagementController;
 use App\Http\Controllers\Admin\SystemSettingController;
 use App\Http\Controllers\Admin\UserManagementController;
+use App\Http\Controllers\Admin\ContactMessageManagementController;
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\FeedbackController;
+use App\Http\Controllers\InterviewInvitationController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\SupportTicketController;
+use App\Http\Controllers\SupportTicketReplyController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -50,6 +61,22 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::patch('/notifications/{notification}/read', [NotificationController::class, 'read'])->name('notifications.read');
+    Route::patch('/notifications/read-all', [NotificationController::class, 'readAll'])->name('notifications.read-all');
+    Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
+
+    Route::get('/feedback', [FeedbackController::class, 'index'])->name('feedback.index');
+    Route::get('/feedback/create', [FeedbackController::class, 'create'])->name('feedback.create');
+    Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
+    Route::get('/feedback/{feedback}', [FeedbackController::class, 'show'])->name('feedback.show');
+
+    Route::get('/support-tickets', [SupportTicketController::class, 'index'])->name('support-tickets.index');
+    Route::get('/support-tickets/create', [SupportTicketController::class, 'create'])->name('support-tickets.create');
+    Route::post('/support-tickets', [SupportTicketController::class, 'store'])->name('support-tickets.store');
+    Route::get('/support-tickets/{supportTicket}', [SupportTicketController::class, 'show'])->name('support-tickets.show');
+    Route::post('/support-tickets/{supportTicket}/replies', [SupportTicketReplyController::class, 'store'])->name('support-tickets.replies.store');
 });
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
@@ -132,6 +159,22 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
             ->name('applications.resume.download');
 
         Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+        Route::get('/email-logs', [EmailCommunicationController::class, 'index'])->name('email-logs.index');
+        Route::patch('/email-logs/{emailLog}/resend', [EmailCommunicationController::class, 'resend'])->name('email-logs.resend');
+        Route::get('/communications', [CommunicationInboxController::class, 'index'])->name('communications.index');
+        Route::patch('/communications/contacts/{contactMessage}/status', [ContactMessageManagementController::class, 'updateStatus'])->name('communications.contacts.status');
+        Route::post('/communications/contacts/{contactMessage}/reply', [ContactMessageManagementController::class, 'reply'])->name('communications.contacts.reply');
+        Route::delete('/communications/contacts/{contactMessage}', [ContactMessageManagementController::class, 'destroy'])->name('communications.contacts.destroy');
+
+        Route::get('/feedback/{feedback}', [FeedbackManagementController::class, 'show'])->name('feedback.show');
+        Route::patch('/feedback/{feedback}/status', [FeedbackManagementController::class, 'updateStatus'])->name('feedback.status');
+        Route::delete('/feedback/{feedback}', [FeedbackManagementController::class, 'destroy'])->name('feedback.destroy');
+
+        Route::get('/support-tickets/{supportTicket}', [SupportTicketManagementController::class, 'show'])->name('support-tickets.show');
+        Route::patch('/support-tickets/{supportTicket}/status', [SupportTicketManagementController::class, 'updateStatus'])->name('support-tickets.status');
+        Route::post('/support-tickets/{supportTicket}/replies', [SupportTicketReplyController::class, 'store'])->name('support-tickets.replies.store');
+        Route::delete('/support-tickets/{supportTicket}', [SupportTicketManagementController::class, 'destroy'])->name('support-tickets.destroy');
+
         Route::view('/cms', 'admin.section', ['title' => 'CMS'])->name('cms');
         Route::get('/settings', [SystemSettingController::class, 'index'])->name('settings.index');
         Route::patch('/settings', [SystemSettingController::class, 'update'])->name('settings.update');
@@ -145,6 +188,19 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 Route::middleware(['auth', 'role:employer'])->group(function () {
     Route::get('/employer/dashboard', [App\Http\Controllers\EmployerDashboardController::class, 'index'])
         ->name('employer.dashboard');
+
+    Route::get('/employer/interview-invitations', [InterviewInvitationController::class, 'index'])
+        ->name('employer.interview-invitations.index');
+    Route::get('/employer/interview-invitations/create', [InterviewInvitationController::class, 'create'])
+        ->name('employer.interview-invitations.create');
+    Route::post('/employer/interview-invitations', [InterviewInvitationController::class, 'store'])
+        ->name('employer.interview-invitations.store');
+    Route::get('/employer/interview-invitations/{invitation}', [InterviewInvitationController::class, 'show'])
+        ->name('employer.interview-invitations.show');
+    Route::patch('/employer/interview-invitations/{invitation}', [InterviewInvitationController::class, 'update'])
+        ->name('employer.interview-invitations.update');
+    Route::delete('/employer/interview-invitations/{invitation}', [InterviewInvitationController::class, 'destroy'])
+        ->name('employer.interview-invitations.destroy');
 
     Route::middleware('ensure.employer.has.company')->group(function () {
         Route::resource('company', App\Http\Controllers\CompanyController::class)
@@ -198,6 +254,13 @@ Route::get('/jobs/{job}', [App\Http\Controllers\JobController::class, 'show'])
     ->name('jobs.show');
 
 Route::middleware(['auth', 'role:job-seeker'])->group(function () {
+    Route::get('/job-seeker/interview-invitations', [InterviewInvitationController::class, 'index'])
+        ->name('job-seeker.interview-invitations.index');
+    Route::get('/job-seeker/interview-invitations/{invitation}', [InterviewInvitationController::class, 'show'])
+        ->name('job-seeker.interview-invitations.show');
+    Route::patch('/job-seeker/interview-invitations/{invitation}/respond', [InterviewInvitationController::class, 'respond'])
+        ->name('job-seeker.interview-invitations.respond');
+
     Route::get('/saved-jobs', [App\Http\Controllers\SavedJobController::class, 'index'])
         ->name('job-seeker.saved-jobs.index');
 
@@ -338,5 +401,8 @@ Route::middleware(['auth', 'role:job-seeker'])->group(function () {
     Route::delete('/job-seeker/experiences/{experience}', [App\Http\Controllers\ExperienceController::class, 'destroy'])
         ->name('job-seeker.experiences.destroy');
 });
+
+Route::get('/contact', [ContactController::class, 'create'])->name('contact.create');
+Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 
 require __DIR__.'/auth.php';

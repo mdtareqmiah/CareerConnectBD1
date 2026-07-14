@@ -5,6 +5,9 @@
     $monthlyRegistrations = $growth['registrations'] ?? [];
     $monthlyJobPosts = $growth['job_posts'] ?? [];
     $monthlyApplications = $growth['applications'] ?? [];
+    $monthlyContacts = $growth['contacts'] ?? [];
+    $monthlyFeedback = $growth['feedback'] ?? [];
+    $monthlyTickets = $growth['tickets'] ?? [];
 @endphp
 
 @section('content')
@@ -35,6 +38,14 @@
     <div class="col-sm-6 col-xl-3"><div class="card shadow-sm border-0"><div class="card-body"><div class="text-muted small">Today's Registrations</div><div class="h4 mb-0">{{ $stats['todays_registrations'] }}</div></div></div></div>
     <div class="col-sm-6 col-xl-3"><div class="card shadow-sm border-0"><div class="card-body"><div class="text-muted small">Today's Jobs</div><div class="h4 mb-0">{{ $stats['todays_jobs'] }}</div></div></div></div>
     <div class="col-sm-6 col-xl-3"><div class="card shadow-sm border-0"><div class="card-body"><div class="text-muted small">Today's Applications</div><div class="h4 mb-0">{{ $stats['todays_applications'] }}</div></div></div></div>
+
+    <div class="col-sm-6 col-xl-3"><div class="card shadow-sm border-0"><div class="card-body"><div class="text-muted small">Total Contacts</div><div class="h4 mb-0">{{ $stats['total_contacts'] }}</div></div></div></div>
+    <div class="col-sm-6 col-xl-3"><div class="card shadow-sm border-0"><div class="card-body"><div class="text-muted small">Unread Contacts</div><div class="h4 mb-0">{{ $stats['unread_contacts'] }}</div></div></div></div>
+    <div class="col-sm-6 col-xl-3"><div class="card shadow-sm border-0"><div class="card-body"><div class="text-muted small">Open Tickets</div><div class="h4 mb-0">{{ $stats['open_tickets'] }}</div></div></div></div>
+    <div class="col-sm-6 col-xl-3"><div class="card shadow-sm border-0"><div class="card-body"><div class="text-muted small">Pending Tickets</div><div class="h4 mb-0">{{ $stats['pending_tickets'] }}</div></div></div></div>
+    <div class="col-sm-6 col-xl-3"><div class="card shadow-sm border-0"><div class="card-body"><div class="text-muted small">Resolved Tickets</div><div class="h4 mb-0">{{ $stats['resolved_tickets'] }}</div></div></div></div>
+    <div class="col-sm-6 col-xl-3"><div class="card shadow-sm border-0"><div class="card-body"><div class="text-muted small">Total Feedback</div><div class="h4 mb-0">{{ $stats['total_feedback'] }}</div></div></div></div>
+    <div class="col-sm-6 col-xl-3"><div class="card shadow-sm border-0"><div class="card-body"><div class="text-muted small">Average Rating</div><div class="h4 mb-0">{{ $stats['average_feedback_rating'] }}</div></div></div></div>
 </div>
 
 <div class="card shadow-sm border-0 mb-4">
@@ -175,6 +186,9 @@
     const registrations = @json($monthlyRegistrations);
     const jobPosts = @json($monthlyJobPosts);
     const applications = @json($monthlyApplications);
+    const contacts = @json($monthlyContacts);
+    const feedback = @json($monthlyFeedback);
+    const tickets = @json($monthlyTickets);
 
     const chartElement = document.getElementById('growthChart');
     if (chartElement) {
@@ -202,6 +216,27 @@
                         data: applications,
                         borderColor: '#fd7e14',
                         backgroundColor: 'rgba(253, 126, 20, 0.15)',
+                        tension: 0.3
+                    },
+                    {
+                        label: 'Monthly Contacts',
+                        data: contacts,
+                        borderColor: '#dc3545',
+                        backgroundColor: 'rgba(220, 53, 69, 0.15)',
+                        tension: 0.3
+                    },
+                    {
+                        label: 'Monthly Feedback',
+                        data: feedback,
+                        borderColor: '#6f42c1',
+                        backgroundColor: 'rgba(111, 66, 193, 0.15)',
+                        tension: 0.3
+                    },
+                    {
+                        label: 'Monthly Tickets',
+                        data: tickets,
+                        borderColor: '#198754',
+                        backgroundColor: 'rgba(25, 135, 84, 0.15)',
                         tension: 0.3
                     }
                 ]

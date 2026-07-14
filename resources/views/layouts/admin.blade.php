@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="auth-user-id" content="{{ auth()->id() }}">
 
     <title>{{ config('app.name', 'CareerConnectBD') }} - Admin</title>
 
@@ -52,6 +53,7 @@
             <li class="nav-item"><a class="nav-link {{ request()->routeIs('admin.companies.*') ? 'active' : '' }}" href="{{ route('admin.companies.index') }}">Companies</a></li>
             <li class="nav-item"><a class="nav-link {{ request()->routeIs('admin.jobs.*') ? 'active' : '' }}" href="{{ route('admin.jobs.index') }}">Jobs</a></li>
             <li class="nav-item"><a class="nav-link {{ request()->routeIs('admin.applications.*') ? 'active' : '' }}" href="{{ route('admin.applications.index') }}">Applications</a></li>
+            <li class="nav-item"><a class="nav-link {{ request()->routeIs('admin.communications.*') || request()->routeIs('admin.feedback.*') || request()->routeIs('admin.support-tickets.*') ? 'active' : '' }}" href="{{ route('admin.communications.index') }}">Communications</a></li>
             <li class="nav-item"><a class="nav-link {{ request()->routeIs('admin.reports.*') ? 'active' : '' }}" href="{{ route('admin.reports.index') }}">Reports</a></li>
             <li class="nav-item"><a class="nav-link {{ request()->routeIs('admin.cms') ? 'active' : '' }}" href="{{ route('admin.cms') }}">CMS</a></li>
             <li class="nav-item"><a class="nav-link {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}" href="{{ route('admin.settings.index') }}">Settings</a></li>
@@ -89,6 +91,7 @@
                     <li class="nav-item"><a class="nav-link" href="{{ route('admin.companies.index') }}">Companies</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ route('admin.jobs.index') }}">Jobs</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ route('admin.applications.index') }}">Applications</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('admin.communications.index') }}">Communications</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ route('admin.reports.index') }}">Reports</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ route('admin.cms') }}">CMS</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ route('admin.settings.index') }}">Settings</a></li>
@@ -102,6 +105,47 @@
         </div>
 
         <section class="p-3 p-md-4">
+            <div class="d-flex justify-content-end mb-3">
+                <div class="dropdown">
+                    <button class="btn btn-outline-primary btn-sm position-relative dropdown-toggle d-inline-flex align-items-center gap-2" type="button" id="adminNotificationsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-bell"></i> <span>Notifications</span>
+                        @if (auth()->check() && ($unreadNotificationsCount ?? 0) > 0)
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" data-notification-count>
+                                {{ $unreadNotificationsCount }}
+                            </span>
+                        @else
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none" data-notification-count></span>
+                        @endif
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" aria-labelledby="adminNotificationsDropdown" style="min-width: 320px; max-width: min(92vw, 360px);" data-notification-list data-notification-view-all-url="{{ route('notifications.index') }}">
+                        <li><h6 class="dropdown-header">Latest notifications</h6></li>
+                        @forelse ($latestNotifications as $notification)
+                            @php
+                                $data = $notification->data ?? [];
+                                $title = $data['title'] ?? 'Notification';
+                                $message = $data['message'] ?? '';
+                            @endphp
+                            <li data-notification-item="1" data-notification-id="{{ $notification->id }}">
+                                <a class="dropdown-item rounded-3" href="{{ $data['link'] ?? route('notifications.index') }}">
+                                    <div class="d-flex justify-content-between gap-3">
+                                        <div class="min-w-0">
+                                            <div class="fw-semibold">{{ $title }}</div>
+                                            <div class="small text-muted">{{ Str::limit($message, 60) }}</div>
+                                        </div>
+                                        @if (is_null($notification->read_at))
+                                            <span class="badge bg-primary">New</span>
+                                        @endif
+                                    </div>
+                                </a>
+                            </li>
+                        @empty
+                            <li data-notification-empty><span class="dropdown-item-text text-muted">No notifications yet.</span></li>
+                        @endforelse
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-primary fw-semibold rounded-3" href="{{ route('notifications.index') }}">View all notifications</a></li>
+                    </ul>
+                </div>
+            </div>
             @include('components.flash-messages')
             @yield('content')
         </section>

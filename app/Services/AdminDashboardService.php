@@ -3,8 +3,11 @@
 namespace App\Services;
 
 use App\Models\Company;
+use App\Models\ContactMessage;
+use App\Models\Feedback;
 use App\Models\Job;
 use App\Models\JobApplication;
+use App\Models\SupportTicket;
 use App\Models\User;
 
 class AdminDashboardService
@@ -40,6 +43,13 @@ class AdminDashboardService
             'todays_registrations' => User::whereDate('created_at', $today)->count(),
             'todays_jobs' => Job::whereDate('created_at', $today)->count(),
             'todays_applications' => JobApplication::whereDate('created_at', $today)->count(),
+            'total_contacts' => ContactMessage::count(),
+            'unread_contacts' => ContactMessage::where('status', 'unread')->count(),
+            'open_tickets' => SupportTicket::where('status', 'open')->count(),
+            'pending_tickets' => SupportTicket::where('status', 'pending')->count(),
+            'resolved_tickets' => SupportTicket::where('status', 'resolved')->count(),
+            'total_feedback' => Feedback::count(),
+            'average_feedback_rating' => round((float) Feedback::avg('rating'), 2),
         ];
     }
 
@@ -90,6 +100,9 @@ class AdminDashboardService
         $registrations = [];
         $jobPosts = [];
         $applications = [];
+        $contacts = [];
+        $feedback = [];
+        $tickets = [];
 
         for ($offset = 11; $offset >= 0; $offset--) {
             $month = now()->startOfMonth()->subMonths($offset);
@@ -106,6 +119,18 @@ class AdminDashboardService
             $applications[] = JobApplication::whereYear('created_at', $month->year)
                 ->whereMonth('created_at', $month->month)
                 ->count();
+
+            $contacts[] = ContactMessage::whereYear('created_at', $month->year)
+                ->whereMonth('created_at', $month->month)
+                ->count();
+
+            $feedback[] = Feedback::whereYear('created_at', $month->year)
+                ->whereMonth('created_at', $month->month)
+                ->count();
+
+            $tickets[] = SupportTicket::whereYear('created_at', $month->year)
+                ->whereMonth('created_at', $month->month)
+                ->count();
         }
 
         return [
@@ -113,6 +138,9 @@ class AdminDashboardService
             'registrations' => $registrations,
             'job_posts' => $jobPosts,
             'applications' => $applications,
+            'contacts' => $contacts,
+            'feedback' => $feedback,
+            'tickets' => $tickets,
         ];
     }
 
@@ -123,6 +151,7 @@ class AdminDashboardService
             ['label' => 'View Companies', 'url' => route('admin.companies.index')],
             ['label' => 'Manage Users', 'url' => route('admin.users.index')],
             ['label' => 'Reports', 'url' => route('admin.reports.index')],
+            ['label' => 'Communication Center', 'url' => route('admin.communications.index')],
         ];
     }
 }

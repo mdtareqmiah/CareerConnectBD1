@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\JobApplication;
 use App\Models\SavedJob;
+use App\Models\Feedback;
+use App\Models\SupportTicket;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -64,6 +66,16 @@ class User extends Authenticatable
     public function savedJobs(): HasMany
     {
         return $this->hasMany(SavedJob::class, 'user_id');
+    }
+
+    public function feedback(): HasMany
+    {
+        return $this->hasMany(Feedback::class, 'user_id');
+    }
+
+    public function supportTickets(): HasMany
+    {
+        return $this->hasMany(SupportTicket::class, 'user_id');
     }
 
     public function hasSavedJob(Job $job): bool

@@ -12,14 +12,16 @@
 
     <div class="row g-4">
         <div class="col-xl-7">
-            <div class="card shadow-sm border-0">
+            <div class="card shadow-sm border-0 resume-builder-form">
                 <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-start mb-4 gap-3">
                         <div>
                             <h1 class="h4 mb-1">Professional Resume Builder</h1>
                             <p class="text-muted mb-0">Build your CV inside the website and preview it live as you update sections.</p>
                         </div>
-                        <button type="button" class="btn btn-outline-secondary btn-sm" id="refresh-profile">Refresh From Profile</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2" id="refresh-profile">
+                            <span>↻</span> Refresh From Profile
+                        </button>
                     </div>
 
                     <form id="resume-builder-form" action="{{ route('job-seeker.resume-builders.store') }}" method="POST">
@@ -248,15 +250,15 @@
                             </div>
                         </div>
 
-                        <div class="d-flex justify-content-between align-items-center mt-4 flex-column flex-md-row gap-3">
+                        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-start mt-4 gap-3">
                             <div>
                                 <div class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" id="set_default" name="set_default" value="1">
                                     <label class="form-check-label" for="set_default">Set as default resume</label>
                                 </div>
-                                <div class="text-muted mt-1" id="autosave-status">Draft saved automatically every 30 seconds.</div>
+                                <div class="text-muted mt-1 small" id="autosave-status">Draft saved automatically every 30 seconds.</div>
                             </div>
-                            <div class="d-flex gap-2">
+                            <div class="d-flex flex-wrap gap-2">
                                 <a href="{{ route('job-seeker.resume-builders.index') }}" class="btn btn-outline-secondary">Cancel</a>
                                 <button type="button" class="btn btn-secondary" id="save-draft">Save Draft</button>
                                 <button type="submit" class="btn btn-primary">Save Resume Builder</button>
@@ -299,7 +301,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="card shadow-sm border-0">
+                <div class="card shadow-sm border-0 resume-builder-preview">
                     <div class="card-body" id="resume-preview">
                         <div id="preview-content">
                             <div class="border-bottom mb-3">
