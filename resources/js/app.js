@@ -1,20 +1,35 @@
 
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-import { Toast } from 'bootstrap';
+import * as bootstrap from 'bootstrap';
 import Echo from 'laravel-echo';
 import Pusher from 'pusher-js';
 
 import Alpine from 'alpinejs';
 
 window.Alpine = Alpine;
+window.bootstrap = bootstrap;
 
 Alpine.start();
+initializeBootstrapDropdowns();
 
 const authUserId = document.querySelector('meta[name="auth-user-id"]')?.getAttribute('content');
 
 if (authUserId) {
 	initializeRealtimeNotifications(authUserId);
 }
+
+function initializeBootstrapDropdowns() {
+	const dropdownTriggers = document.querySelectorAll('[data-bs-toggle="dropdown"]');
+
+	dropdownTriggers.forEach((trigger) => {
+		if (!trigger.dataset.dropdownInitialized) {
+			bootstrap.Dropdown.getOrCreateInstance(trigger);
+			trigger.dataset.dropdownInitialized = 'true';
+		}
+	});
+}
+
+window.addEventListener('load', initializeBootstrapDropdowns);
+document.addEventListener('DOMContentLoaded', initializeBootstrapDropdowns);
 
 function initializeRealtimeNotifications(authUserId) {
 	const appKey = import.meta.env.VITE_REVERB_APP_KEY;
@@ -189,7 +204,7 @@ function showNotificationToast(notification) {
 
 	container.appendChild(toastElement);
 
-	const toast = Toast.getOrCreateInstance(toastElement, { delay: 4500 });
+	const toast = bootstrap.Toast.getOrCreateInstance(toastElement, { delay: 4500 });
 	toast.show();
 
 	toastElement.addEventListener('hidden.bs.toast', () => {

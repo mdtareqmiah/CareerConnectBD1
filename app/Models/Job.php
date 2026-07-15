@@ -80,12 +80,12 @@ class Job extends Model
 
     public function isExpired(): bool
     {
-        return $this->status === 'published' && $this->deadline->isBefore(today());
+        return $this->status === 'published' && $this->deadline && $this->deadline->isBefore(today());
     }
 
     public function isOpen(): bool
     {
-        return $this->isPublished() && ! $this->deadline->isBefore(today());
+        return $this->isPublished() && $this->deadline && ! $this->deadline->isBefore(today());
     }
 
     public function alreadyAppliedBy(User $user): bool
@@ -125,11 +125,11 @@ class Job extends Model
 
     public function scopeSalaryRange($query, ?int $min, ?int $max)
     {
-        if (filled($min)) {
+        if ($min !== null) {
             $query->where('salary_max', '>=', $min);
         }
 
-        if (filled($max)) {
+        if ($max !== null) {
             $query->where('salary_min', '<=', $max);
         }
 
@@ -142,7 +142,7 @@ class Job extends Model
             'draft' => $query->where('status', 'draft'),
             'published' => $query->where('status', 'published')->whereDate('deadline', '>=', today()),
             'closed' => $query->where('status', 'archived'),
-            'expired' => $query->where('status', 'published')->whereDate('deadline', '<', today()),
+            'expired' => $query->where('status', 'published')->whereNotNull('deadline')->whereDate('deadline', '<', today()),
             default => $query,
         };
     }
@@ -157,7 +157,7 @@ class Job extends Model
 
     public function getDisplayStatusAttribute(): string
     {
-        if ($this->status === 'published' && $this->deadline->isBefore(today())) {
+        if ($this->status === 'published' && $this->deadline && $this->deadline->isBefore(today())) {
             return 'expired';
         }
 

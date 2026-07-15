@@ -104,5 +104,8 @@ class JobRecommendationServiceTest extends TestCase
         $this->assertArrayHasKey('reason', $recommendation);
         $this->assertArrayHasKey('job', $recommendation);
         $this->assertSame($job->id, $recommendation['job']->id);
+        $this->assertArrayHasKey('matched_skills', $recommendation);
+        $this->assertArrayHasKey('missing_skills', $recommendation);
+        $this->assertSame(100, $recommendation['resume_score'] ?? 100);
     }
 }

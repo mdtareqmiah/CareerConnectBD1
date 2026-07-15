@@ -132,4 +132,22 @@ class ResumeAnalysisServiceTest extends TestCase
         $this->assertContains('Good profile completion', $analysis['strengths']);
         $this->assertEmpty($analysis['suggestions']);
     }
+
+    public function test_resume_analysis_accepts_common_word_mime_types(): void
+    {
+        $profile = JobSeekerProfile::factory()->create();
+        $resume = Resume::factory()->create([
+            'job_seeker_profile_id' => $profile->id,
+            'title' => 'Word Resume',
+            'file_path' => 'resumes/word.doc',
+            'file_type' => 'application/msword',
+            'file_size' => 102400,
+        ]);
+
+        $service = $this->app->make(ResumeAnalysisService::class);
+        $analysis = $service->analyze($resume);
+
+        $this->assertContains('Valid resume file type', $analysis['strengths']);
+        $this->assertNotContains('Unsupported resume file type.', $analysis['warnings']);
+    }
 }

@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\ResumeBuilder;
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
 class ResumePdfService
@@ -17,18 +18,28 @@ class ResumePdfService
 
         $builder->loadMissing('jobSeekerProfile');
 
+        $personal = $this->normalizeRecord($builder->personal_information ?? []);
+        $education = $this->normalizeRecordList($builder->education ?? []);
+        $experience = $this->normalizeRecordList($builder->experience ?? []);
+        $skills = $this->normalizeStringList($builder->skills ?? []);
+        $projects = $this->normalizeRecordList($builder->projects ?? []);
+        $certifications = $this->normalizeRecordList($builder->certifications ?? []);
+        $languages = $this->normalizeRecordList($builder->languages ?? []);
+        $references = $this->normalizeRecordList($builder->references ?? []);
+        $social = $this->normalizeRecord($builder->social_links ?? []);
+
         return view('job-seeker.resume-builder.templates.' . $template, [
             'builder' => $builder,
             'profile' => $builder->jobSeekerProfile,
-            'personal' => $builder->personal_information ?? [],
-            'education' => $builder->education ?? [],
-            'experience' => $builder->experience ?? [],
-            'skills' => $builder->skills ?? [],
-            'projects' => $builder->projects ?? [],
-            'certifications' => $builder->certifications ?? [],
-            'languages' => $builder->languages ?? [],
-            'references' => $builder->references ?? [],
-            'social' => $builder->social_links ?? [],
+            'personal' => $personal,
+            'education' => $education,
+            'experience' => $experience,
+            'skills' => $skills,
+            'projects' => $projects,
+            'certifications' => $certifications,
+            'languages' => $languages,
+            'references' => $references,
+            'social' => $social,
         ])->render();
     }
 
@@ -66,5 +77,120 @@ class ResumePdfService
         }
 
         return $template;
+    }
+
+    protected function normalizeRecord(mixed $value): array
+    {
+        if (! is_array($value)) {
+            return [];
+        }
+
+        $normalized = [];
+
+        foreach ($value as $key => $item) {
+            $normalized[$key] = $this->normalizeScalar($item);
+        }
+
+        return $normalized;
+    }
+
+    protected function normalizeRecordList(mixed $value): array
+    {
+        if (! is_array($value)) {
+            return [];
+        }
+
+        $normalized = [];
+
+        foreach ($value as $item) {
+            if (is_array($item)) {
+                $normalized[] = $this->normalizeRecord($item);
+
+                continue;
+            }
+
+            $text = $this->normalizeScalar($item);
+
+            if ($text !== '') {
+                $normalized[] = ['value' => $text];
+            }
+        }
+
+        return $normalized;
+    }
+
+    protected function normalizeStringList(mixed $value): array
+    {
+        if (! is_array($value)) {
+            return [];
+        }
+
+        $normalized = [];
+
+        foreach ($value as $item) {
+            if (is_array($item)) {
+                $preferred = Arr::first([
+                    Arr::get($item, 'name'),
+                    Arr::get($item, 'title'),
+                    Arr::get($item, 'label'),
+                    Arr::get($item, 'value'),
+                ], fn ($candidate) => is_scalar($candidate) && trim((string) $candidate) !== '');
+
+                $text = $preferred !== null
+                    ? trim((string) $preferred)
+                    : $this->normalizeScalar($item);
+            } else {
+                $text = $this->normalizeScalar($item);
+            }
+
+            if ($text !== '') {
+                $normalized[] = $text;
+            }
+        }
+
+        return $normalized;
+    }
+
+    protected function normalizeScalar(mixed $value): string
+    {
+        if ($value === null) {
+            return '';
+        }
+
+        if (is_bool($value)) {
+            return $value ? 'Yes' : 'No';
+        }
+
+        if (is_scalar($value)) {
+            return trim((string) $value);
+        }
+
+        if (is_array($value)) {
+            $flattened = [];
+
+            array_walk_recursive($value, function ($item) use (&$flattened): void {
+                if ($item === null) {
+                    return;
+                }
+
+                if (is_bool($item)) {
+                    $flattened[] = $item ? 'Yes' : 'No';
+
+                    return;
+                }
+
+                if (is_scalar($item)) {
+                    $text = trim((string) $item);
+
+                    if ($text !== '') {
+                        $flattened[] = $text;
+                    }
+                }
+            });
+
+            return implode(', ', array_unique($flattened));
+        }
+
+        return '';
     }
 }

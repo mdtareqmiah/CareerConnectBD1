@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use App\Models\Company;
+use App\Models\Job;
+use App\Models\JobApplication;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -95,5 +97,31 @@ class EmployerDashboardTest extends TestCase
         $response = $this->get('/employer/dashboard');
 
         $response->assertRedirect('/login');
+    }
+
+    public function test_dashboard_shows_real_job_and_application_counts_for_the_employer()
+    {
+        $company = Company::factory()->create(['employer_id' => $this->employer->id]);
+
+        Job::factory()->count(2)->create(['company_id' => $company->id]);
+
+        $applicantRole = Role::create(['name' => 'Job Seeker', 'slug' => 'job-seeker']);
+        $applicant = User::factory()->create(['role_id' => $applicantRole->id]);
+
+        $jobs = Job::where('company_id', $company->id)->get();
+        foreach ($jobs as $job) {
+            JobApplication::factory()->create([
+                'job_id' => $job->id,
+                'user_id' => $applicant->id,
+            ]);
+        }
+
+        $this->actingAs($this->employer);
+
+        $response = $this->get('/employer/dashboard');
+
+        $response->assertStatus(200);
+        $response->assertSeeInOrder(['Job Postings', '2']);
+        $response->assertSeeInOrder(['Applications Received', '2']);
     }
 }
