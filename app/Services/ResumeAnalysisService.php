@@ -134,13 +134,14 @@ class ResumeAnalysisService
     {
         $fileType = strtolower((string) $resume->file_type);
         $extension = Str::afterLast($fileType, '.');
+        $normalizedExtension = $this->normalizeExtension($extension ?: $fileType);
 
         return [
             'uploaded' => ! empty($resume->file_path),
             'title' => ! empty($resume->title),
             'default' => (bool) $resume->is_default,
             'active' => $resume->is_active,
-            'validType' => in_array($extension ?: $fileType, self::VALID_EXTENSIONS, true),
+            'validType' => in_array($normalizedExtension, self::VALID_EXTENSIONS, true),
             'validSize' => is_int($resume->file_size) && $resume->file_size > 0 && $resume->file_size <= self::MAX_FILE_SIZE,
         ];
     }
@@ -152,11 +153,11 @@ class ResumeAnalysisService
         }
 
         $path = Storage::disk('public')->path($resume->file_path);
-        $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+        $extension = $this->normalizeExtension(strtolower(pathinfo($path, PATHINFO_EXTENSION)));
 
         return match ($extension) {
             'pdf' => $this->extractTextFromPdf($path),
-            'docx' => $this->extractTextFromDocx($path),
+            'doc', 'docx' => $this->extractTextFromDocx($path),
             default => '',
         };
     }
@@ -431,5 +432,17 @@ class ResumeAnalysisService
             $profile->portfolio_url,
             $profile->website_url,
         ])->filter(fn ($value) => ! empty($value))->isNotEmpty();
+    }
+
+    protected function normalizeExtension(string $value): string
+    {
+        $value = strtolower(trim($value));
+
+        return match ($value) {
+            'application/msword', 'doc' => 'doc',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'docx' => 'docx',
+            'application/pdf', 'pdf' => 'pdf',
+            default => $value,
+        };
     }
 }

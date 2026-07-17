@@ -1,5 +1,6 @@
 @import "bootstrap/dist/css/bootstrap.min.css";
 
+<<<<<<< HEAD
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -1311,4 +1312,77 @@ select {
     .jobs-search-card {
         padding: 1rem;
     }
+ {
+    color-scheme: light;
+}
+
+body {
+    font-family: "Figtree", "Segoe UI", sans-serif;
+}
+
+.dropdown-menu {
+    border: 0;
+    box-shadow: 0 0.75rem 1.5rem rgba(15, 23, 42, 0.12);
+    max-width: min(92vw, 360px);
+}
+
+.dropdown-item {
+    border-radius: 0.5rem;
+}
+
+.dropdown-item:hover {
+    background-color: rgba(13, 110, 253, 0.08);
+}
+
+.job-card {
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.job-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.75rem 1.5rem rgba(15, 23, 42, 0.08);
+}
+
+.job-card__footer {
+    margin-top: auto;
+}
+
+.resume-builder-form .accordion-item {
+    border-radius: 0.85rem;
+    overflow: hidden;
+}
+
+.resume-builder-form .accordion-button {
+    font-weight: 600;
+}
+
+.resume-builder-form .accordion-body {
+    padding: 1.25rem;
+}
+
+.resume-builder-form .form-control,
+.resume-builder-form .form-select,
+.resume-builder-form .form-check-input {
+    border-radius: 0.7rem;
+}
+
+.resume-builder-form .btn {
+    border-radius: 0.7rem;
+}
+
+.resume-builder-preview {
+    border-radius: 1rem;
+}
+
+.resume-builder-preview .card-body {
+    border-radius: 1rem;
+    background: linear-gradient(135deg, #f8fbff 0%, #eef4ff 100%);
+}
+
+.admin-stat-card {
+    border-radius: 1rem;
+}
+
+.admin-stat-card .card-body {
+    padding: 1rem 1.1rem;
 }

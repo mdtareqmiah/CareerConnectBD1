@@ -12,28 +12,30 @@
 
     <div class="row g-4">
         <div class="col-xl-7">
-            <div class="card shadow-sm border-0">
+            <div class="card shadow-sm border-0 resume-builder-form">
                 <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-start mb-4 gap-3">
                         <div>
                             <h1 class="h4 mb-1">Professional Resume Builder</h1>
                             <p class="text-muted mb-0">Build your CV inside the website and preview it live as you update sections.</p>
                         </div>
-                        <button type="button" class="btn btn-outline-secondary btn-sm" id="refresh-profile">Refresh From Profile</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2" id="refresh-profile">
+                            <span>↻</span> Refresh From Profile
+                        </button>
                     </div>
 
                     <form id="resume-builder-form" action="{{ route('job-seeker.resume-builders.store') }}" method="POST">
                         @csrf
-                        <input type="hidden" name="personal_information" id="personal_information_input" value="{{ old('personal_information') ? json_encode(old('personal_information')) : '' }}">
-                        <input type="hidden" name="education" id="education_input" value="{{ old('education') ? json_encode(old('education')) : '' }}">
-                        <input type="hidden" name="experience" id="experience_input" value="{{ old('experience') ? json_encode(old('experience')) : '' }}">
-                        <input type="hidden" name="skills" id="skills_input" value="{{ old('skills') ? json_encode(old('skills')) : '' }}">
-                        <input type="hidden" name="projects" id="projects_input" value="{{ old('projects') ? json_encode(old('projects')) : '' }}">
-                        <input type="hidden" name="certifications" id="certifications_input" value="{{ old('certifications') ? json_encode(old('certifications')) : '' }}">
-                        <input type="hidden" name="languages" id="languages_input" value="{{ old('languages') ? json_encode(old('languages')) : '' }}">
-                        <input type="hidden" name="references" id="references_input" value="{{ old('references') ? json_encode(old('references')) : '' }}">
-                        <input type="hidden" name="social_links" id="social_links_input" value="{{ old('social_links') ? json_encode(old('social_links')) : '' }}">
-                        <input type="hidden" name="template" id="template_input" value="default">
+                        <input type="hidden" name="personal_information" id="personal_information_input" value="{{ old('personal_information') ? json_encode(old('personal_information')) : ($duplicateBuilder? json_encode($duplicateBuilder->personal_information) : '') }}">
+                        <input type="hidden" name="education" id="education_input" value="{{ old('education') ? json_encode(old('education')) : ($duplicateBuilder? json_encode($duplicateBuilder->education) : '') }}">
+                        <input type="hidden" name="experience" id="experience_input" value="{{ old('experience') ? json_encode(old('experience')) : ($duplicateBuilder? json_encode($duplicateBuilder->experience) : '') }}">
+                        <input type="hidden" name="skills" id="skills_input" value="{{ old('skills') ? json_encode(old('skills')) : ($duplicateBuilder? json_encode($duplicateBuilder->skills) : '') }}">
+                        <input type="hidden" name="projects" id="projects_input" value="{{ old('projects') ? json_encode(old('projects')) : ($duplicateBuilder? json_encode($duplicateBuilder->projects) : '') }}">
+                        <input type="hidden" name="certifications" id="certifications_input" value="{{ old('certifications') ? json_encode(old('certifications')) : ($duplicateBuilder? json_encode($duplicateBuilder->certifications) : '') }}">
+                        <input type="hidden" name="languages" id="languages_input" value="{{ old('languages') ? json_encode(old('languages')) : ($duplicateBuilder? json_encode($duplicateBuilder->languages) : '') }}">
+                        <input type="hidden" name="references" id="references_input" value="{{ old('references') ? json_encode(old('references')) : ($duplicateBuilder? json_encode($duplicateBuilder->references) : '') }}">
+                        <input type="hidden" name="social_links" id="social_links_input" value="{{ old('social_links') ? json_encode(old('social_links')) : ($duplicateBuilder? json_encode($duplicateBuilder->social_links) : '') }}">
+                        <input type="hidden" name="template" id="template_input" value="{{ old('template') ?? ($duplicateBuilder? $duplicateBuilder->template : 'modern') }}">
                         <input type="hidden" name="status" id="status" value="draft">
                         <input type="hidden" name="is_default" id="is_default" value="0">
                         <input type="hidden" name="resume_builder_id" id="resume_builder_id" value="">
@@ -41,7 +43,7 @@
 
                         <div class="mb-3">
                             <label for="title" class="form-label">Resume Title</label>
-                            <input type="text" id="title" name="title" value="{{ old('title') }}" class="form-control @error('title') is-invalid @enderror" required maxlength="255">
+                            <input type="text" id="title" name="title" value="{{ old('title', $duplicateBuilder?->title) }}" class="form-control @error('title') is-invalid @enderror" required maxlength="255">
                             @error('title')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -248,9 +250,15 @@
                             </div>
                         </div>
 
-                        <div class="d-flex justify-content-between align-items-center mt-4">
-                            <div class="text-muted" id="autosave-status">Draft saved automatically every 30 seconds.</div>
-                            <div class="d-flex gap-2">
+                        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-start mt-4 gap-3">
+                            <div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="set_default" name="set_default" value="1">
+                                    <label class="form-check-label" for="set_default">Set as default resume</label>
+                                </div>
+                                <div class="text-muted mt-1 small" id="autosave-status">Draft saved automatically every 30 seconds.</div>
+                            </div>
+                            <div class="d-flex flex-wrap gap-2">
                                 <a href="{{ route('job-seeker.resume-builders.index') }}" class="btn btn-outline-secondary">Cancel</a>
                                 <button type="button" class="btn btn-secondary" id="save-draft">Save Draft</button>
                                 <button type="submit" class="btn btn-primary">Save Resume Builder</button>
@@ -267,9 +275,33 @@
                     <div class="card-body">
                         <h2 class="h5">Live CV Preview</h2>
                         <p class="text-muted">Preview updates instantly while you edit.</p>
+                        <div class="row gx-3 gy-3 mt-3">
+                            <div class="col-sm-6">
+                                <label class="form-label small mb-1" for="preview_template">Template</label>
+                                <select id="preview_template" class="form-select form-select-sm">
+                                    <option value="modern">Modern</option>
+                                    <option value="professional">Professional</option>
+                                    <option value="minimal">Minimal</option>
+                                    <option value="creative">Creative</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="form-label small mb-1" for="preview_spacing">Spacing</label>
+                                <select id="preview_spacing" class="form-select form-select-sm">
+                                    <option value="compact">Compact</option>
+                                    <option value="normal" selected>Normal</option>
+                                    <option value="spacious">Spacious</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2 flex-wrap mt-3">
+                            <a id="preview_resume_link" class="btn btn-outline-secondary btn-sm disabled" target="_blank" rel="noopener">Full Preview</a>
+                            <a id="download_pdf_link" class="btn btn-outline-primary btn-sm disabled" target="_blank" rel="noopener">Download PDF</a>
+                            <a id="print_resume_link" class="btn btn-outline-success btn-sm disabled" target="_blank" rel="noopener">Print Resume</a>
+                        </div>
                     </div>
                 </div>
-                <div class="card shadow-sm border-0">
+                <div class="card shadow-sm border-0 resume-builder-preview">
                     <div class="card-body" id="resume-preview">
                         <div id="preview-content">
                             <div class="border-bottom mb-3">
@@ -294,6 +326,24 @@
 @section('scripts')
 @php
     $profile = auth()->user()?->jobSeekerProfile;
+    $duplicateBuilderData = null;
+    if (isset($duplicateBuilder)) {
+        $duplicateBuilderData = [
+            'title' => $duplicateBuilder->title,
+            'professional_summary' => $duplicateBuilder->professional_summary,
+            'personal_information' => $duplicateBuilder->personal_information ?? [],
+            'education' => $duplicateBuilder->education ?? [],
+            'experience' => $duplicateBuilder->experience ?? [],
+            'skills' => $duplicateBuilder->skills ?? [],
+            'projects' => $duplicateBuilder->projects ?? [],
+            'certifications' => $duplicateBuilder->certifications ?? [],
+            'languages' => $duplicateBuilder->languages ?? [],
+            'references' => $duplicateBuilder->references ?? [],
+            'social_links' => $duplicateBuilder->social_links ?? [],
+            'template' => $duplicateBuilder->template,
+        ];
+    }
+
     $profileData = $profile ? [
         'first_name' => $profile->first_name,
         'last_name' => $profile->last_name,
@@ -372,6 +422,9 @@
         references: [...initialSections.references],
         social_links: {...initialSections.social_links},
         title: @json(old('title') ?? ''),
+        template: document.getElementById('template_input').value || 'modern',
+        previewTemplate: 'modern',
+        previewSpacing: 'normal',
     };
 
     const timedSave = { interval: null, dirty: false, builderId: null };
@@ -402,8 +455,41 @@
         document.getElementById('references_input').value = JSON.stringify(state.references);
         document.getElementById('social_links_input').value = JSON.stringify(state.social_links);
         document.getElementById('title').value = state.title;
+        document.getElementById('template_input').value = state.template;
         renderPreview();
+        updateExportLinks();
         timedSave.dirty = true;
+    };
+
+    const getBuilderId = () => document.getElementById('resume_builder_id')?.value || timedSave.builderId;
+
+    const updateExportLinks = () => {
+        const builderId = getBuilderId();
+        const previewLink = document.getElementById('preview_resume_link');
+        const downloadLink = document.getElementById('download_pdf_link');
+        const printLink = document.getElementById('print_resume_link');
+        const template = state.template || 'modern';
+        const spacing = state.previewSpacing || 'normal';
+
+        if (!builderId) {
+            [previewLink, downloadLink, printLink].forEach(link => {
+                if (!link) return;
+                link.classList.add('disabled');
+                link.removeAttribute('href');
+            });
+            return;
+        }
+
+        const query = `?template=${encodeURIComponent(template)}&spacing=${encodeURIComponent(spacing)}`;
+        const previewUrl = `/job-seeker/resume-builders/${builderId}/preview${query}`;
+        const downloadUrl = `/job-seeker/resume-builders/${builderId}/download?template=${encodeURIComponent(template)}`;
+        const printUrl = `/job-seeker/resume-builders/${builderId}/print?template=${encodeURIComponent(template)}`;
+
+        previewLink.href = previewUrl;
+        downloadLink.href = downloadUrl;
+        printLink.href = printUrl;
+
+        [previewLink, downloadLink, printLink].forEach(link => link.classList.remove('disabled'));
     };
 
     const moveItem = (collection, index, delta) => {
@@ -673,7 +759,7 @@
             body: JSON.stringify({
                 title: state.title,
                 professional_summary: state.professional_summary,
-                template: 'default',
+                template: state.template,
                 status: document.getElementById('status').value,
                 is_default: document.getElementById('is_default').value,
                 personal_information: state.personal_information,
@@ -700,6 +786,7 @@
             document.getElementById('resume_builder_id').value = payload.id;
             document.getElementById('_method').value = 'PATCH';
             document.getElementById('resume-builder-form').action = `/job-seeker/resume-builders/${payload.id}`;
+            updateExportLinks();
         }
 
         timedSave.dirty = false;
@@ -766,10 +853,32 @@
         document.getElementById('addLanguage').addEventListener('click', () => { state.languages.push({ name: '' }); renderLanguageItems(); normalizeState(); });
         document.getElementById('addReference').addEventListener('click', () => { state.references.push({ name: '', position: '', contact: '' }); renderReferenceItems(); normalizeState(); });
 
+        document.getElementById('preview_template').value = state.template || 'modern';
+        document.getElementById('preview_spacing').value = state.previewSpacing;
+        document.getElementById('preview_template').addEventListener('change', (event) => {
+            state.previewTemplate = event.target.value;
+            state.template = event.target.value;
+            document.getElementById('template_input').value = state.template;
+            normalizeState();
+        });
+
+        document.getElementById('preview_spacing').addEventListener('change', (event) => {
+            state.previewSpacing = event.target.value;
+            updateExportLinks();
+        });
+
+        const defaultToggle = document.getElementById('set_default');
+        if (defaultToggle) {
+            defaultToggle.addEventListener('change', (event) => {
+                document.getElementById('is_default').value = event.target.checked ? '1' : '0';
+                timedSave.dirty = true;
+            });
+        }
+
         document.getElementById('refresh-profile').addEventListener('click', refreshFromProfile);
         document.getElementById('save-draft').addEventListener('click', saveDraft);
 
-        timedSave.interval = setInterval(() => {
+        setInterval(() => {
             if (!timedSave.dirty) return;
             saveDraft();
         }, 30000);

@@ -26,7 +26,19 @@ class JobRecommendationService
 
     public function recommendForJob(Job $job, JobSeekerProfile $profile): array
     {
-        return $this->transformRecommendation($job, $profile);
+        $defaultResumeExists = $profile->resumes()->whereNotNull('file_path')->exists();
+        $preferredLocation = strtolower((string) $profile->preferred_location);
+        $preferredJobType = strtolower((string) $profile->preferred_job_type);
+        $expectedSalary = $profile->expected_salary;
+
+        return $this->transformRecommendation(
+            $job,
+            $profile,
+            $defaultResumeExists,
+            $preferredLocation,
+            $preferredJobType,
+            $expectedSalary,
+        );
     }
 
     protected function buildRecommendations(JobSeekerProfile $profile, int $limit): Collection
@@ -78,6 +90,7 @@ class JobRecommendationService
             'job' => $job,
             'company' => $job->company,
             'score' => $score,
+            'resume_score' => $resumeScore,
             'matched_skills' => $this->candidateMatchService->matchedSkills($job, $profile),
             'missing_skills' => $this->candidateMatchService->missingSkills($job, $profile),
             'reason' => $this->buildRecommendationReason($score, $skillsScore, $experienceScore, $educationScore, $locationScore, $jobTypeScore, $salaryScore, $resumeScore),

@@ -27,6 +27,15 @@ class Company extends Model
         'city',
         'country',
         'company_description',
+        'verification_status',
+        'verified_at',
+        'verified_by',
+        'is_active',
+    ];
+
+    protected $casts = [
+        'verified_at' => 'datetime',
+        'is_active' => 'boolean',
     ];
 
     /**
@@ -35,6 +44,11 @@ class Company extends Model
     public function employer(): BelongsTo
     {
         return $this->belongsTo(User::class, 'employer_id');
+    }
+
+    public function verifier(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'verified_by');
     }
 
     public function jobs(): \Illuminate\Database\Eloquent\Relations\HasMany

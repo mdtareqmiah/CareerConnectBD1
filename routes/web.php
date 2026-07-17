@@ -2,6 +2,25 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\NewsletterController;
+use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\ApplicationManagementController;
+use App\Http\Controllers\Admin\CommunicationInboxController;
+use App\Http\Controllers\Admin\CompanyManagementController;
+use App\Http\Controllers\Admin\EmailCommunicationController;
+use App\Http\Controllers\Admin\EmployerManagementController;
+use App\Http\Controllers\Admin\FeedbackManagementController;
+use App\Http\Controllers\Admin\JobManagementController;
+use App\Http\Controllers\Admin\ReportController;
+use App\Http\Controllers\Admin\SupportTicketManagementController;
+use App\Http\Controllers\Admin\SystemSettingController;
+use App\Http\Controllers\Admin\UserManagementController;
+use App\Http\Controllers\Admin\ContactMessageManagementController;
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\FeedbackController;
+use App\Http\Controllers\InterviewInvitationController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\SupportTicketController;
+use App\Http\Controllers\SupportTicketReplyController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -20,11 +39,11 @@ Route::get('/dashboard', function () {
     }
 
     if ($user?->role?->slug === 'admin') {
-        return redirect()->to('/admin');
+        return redirect()->route('admin.dashboard');
     }
 
     if ($user?->role?->slug === 'employer') {
-        return redirect()->to('/employer');
+        return redirect()->route('employer.dashboard');
     }
 
     return view('dashboard');
@@ -32,7 +51,7 @@ Route::get('/dashboard', function () {
 
 Route::middleware(['auth', 'role:employer'])->group(function () {
     Route::get('/employer', function () {
-        $user = auth()->user();
+        $user = Auth::user();
 
         if ($user->company) {
             return redirect()->route('employer.dashboard');
@@ -46,19 +65,146 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::patch('/notifications/{notification}/read', [NotificationController::class, 'read'])->name('notifications.read');
+    Route::patch('/notifications/read-all', [NotificationController::class, 'readAll'])->name('notifications.read-all');
+    Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
+
+    Route::get('/feedback', [FeedbackController::class, 'index'])->name('feedback.index');
+    Route::get('/feedback/create', [FeedbackController::class, 'create'])->name('feedback.create');
+    Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
+    Route::get('/feedback/{feedback}', [FeedbackController::class, 'show'])->name('feedback.show');
+
+    Route::get('/support-tickets', [SupportTicketController::class, 'index'])->name('support-tickets.index');
+    Route::get('/support-tickets/create', [SupportTicketController::class, 'create'])->name('support-tickets.create');
+    Route::post('/support-tickets', [SupportTicketController::class, 'store'])->name('support-tickets.store');
+    Route::get('/support-tickets/{supportTicket}', [SupportTicketController::class, 'show'])->name('support-tickets.show');
+    Route::post('/support-tickets/{supportTicket}/replies', [SupportTicketReplyController::class, 'store'])->name('support-tickets.replies.store');
 });
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin', function () {
-        return response('Admin access granted', 200);
+        return redirect()->route('admin.dashboard');
     });
 
+    Route::prefix('admin')->name('admin.')->group(function () {
+        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+
+        Route::get('/users', [UserManagementController::class, 'index'])->name('users.index');
+        Route::get('/users/create', [UserManagementController::class, 'create'])->name('users.create');
+        Route::post('/users', [UserManagementController::class, 'store'])->name('users.store');
+        Route::get('/users/{user}/edit', [UserManagementController::class, 'edit'])->name('users.edit');
+        Route::match(['put', 'patch'], '/users/{user}', [UserManagementController::class, 'update'])->name('users.update');
+        Route::patch('/users/{user}/toggle-status', [UserManagementController::class, 'toggleStatus'])->name('users.toggle-status');
+        Route::delete('/users/{user}', [UserManagementController::class, 'destroy'])->name('users.destroy');
+        Route::patch('/users/{userId}/restore', [UserManagementController::class, 'restore'])
+            ->whereNumber('userId')
+            ->name('users.restore');
+        Route::get('/employers', [EmployerManagementController::class, 'index'])->name('employers.index');
+        Route::get('/employers/{employer}', [EmployerManagementController::class, 'show'])
+            ->whereNumber('employer')
+            ->name('employers.show');
+
+        Route::get('/companies', [CompanyManagementController::class, 'index'])->name('companies.index');
+        Route::get('/companies/{company}', [CompanyManagementController::class, 'show'])
+            ->whereNumber('company')
+            ->name('companies.show');
+        Route::get('/companies/{company}/edit', [CompanyManagementController::class, 'edit'])
+            ->whereNumber('company')
+            ->name('companies.edit');
+        Route::match(['put', 'patch'], '/companies/{company}', [CompanyManagementController::class, 'update'])
+            ->whereNumber('company')
+            ->name('companies.update');
+        Route::patch('/companies/{company}/approve', [CompanyManagementController::class, 'approve'])
+            ->whereNumber('company')
+            ->name('companies.approve');
+        Route::patch('/companies/{company}/reject', [CompanyManagementController::class, 'reject'])
+            ->whereNumber('company')
+            ->name('companies.reject');
+        Route::patch('/companies/{company}/suspend', [CompanyManagementController::class, 'suspend'])
+            ->whereNumber('company')
+            ->name('companies.suspend');
+        Route::patch('/companies/{company}/activate', [CompanyManagementController::class, 'activate'])
+            ->whereNumber('company')
+            ->name('companies.activate');
+        Route::get('/jobs', [JobManagementController::class, 'index'])->name('jobs.index');
+        Route::get('/jobs/{jobId}', [JobManagementController::class, 'show'])
+            ->whereNumber('jobId')
+            ->name('jobs.show');
+        Route::patch('/jobs/{jobId}/publish', [JobManagementController::class, 'publish'])
+            ->whereNumber('jobId')
+            ->name('jobs.publish');
+        Route::patch('/jobs/{jobId}/unpublish', [JobManagementController::class, 'unpublish'])
+            ->whereNumber('jobId')
+            ->name('jobs.unpublish');
+        Route::patch('/jobs/{jobId}/close', [JobManagementController::class, 'close'])
+            ->whereNumber('jobId')
+            ->name('jobs.close');
+        Route::patch('/jobs/{jobId}/reopen', [JobManagementController::class, 'reopen'])
+            ->whereNumber('jobId')
+            ->name('jobs.reopen');
+        Route::delete('/jobs/{jobId}', [JobManagementController::class, 'destroy'])
+            ->whereNumber('jobId')
+            ->name('jobs.destroy');
+        Route::patch('/jobs/{jobId}/restore', [JobManagementController::class, 'restore'])
+            ->whereNumber('jobId')
+            ->name('jobs.restore');
+
+        Route::get('/applications', [ApplicationManagementController::class, 'index'])->name('applications.index');
+        Route::get('/applications/{jobApplication}', [ApplicationManagementController::class, 'show'])
+            ->whereNumber('jobApplication')
+            ->name('applications.show');
+        Route::get('/applications/{jobApplication}/resume/preview', [ApplicationManagementController::class, 'previewResume'])
+            ->whereNumber('jobApplication')
+            ->name('applications.resume.preview');
+        Route::get('/applications/{jobApplication}/resume/download', [ApplicationManagementController::class, 'downloadResume'])
+            ->whereNumber('jobApplication')
+            ->name('applications.resume.download');
+
+        Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+        Route::get('/email-logs', [EmailCommunicationController::class, 'index'])->name('email-logs.index');
+        Route::patch('/email-logs/{emailLog}/resend', [EmailCommunicationController::class, 'resend'])->name('email-logs.resend');
+        Route::get('/communications', [CommunicationInboxController::class, 'index'])->name('communications.index');
+        Route::patch('/communications/contacts/{contactMessage}/status', [ContactMessageManagementController::class, 'updateStatus'])->name('communications.contacts.status');
+        Route::post('/communications/contacts/{contactMessage}/reply', [ContactMessageManagementController::class, 'reply'])->name('communications.contacts.reply');
+        Route::delete('/communications/contacts/{contactMessage}', [ContactMessageManagementController::class, 'destroy'])->name('communications.contacts.destroy');
+
+        Route::get('/feedback/{feedback}', [FeedbackManagementController::class, 'show'])->name('feedback.show');
+        Route::patch('/feedback/{feedback}/status', [FeedbackManagementController::class, 'updateStatus'])->name('feedback.status');
+        Route::delete('/feedback/{feedback}', [FeedbackManagementController::class, 'destroy'])->name('feedback.destroy');
+
+        Route::get('/support-tickets/{supportTicket}', [SupportTicketManagementController::class, 'show'])->name('support-tickets.show');
+        Route::patch('/support-tickets/{supportTicket}/status', [SupportTicketManagementController::class, 'updateStatus'])->name('support-tickets.status');
+        Route::post('/support-tickets/{supportTicket}/replies', [SupportTicketReplyController::class, 'store'])->name('support-tickets.replies.store');
+        Route::delete('/support-tickets/{supportTicket}', [SupportTicketManagementController::class, 'destroy'])->name('support-tickets.destroy');
+
+        Route::view('/cms', 'admin.section', ['title' => 'CMS'])->name('cms');
+        Route::get('/settings', [SystemSettingController::class, 'index'])->name('settings.index');
+        Route::patch('/settings', [SystemSettingController::class, 'update'])->name('settings.update');
+        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile');
+    });
+
+    
     Route::resource('roles', App\Http\Controllers\RoleController::class);
 });
 
 Route::middleware(['auth', 'role:employer'])->group(function () {
     Route::get('/employer/dashboard', [App\Http\Controllers\EmployerDashboardController::class, 'index'])
         ->name('employer.dashboard');
+
+    Route::get('/employer/interview-invitations', [InterviewInvitationController::class, 'index'])
+        ->name('employer.interview-invitations.index');
+    Route::get('/employer/interview-invitations/create', [InterviewInvitationController::class, 'create'])
+        ->name('employer.interview-invitations.create');
+    Route::post('/employer/interview-invitations', [InterviewInvitationController::class, 'store'])
+        ->name('employer.interview-invitations.store');
+    Route::get('/employer/interview-invitations/{invitation}', [InterviewInvitationController::class, 'show'])
+        ->name('employer.interview-invitations.show');
+    Route::patch('/employer/interview-invitations/{invitation}', [InterviewInvitationController::class, 'update'])
+        ->name('employer.interview-invitations.update');
+    Route::delete('/employer/interview-invitations/{invitation}', [InterviewInvitationController::class, 'destroy'])
+        ->name('employer.interview-invitations.destroy');
 
     Route::middleware('ensure.employer.has.company')->group(function () {
         Route::resource('company', App\Http\Controllers\CompanyController::class)
@@ -112,6 +258,13 @@ Route::get('/jobs/{job}', [App\Http\Controllers\JobController::class, 'show'])
     ->name('jobs.show');
 
 Route::middleware(['auth', 'role:job-seeker'])->group(function () {
+    Route::get('/job-seeker/interview-invitations', [InterviewInvitationController::class, 'index'])
+        ->name('job-seeker.interview-invitations.index');
+    Route::get('/job-seeker/interview-invitations/{invitation}', [InterviewInvitationController::class, 'show'])
+        ->name('job-seeker.interview-invitations.show');
+    Route::patch('/job-seeker/interview-invitations/{invitation}/respond', [InterviewInvitationController::class, 'respond'])
+        ->name('job-seeker.interview-invitations.respond');
+
     Route::get('/saved-jobs', [App\Http\Controllers\SavedJobController::class, 'index'])
         ->name('job-seeker.saved-jobs.index');
 
@@ -219,6 +372,15 @@ Route::middleware(['auth', 'role:job-seeker'])->group(function () {
     Route::delete('/job-seeker/resume-builders/{resumeBuilder}', [App\Http\Controllers\ResumeBuilderController::class, 'destroy'])
         ->name('job-seeker.resume-builders.destroy');
 
+    Route::get('/job-seeker/resume-builders/{resumeBuilder}/preview', [App\Http\Controllers\ResumeBuilderController::class, 'preview'])
+        ->name('resume-builder.preview');
+
+    Route::get('/job-seeker/resume-builders/{resumeBuilder}/download', [App\Http\Controllers\ResumeBuilderController::class, 'downloadPdf'])
+        ->name('resume-builder.download');
+
+    Route::get('/job-seeker/resume-builders/{resumeBuilder}/print', [App\Http\Controllers\ResumeBuilderController::class, 'print'])
+        ->name('resume-builder.print');
+
     Route::get('/job-seeker/applications', [App\Http\Controllers\JobSeekerApplicationController::class, 'index'])
         ->name('job-seeker.applications.index');
 
@@ -243,5 +405,8 @@ Route::middleware(['auth', 'role:job-seeker'])->group(function () {
     Route::delete('/job-seeker/experiences/{experience}', [App\Http\Controllers\ExperienceController::class, 'destroy'])
         ->name('job-seeker.experiences.destroy');
 });
+
+Route::get('/contact', [ContactController::class, 'create'])->name('contact.create');
+Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 
 require __DIR__.'/auth.php';

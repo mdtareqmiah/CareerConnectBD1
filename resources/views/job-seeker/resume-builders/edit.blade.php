@@ -12,14 +12,16 @@
 
     <div class="row g-4">
         <div class="col-xl-7">
-            <div class="card shadow-sm border-0">
+            <div class="card shadow-sm border-0 resume-builder-form">
                 <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-start mb-4 gap-3">
                         <div>
                             <h1 class="h4 mb-1">Professional Resume Builder</h1>
                             <p class="text-muted mb-0">Edit your CV and preview changes instantly.</p>
                         </div>
-                        <button type="button" class="btn btn-outline-secondary btn-sm" id="refresh-profile">Refresh From Profile</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2" id="refresh-profile">
+                            <span>↻</span> Refresh From Profile
+                        </button>
                     </div>
 
                     <form id="resume-builder-form" action="{{ route('job-seeker.resume-builders.update', $resumeBuilder) }}" method="POST">
@@ -248,9 +250,9 @@
                             </div>
                         </div>
 
-                        <div class="d-flex justify-content-between align-items-center mt-4">
-                            <div class="text-muted" id="autosave-status">Draft saved automatically every 30 seconds.</div>
-                            <div class="d-flex gap-2">
+                        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-start mt-4 gap-3">
+                            <div class="text-muted small" id="autosave-status">Draft saved automatically every 30 seconds.</div>
+                            <div class="d-flex flex-wrap gap-2">
                                 <a href="{{ route('job-seeker.resume-builders.index') }}" class="btn btn-outline-secondary">Cancel</a>
                                 <button type="button" class="btn btn-secondary" id="save-draft">Save Draft</button>
                                 <button type="submit" class="btn btn-primary">Update Resume Builder</button>
@@ -267,9 +269,33 @@
                     <div class="card-body">
                         <h2 class="h5">Live CV Preview</h2>
                         <p class="text-muted">Preview updates instantly while you edit.</p>
+                        <div class="row gx-3 gy-3 mt-3">
+                            <div class="col-sm-6">
+                                <label class="form-label small mb-1" for="preview_template">Template</label>
+                                <select id="preview_template" class="form-select form-select-sm">
+                                    <option value="modern">Modern</option>
+                                    <option value="professional">Professional</option>
+                                    <option value="minimal">Minimal</option>
+                                    <option value="creative">Creative</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="form-label small mb-1" for="preview_spacing">Spacing</label>
+                                <select id="preview_spacing" class="form-select form-select-sm">
+                                    <option value="compact">Compact</option>
+                                    <option value="normal" selected>Normal</option>
+                                    <option value="spacious">Spacious</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2 flex-wrap mt-3">
+                            <a id="preview_resume_link" class="btn btn-outline-secondary btn-sm disabled" target="_blank" rel="noopener">Full Preview</a>
+                            <a id="download_pdf_link" class="btn btn-outline-primary btn-sm disabled" target="_blank" rel="noopener">Download PDF</a>
+                            <a id="print_resume_link" class="btn btn-outline-success btn-sm disabled" target="_blank" rel="noopener">Print Resume</a>
+                        </div>
                     </div>
                 </div>
-                <div class="card shadow-sm border-0">
+                <div class="card shadow-sm border-0 resume-builder-preview">
                     <div class="card-body" id="resume-preview">
                         <div id="preview-content">
                             <div class="border-bottom mb-3">
@@ -294,6 +320,22 @@
 @section('scripts')
 @php
     $profile = auth()->user()?->jobSeekerProfile;
+    $userEmail = auth()->user()?->email;
+    $initialTemplate = old('template', $resumeBuilder->template) ?: 'modern';
+    $currentBuilderData = [
+        'id' => $resumeBuilder->id,
+        'title' => $resumeBuilder->title,
+        'professional_summary' => $resumeBuilder->professional_summary,
+        'personal_information' => $resumeBuilder->personal_information ?? [],
+        'education' => $resumeBuilder->education ?? [],
+        'experience' => $resumeBuilder->experience ?? [],
+        'skills' => $resumeBuilder->skills ?? [],
+        'projects' => $resumeBuilder->projects ?? [],
+        'certifications' => $resumeBuilder->certifications ?? [],
+        'languages' => $resumeBuilder->languages ?? [],
+        'references' => $resumeBuilder->references ?? [],
+        'social_links' => $resumeBuilder->social_links ?? [],
+    ];
     $profileData = $profile ? [
         'first_name' => $profile->first_name,
         'last_name' => $profile->last_name,
@@ -332,26 +374,16 @@
     const profileEducations = @json($profileEducations);
     const profileExperiences = @json($profileExperiences);
     const profileSkills = @json($profileSkills);
-    const currentBuilder = @json([
-        'id' => $resumeBuilder->id,
-        'title' => $resumeBuilder->title,
-        'professional_summary' => $resumeBuilder->professional_summary,
-        'personal_information' => $resumeBuilder->personal_information ?? [],
-        'education' => $resumeBuilder->education ?? [],
-        'experience' => $resumeBuilder->experience ?? [],
-        'skills' => $resumeBuilder->skills ?? [],
-        'projects' => $resumeBuilder->projects ?? [],
-        'certifications' => $resumeBuilder->certifications ?? [],
-        'languages' => $resumeBuilder->languages ?? [],
-        'references' => $resumeBuilder->references ?? [],
-        'social_links' => $resumeBuilder->social_links ?? [],
-    ]);
+    const userEmail = @json($userEmail);
+    const initialTemplate = @json($initialTemplate);
+    const currentBuilder = @json($currentBuilderData);
 
     const initialSections = {
         personal_information: {
+            ...currentBuilder.personal_information,
             first_name: currentBuilder.personal_information.first_name || profileData.first_name || '',
             last_name: currentBuilder.personal_information.last_name || profileData.last_name || '',
-            email: currentBuilder.personal_information.email || @json(auth()->user()->email),
+            email: currentBuilder.personal_information.email || userEmail || '',
             phone: currentBuilder.personal_information.phone || profileData.phone || '',
             linkedin_url: currentBuilder.personal_information.linkedin_url || profileData.linkedin_url || '',
             github_url: currentBuilder.personal_information.github_url || profileData.github_url || '',
@@ -386,7 +418,13 @@
         references: [...initialSections.references],
         social_links: {...initialSections.social_links},
         title: currentBuilder.title || '',
+        template: initialTemplate,
+        previewTemplate: initialTemplate,
+        previewSpacing: currentBuilder.personal_information.spacing || 'normal',
     };
+
+    state.personal_information.theme = state.personal_information.theme || state.template;
+    state.personal_information.spacing = state.personal_information.spacing || state.previewSpacing;
 
     const timedSave = { interval: null, dirty: false, builderId: currentBuilder.id };
 
@@ -406,8 +444,41 @@
         document.getElementById('references_input').value = JSON.stringify(state.references);
         document.getElementById('social_links_input').value = JSON.stringify(state.social_links);
         document.getElementById('title').value = state.title;
+        document.getElementById('template_input').value = state.template;
         renderPreview();
+        updateExportLinks();
         timedSave.dirty = true;
+    };
+
+    const getBuilderId = () => document.getElementById('resume_builder_id')?.value || timedSave.builderId;
+
+    const updateExportLinks = () => {
+        const builderId = getBuilderId();
+        const previewLink = document.getElementById('preview_resume_link');
+        const downloadLink = document.getElementById('download_pdf_link');
+        const printLink = document.getElementById('print_resume_link');
+        const template = state.template || 'modern';
+        const spacing = state.previewSpacing || 'normal';
+
+        if (!builderId) {
+            [previewLink, downloadLink, printLink].forEach(link => {
+                if (!link) return;
+                link.classList.add('disabled');
+                link.removeAttribute('href');
+            });
+            return;
+        }
+
+        const query = `?template=${encodeURIComponent(template)}&spacing=${encodeURIComponent(spacing)}`;
+        const previewUrl = `/job-seeker/resume-builders/${builderId}/preview${query}`;
+        const downloadUrl = `/job-seeker/resume-builders/${builderId}/download?template=${encodeURIComponent(template)}`;
+        const printUrl = `/job-seeker/resume-builders/${builderId}/print?template=${encodeURIComponent(template)}`;
+
+        previewLink.href = previewUrl;
+        downloadLink.href = downloadUrl;
+        printLink.href = printUrl;
+
+        [previewLink, downloadLink, printLink].forEach(link => link.classList.remove('disabled'));
     };
 
     const moveItem = (collection, index, delta) => {
@@ -544,7 +615,7 @@
 
     const renderPreview = () => {
         document.getElementById('preview-name').textContent = `${state.personal_information.first_name || 'Your'} ${state.personal_information.last_name || 'Name'}`.trim();
-        document.getElementById('preview-title').textContent = state.personal_information.professional_title || 'Professional Title';
+        document.getElementById('preview-title').textContent = state.title || 'Professional Title';
         document.getElementById('preview-contact').innerHTML = [
             state.personal_information.email,
             state.personal_information.phone,
@@ -677,7 +748,7 @@
             body: JSON.stringify({
                 title: state.title,
                 professional_summary: state.professional_summary,
-                template: 'default',
+                template: state.template,
                 status: document.getElementById('status').value,
                 is_default: document.getElementById('is_default').value,
                 personal_information: state.personal_information,
@@ -700,6 +771,7 @@
         const payload = await response.json();
         timedSave.builderId = payload.id || timedSave.builderId;
         document.getElementById('resume_builder_id').value = timedSave.builderId;
+        updateExportLinks();
         statusElement.textContent = 'Draft saved automatically every 30 seconds.';
         timedSave.dirty = false;
     };
@@ -764,10 +836,26 @@
         document.getElementById('addLanguage').addEventListener('click', () => { state.languages.push({ name: '' }); renderLanguageItems(); normalizeState(); });
         document.getElementById('addReference').addEventListener('click', () => { state.references.push({ name: '', position: '', contact: '' }); renderReferenceItems(); normalizeState(); });
 
+        document.getElementById('preview_template').value = state.template || 'modern';
+        document.getElementById('preview_spacing').value = state.previewSpacing;
+        document.getElementById('preview_template').addEventListener('change', (event) => {
+            state.previewTemplate = event.target.value;
+            state.template = event.target.value;
+            state.personal_information.theme = state.template;
+            document.getElementById('template_input').value = state.template;
+            normalizeState();
+        });
+
+        document.getElementById('preview_spacing').addEventListener('change', (event) => {
+            state.previewSpacing = event.target.value;
+            state.personal_information.spacing = state.previewSpacing;
+            normalizeState();
+        });
+
         document.getElementById('refresh-profile').addEventListener('click', refreshFromProfile);
         document.getElementById('save-draft').addEventListener('click', saveDraft);
 
-        timedSave.interval = setInterval(() => {
+        setInterval(() => {
             if (!timedSave.dirty) return;
             saveDraft();
         }, 30000);
@@ -784,10 +872,10 @@
             const socialValid = ['linkedin','github','portfolio','website'].every(key => validateUrl(state.social_links[key]));
             setValidationState('email_error', emailValid, 'Enter a valid email address.');
             setValidationState('phone_error', phoneValid, 'Enter a valid phone number.');
-            setValidationState('linkedin_url_error', validateUrl(state.social_links.linkedin), 'Enter a valid LinkedIn URL.');
-            setValidationState('github_url_error', validateUrl(state.social_links.github), 'Enter a valid GitHub URL.');
-            setValidationState('portfolio_url_error', validateUrl(state.social_links.portfolio), 'Enter a valid portfolio URL.');
-            setValidationState('website_url_error', validateUrl(state.social_links.website), 'Enter a valid website URL.');
+            setValidationState('social_linkedin_error', validateUrl(state.social_links.linkedin), 'Enter a valid LinkedIn URL.');
+            setValidationState('social_github_error', validateUrl(state.social_links.github), 'Enter a valid GitHub URL.');
+            setValidationState('social_portfolio_error', validateUrl(state.social_links.portfolio), 'Enter a valid portfolio URL.');
+            setValidationState('social_website_error', validateUrl(state.social_links.website), 'Enter a valid website URL.');
 
             if (!emailValid || !phoneValid || !socialValid) {
                 event.preventDefault();

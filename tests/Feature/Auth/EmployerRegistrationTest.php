@@ -62,7 +62,7 @@ class EmployerRegistrationTest extends TestCase
             'password' => 'password',
         ]);
 
-        $response->assertRedirect('/employer');
+        $response->assertRedirect('/employer/dashboard');
 
         $this->actingAs($user);
         $response = $this->get('/employer');
@@ -87,7 +87,7 @@ class EmployerRegistrationTest extends TestCase
             'password' => 'password',
         ]);
 
-        $response->assertRedirect('/employer');
+        $response->assertRedirect('/employer/dashboard');
 
         $this->actingAs($user);
         $response = $this->get('/employer');

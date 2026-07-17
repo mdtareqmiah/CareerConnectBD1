@@ -321,12 +321,19 @@ function buildPagination() {
         const current = props.pagination.current_page || 1;
         const last = props.pagination.last_page || 1;
         const url = new URL(window.location.href);
+        const params = new URLSearchParams(url.searchParams);
+
+        const prevParams = new URLSearchParams(params);
+        prevParams.set('page', current - 1);
+
+        const nextParams = new URLSearchParams(params);
+        nextParams.set('page', current + 1);
 
         pagination.value = {
             current_page: current,
             last_page: last,
-            prev_page_url: current > 1 ? `${url.pathname}?${url.searchParams.toString()}` : null,
-            next_page_url: current < last ? `${url.pathname}?page=${current + 1}${url.searchParams.toString() ? '&' + url.searchParams.toString().replace(/page=\d+&?/, '') : ''}` : null,
+            prev_page_url: current > 1 ? `${url.pathname}?${prevParams.toString()}` : null,
+            next_page_url: current < last ? `${url.pathname}?${nextParams.toString()}` : null,
         };
     } else {
         pagination.value = {

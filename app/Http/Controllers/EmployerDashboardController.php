@@ -22,8 +22,10 @@ class EmployerDashboardController extends Controller
         $user = auth()->user();
         $company = $user->company;
 
+        $jobStats = $company ? $this->jobService->stats($user) : ['total_jobs' => 0];
+
         $stats = [
-            'job_postings' => 0,
+            'job_postings' => $jobStats['total_jobs'] ?? 0,
             'total_applications' => 0,
             'profile_completion' => $company ? 100 : 0,
         ];
@@ -36,6 +38,8 @@ class EmployerDashboardController extends Controller
             'rejected_applications' => 0,
             'hired_applications' => 0,
         ];
+
+        $stats['total_applications'] = $applicationStats['total_applications'] ?? 0;
 
         return view('employer.dashboard', compact('user', 'company', 'stats', 'applicationStats'));
     }

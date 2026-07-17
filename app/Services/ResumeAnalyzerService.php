@@ -167,7 +167,7 @@ class ResumeAnalyzerService
         return [
             'uploaded' => ! empty($resume->file_path),
             'titleSet' => ! empty($resume->title),
-            'validType' => in_array($fileType, ['pdf', 'doc', 'docx'], true),
+            'validType' => in_array($this->normalizeExtension($fileType), ['pdf', 'doc', 'docx'], true),
             'validSize' => is_int($resume->file_size) && $resume->file_size > 0 && $resume->file_size <= 5242880,
         ];
     }
@@ -206,11 +206,11 @@ class ResumeAnalyzerService
         }
 
         $path = Storage::disk('public')->path($resume->file_path);
-        $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+        $extension = $this->normalizeExtension(strtolower(pathinfo($path, PATHINFO_EXTENSION)));
 
         return match ($extension) {
             'pdf' => $this->extractTextFromPdf($path),
-            'docx' => $this->extractTextFromDocx($path),
+            'doc', 'docx' => $this->extractTextFromDocx($path),
             default => '',
         };
     }
@@ -388,6 +388,18 @@ class ResumeAnalyzerService
             $score >= 70 => 'Good',
             $score >= 50 => 'Needs Improvement',
             default => 'Incomplete',
+        };
+    }
+
+    protected function normalizeExtension(string $value): string
+    {
+        $value = strtolower(trim($value));
+
+        return match ($value) {
+            'application/msword', 'doc' => 'doc',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'docx' => 'docx',
+            'application/pdf', 'pdf' => 'pdf',
+            default => $value,
         };
     }
 }
