@@ -7,165 +7,158 @@
         'employer' => '/employer',
         default => route('dashboard'),
     };
+    $hasCustomLogo = file_exists(public_path('images/logo.png'));
 @endphp
 
-<nav class="navbar navbar-expand-lg navbar-light sticky-top border-bottom shadow-sm">
-    <div class="container">
-        <a class="navbar-brand d-flex align-items-center gap-3 fw-semibold text-dark" href="{{ auth()->check() ? $homeRoute : '/' }}">
-            <span class="brand-mark d-inline-flex align-items-center justify-content-center rounded-circle text-white">CC</span>
-            <span class="d-flex flex-column">
-                <span class="fw-bold">CareerConnectBD</span>
+<!-- Premium Glassmorphism Navigation with Tailwind CSS -->
+<nav class="sticky top-0 z-50 h-20 bg-white/80 backdrop-blur-md border-b border-slate-200/80" role="navigation" aria-label="Main navigation">
+    <div class="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
 
-            </span>
+        <!-- Logo Section (Left) -->
+        <a href="{{ auth()->check() ? $homeRoute : '/' }}" class="flex items-center gap-3 group hover:opacity-80 transition-opacity duration-300" aria-label="CareerConnectBD home">
+            @if ($hasCustomLogo)
+                <img src="{{ asset('images/logo.png') }}" alt="CareerConnectBD logo" class="w-12 h-12 rounded-lg object-cover">
+            @else
+                <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white font-extrabold text-lg">CC</div>
+            @endif
+
+            <div class="flex flex-col">
+                <span class="text-lg font-extrabold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent leading-tight">CareerConnectBD</span>
+                <span class="text-[10px] font-bold tracking-widest text-slate-400 uppercase">Premium AI Hiring</span>
+            </div>
         </a>
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+        <!-- Center Navigation Links (Desktop Only) -->
+        <div class="hidden md:flex items-center gap-1">
+            <a href="{{ auth()->check() ? $homeRoute : '/' }}" class="px-4 py-2 text-sm font-semibold text-blue-600 bg-blue-50 rounded-full transition-all duration-200 {{ request()->is('/') ? 'bg-blue-50 text-blue-600' : '' }}">
+                Home
+            </a>
+            <a href="{{ route('jobs.index') }}" class="px-4 py-2 text-sm font-medium text-slate-600 rounded-full hover:text-slate-900 hover:bg-slate-100 transition-all duration-200">
+                Jobs
+            </a>
+            <a href="{{ route('register') }}" class="px-4 py-2 text-sm font-medium text-slate-600 rounded-full hover:text-slate-900 hover:bg-slate-100 transition-all duration-200">
+                For Seeker
+            </a>
+            <a href="{{ route('employer.register') }}" class="px-4 py-2 text-sm font-medium text-slate-600 rounded-full hover:text-slate-900 hover:bg-slate-100 transition-all duration-200">
+                For Employer
+            </a>
+        </div>
 
-        <div class="collapse navbar-collapse justify-content-between" id="mainNavbar">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                @guest
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->is('/') ? 'active' : '' }}" href="/">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('jobs.index') ? 'active' : '' }}" href="{{ route('jobs.index') }}">Jobs</a>
-                    </li>
-                @else
-                    @if ($roleSlug === 'job-seeker')
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('job-seeker.dashboard') ? 'active' : '' }}" href="{{ route('job-seeker.dashboard') }}" @if (request()->routeIs('job-seeker.dashboard')) aria-current="page" @endif>Dashboard</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('jobs.index') ? 'active' : '' }}" href="{{ route('jobs.index') }}">Jobs</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('job-seeker.applications.*') ? 'active' : '' }}" href="{{ route('job-seeker.applications.index') }}">My Applications</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('job-seeker.saved-jobs.index') ? 'active' : '' }}" href="{{ route('job-seeker.saved-jobs.index') }}">
-                                Saved Jobs
-                                @if (! empty($savedJobsCount))
-                                    <span class="badge bg-primary rounded-pill ms-1">{{ $savedJobsCount }}</span>
-                                @endif
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('job-seeker.profile.*') ? 'active' : '' }}" href="{{ route('job-seeker.profile.edit') }}" @if (request()->routeIs('job-seeker.profile.*')) aria-current="page" @endif>Profile</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('job-seeker.educations.*') ? 'active' : '' }}" href="{{ route('job-seeker.educations.index') }}" @if (request()->routeIs('job-seeker.educations.*')) aria-current="page" @endif>Education</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('job-seeker.experiences.*') ? 'active' : '' }}" href="{{ route('job-seeker.experiences.index') }}" @if (request()->routeIs('job-seeker.experiences.*')) aria-current="page" @endif>Experience</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('job-seeker.skills.*') ? 'active' : '' }}" href="{{ route('job-seeker.skills.index') }}" @if (request()->routeIs('job-seeker.skills.*')) aria-current="page" @endif>Skills</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('job-seeker.resumes.*') ? 'active' : '' }}" href="{{ route('job-seeker.resumes.index') }}" @if (request()->routeIs('job-seeker.resumes.*')) aria-current="page" @endif>Resume</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('job-seeker.resume-builders.*') ? 'active' : '' }}" href="{{ route('job-seeker.resume-builders.index') }}" @if (request()->routeIs('job-seeker.resume-builders.*')) aria-current="page" @endif>Resume Builder</a>
-                        </li>
-                    @elseif ($roleSlug === 'employer')
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">Dashboard</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('jobs.index') ? 'active' : '' }}" href="{{ route('jobs.index') }}">Manage Jobs</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('employer.applications.*') ? 'active' : '' }}" href="{{ route('employer.applications.index') }}">Applications</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('jobs.create') ? 'active' : '' }}" href="{{ route('jobs.create') }}">Post Job</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('company.*') ? 'active' : '' }}" href="{{ auth()->user()->company ? route('company.show', auth()->user()->company) : route('company.create') }}">Company</a>
-                        </li>
-                    @elseif ($roleSlug === 'admin')
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">Dashboard</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('roles.*') ? 'active' : '' }}" href="{{ route('roles.index') }}">Role Management</a>
-                        </li>
-                    @else
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">Dashboard</a>
-                        </li>
-                    @endif
-                @endguest
-            </ul>
+        <!-- Login Button & Auth Actions (Right) -->
+        <div class="flex items-center gap-4">
+            @guest
+                <!-- Premium Login Button -->
+                <a href="{{ route('login') }}" class="px-6 py-2.5 text-sm font-bold text-white bg-gradient-to-r from-amber-500 to-orange-500 rounded-full shadow-md shadow-orange-500/10 hover:shadow-lg hover:shadow-orange-500/20 hover:-translate-y-0.5 transition-all duration-200 whitespace-nowrap">
+                    Login
+                </a>
+            @else
+                <!-- User Authenticated: Notifications & Dropdown -->
+                <button class="w-10 h-10 rounded-full hover:bg-slate-100 flex items-center justify-center transition-colors duration-200" aria-label="Notifications">
+                    <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                    </svg>
+                </button>
 
-            <ul class="navbar-nav ms-auto align-items-lg-center gap-2">
-                @guest
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('register') ? 'active' : '' }}" href="{{ route('register') }}">Register as job seeker</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('employer.register') ? 'active' : '' }}" href="{{ route('employer.register') }}">Register as Employer</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="btn btn-outline-primary btn-sm rounded-pill px-3" href="{{ route('login') }}">Login</a>
-                    </li>
+                <!-- User Dropdown -->
+                <div class="relative">
+                    <button id="userMenuButton" type="button" class="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-slate-100 transition-colors duration-200" aria-label="User menu" aria-expanded="false">
+                        <img src="{{ optional($user->jobSeekerProfile)->profile_photo_url ?? asset('images/default-avatar.svg') }}" alt="Avatar" class="w-8 h-8 rounded-full object-cover">
+                        <span class="text-sm font-medium text-slate-700 hidden sm:inline">{{ $user->name }}</span>
+                    </button>
 
-                @else
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle d-flex align-items-center rounded-pill px-3 py-2" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <span class="me-2 d-flex align-items-center">
-                                <img src="{{ optional($user->jobSeekerProfile)->profile_photo_url ?? asset('images/default-avatar.svg') }}" alt="Avatar" class="rounded-circle border" width="32" height="32">
-                            </span>
-                            <span class="me-2 fw-semibold">{{ $user->name }}</span>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-4" aria-labelledby="userDropdown">
-                            <li>
-                                <h6 class="dropdown-header">{{ $user->name }}</h6>
-                            </li>
-                            <li>
-                                <span class="dropdown-item-text small text-muted">{{ $user->email }}</span>
-                            </li>
-                            <li><hr class="dropdown-divider"></li>
-                            @if ($roleSlug === 'job-seeker')
-                                <li>
-                                    <a class="dropdown-item {{ request()->routeIs('job-seeker.dashboard') ? 'active' : '' }}" href="{{ route('job-seeker.dashboard') }}">Dashboard</a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item {{ request()->routeIs('jobs.index') ? 'active' : '' }}" href="{{ route('jobs.index') }}">Jobs</a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item {{ request()->routeIs('job-seeker.profile.*') ? 'active' : '' }}" href="{{ route('job-seeker.profile.edit') }}">Profile</a>
-                                </li>
-                            @elseif ($roleSlug === 'employer')
-                                <li>
-                                    <a class="dropdown-item {{ request()->routeIs('employer.dashboard') ? 'active' : '' }}" href="{{ route('employer.dashboard') }}">Dashboard</a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item {{ request()->routeIs('jobs.index') ? 'active' : '' }}" href="{{ route('jobs.index') }}">Manage Jobs</a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item {{ request()->routeIs('jobs.create') ? 'active' : '' }}" href="{{ route('jobs.create') }}">Post Job</a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item {{ request()->routeIs('company.*') ? 'active' : '' }}" href="{{ auth()->user()->company ? route('company.show', auth()->user()->company) : route('company.create') }}">Company</a>
-                                </li>
-                            @else
-                                <li>
-                                    <a class="dropdown-item {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">Dashboard</a>
-                                </li>
-                            @endif
-                            <li>
-                                <form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <button type="submit" class="dropdown-item text-start">Logout</button>
-                                </form>
-                            </li>
-                        </ul>
-                    </li>
-                @endguest
-            </ul>
+                    <!-- Dropdown Menu -->
+                    <div id="userMenuDropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg opacity-0 invisible transition-all duration-200 py-2 z-50">
+                        <div class="px-4 py-2 border-b border-slate-200">
+                            <p class="text-sm font-semibold text-slate-900">{{ $user->name }}</p>
+                            <p class="text-xs text-slate-500">{{ $user->email }}</p>
+                        </div>
+
+                        @if ($roleSlug === 'job-seeker')
+                            <a href="{{ route('job-seeker.dashboard') }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">Dashboard</a>
+                            <a href="{{ route('jobs.index') }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">Jobs</a>
+                            <a href="{{ route('job-seeker.profile.edit') }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">Profile</a>
+                        @elseif ($roleSlug === 'employer')
+                            <a href="{{ route('employer.dashboard') }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">Dashboard</a>
+                            <a href="{{ route('jobs.index') }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">Manage Jobs</a>
+                            <a href="{{ auth()->user()->company ? route('company.show', auth()->user()->company) : route('company.create') }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">Company</a>
+                        @else
+                            <a href="{{ route('dashboard') }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">Dashboard</a>
+                        @endif
+
+                        <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 border-t border-slate-200">Settings</a>
+
+                        <form method="POST" action="{{ route('logout') }}" class="block">
+                            @csrf
+                            <button type="submit" class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">Logout</button>
+                        </form>
+                    </div>
+                </div>
+            @endguest
+
+            <!-- Mobile Menu Toggle -->
+            <button id="mobileMenuToggle" class="md:hidden w-10 h-10 rounded-full hover:bg-slate-100 flex items-center justify-center transition-colors duration-200" aria-label="Toggle menu">
+                <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Mobile Navigation Menu -->
+    <div id="mobileMenu" class="hidden md:hidden absolute top-20 left-0 right-0 bg-white border-b border-slate-200 shadow-lg z-40">
+        <div class="flex flex-col p-4 gap-2">
+            <a href="{{ auth()->check() ? $homeRoute : '/' }}" class="px-4 py-2 text-sm font-semibold text-blue-600 bg-blue-50 rounded-full">Home</a>
+            <a href="{{ route('jobs.index') }}" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-full">Jobs</a>
+            <a href="{{ route('register') }}" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-full">For Seeker</a>
+            <a href="{{ route('employer.register') }}" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-full">For Employer</a>
         </div>
     </div>
 </nav>
+
+<script>
+    // Mobile menu toggle
+    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+    const mobileMenu = document.getElementById('mobileMenu');
+
+    if (mobileMenuToggle && mobileMenu) {
+        mobileMenuToggle.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+    }
+
+    // Close mobile menu when a link is clicked
+    const mobileLinks = mobileMenu?.querySelectorAll('a');
+    mobileLinks?.forEach(link => {
+        link.addEventListener('click', () => {
+            mobileMenu.classList.add('hidden');
+        });
+    });
+
+    // User menu toggle
+    const userMenuButton = document.getElementById('userMenuButton');
+    const userMenuDropdown = document.getElementById('userMenuDropdown');
+
+    if (userMenuButton && userMenuDropdown) {
+        userMenuButton.addEventListener('click', (event) => {
+            event.stopPropagation();
+            const isOpen = userMenuDropdown.classList.contains('opacity-100');
+            userMenuDropdown.classList.toggle('opacity-100', !isOpen);
+            userMenuDropdown.classList.toggle('visible', !isOpen);
+            userMenuDropdown.classList.toggle('invisible', isOpen);
+            userMenuDropdown.classList.toggle('pointer-events-auto', !isOpen);
+            userMenuDropdown.classList.toggle('pointer-events-none', isOpen);
+            userMenuButton.setAttribute('aria-expanded', String(!isOpen));
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!userMenuButton.contains(event.target) && !userMenuDropdown.contains(event.target)) {
+                userMenuDropdown.classList.remove('opacity-100');
+                userMenuDropdown.classList.add('invisible');
+                userMenuDropdown.classList.remove('visible');
+                userMenuDropdown.classList.remove('pointer-events-auto');
+                userMenuDropdown.classList.add('pointer-events-none');
+                userMenuButton.setAttribute('aria-expanded', 'false');
+            }
+        });
+    }
+</script>

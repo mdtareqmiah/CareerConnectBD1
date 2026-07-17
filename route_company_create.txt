@@ -1,0 +1,5 @@
+﻿
+  GET|HEAD       company/create .... company.create ΓÇ║ CompanyController@create
+
+                                                            Showing [1] routes
+

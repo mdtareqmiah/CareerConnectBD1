@@ -14,20 +14,22 @@
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="bg-body-tertiary text-dark">
+    <body class="text-dark">
+        <a class="visually-hidden-focusable" href="#main-content">Skip to main content</a>
+
         <div class="app-shell min-vh-100 d-flex flex-column">
             @include('layouts.navigation')
 
             @isset($header)
                 <header class="app-surface border-bottom">
-                    <div class="container py-4 py-lg-5">
+                    <div class="container-xl py-4 py-lg-5">
                         {{ $header }}
                     </div>
                 </header>
             @endisset
 
-            <main class="flex-grow-1 py-4 py-lg-5">
-                <div class="container">
+            <main id="main-content" class="flex-grow-1 py-5">
+                <div class="container-xl">
                     @include('components.flash-messages')
 
                     @hasSection('content')
@@ -37,6 +39,8 @@
                     @endif
                 </div>
             </main>
+
+            @include('components.newsletter')
 
             @include('components.footer')
         </div>

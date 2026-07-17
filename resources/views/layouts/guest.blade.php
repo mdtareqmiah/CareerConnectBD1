@@ -18,18 +18,16 @@
         @include('layouts.navigation')
 
         <div class="auth-shell min-vh-100 d-flex align-items-center justify-content-center py-5">
-            <div class="w-100" style="max-width: 34rem;">
+            <div class="w-100" style="max-width: 38rem;">
                 <div class="text-center mb-4">
                     <a href="/" class="text-decoration-none text-dark">
-                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle border shadow-sm bg-white" style="width: 72px; height: 72px;">
-                            <span class="fw-bold fs-4 text-primary">CC</span>
-                        </div>
+                        <div class="brand-mark d-inline-flex align-items-center justify-content-center rounded-circle text-white mb-3">CC</div>
                     </a>
-                    <h1 class="h3 mt-3 mb-2 fw-semibold">CareerConnectBD</h1>
+                    <h1 class="h2 fw-semibold mb-2">{{ config('app.name', 'CareerConnectBD') }}</h1>
                     <p class="text-muted mb-0">Modern recruitment for ambitious teams and talent.</p>
                 </div>
 
-                <div class="card border-0 shadow-soft auth-card">
+                <div class="card auth-card border-0 shadow-soft">
                     <div class="card-body p-4 p-lg-5">
                         {{ $slot }}
                     </div>

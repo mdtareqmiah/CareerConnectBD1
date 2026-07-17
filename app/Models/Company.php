@@ -60,9 +60,9 @@ class Company extends Model
     public function getCompanyLogoUrlAttribute(): string
     {
         if ($this->company_logo && Storage::disk('public')->exists("company-logos/{$this->company_logo}")) {
-            return Storage::url("company-logos/{$this->company_logo}");
+            return "/storage/company-logos/{$this->company_logo}";
         }
 
-        return asset('images/company-logo-placeholder.svg');
+        return "/images/company-logo-placeholder.svg";
     }
 }
