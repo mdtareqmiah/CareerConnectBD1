@@ -37,6 +37,9 @@ class Company extends Model
         'verified_at' => 'datetime',
         'is_active' => 'boolean',
     ];
+    protected $appends = [
+    'company_logo_url',
+    ];
 
     /**
      * Get the employer (user) that owns the company.

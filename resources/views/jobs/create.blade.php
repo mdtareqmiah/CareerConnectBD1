@@ -7,7 +7,7 @@
             <div class="card-body">
                 <h1 class="h4 mb-3">Create Job</h1>
 
-                <form method="POST" action="{{ route('jobs.store') }}">
+                <form method="POST" action="{{ route('employer.jobs.store') }}">
                     @csrf
 
                     <div class="mb-3">

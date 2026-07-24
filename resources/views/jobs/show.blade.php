@@ -315,8 +315,8 @@
                 <div class="card-body">
                     <h5 class="mb-3">Manage Job</h5>
                     <div class="d-grid gap-2">
-                        <a href="{{ route('jobs.edit', $job) }}" class="btn btn-outline-primary">Edit Job</a>
-                        <form action="{{ route('jobs.destroy', $job) }}" method="POST">
+                        <a href="{{ route('employer.jobs.edit', $job) }}" class="btn btn-outline-primary">Edit Job</a>
+                        <form action="{{ route('employer.jobs.destroy', $job) }}" method="POST">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger" onclick="return confirm('Delete this job?')">Delete Job</button>

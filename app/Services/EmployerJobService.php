@@ -122,6 +122,14 @@ class EmployerJobService
             'hired_applications' => (clone $base)->where('status', 'accepted')->count(),
         ];
     }
+    public function recentJobs(User $employer)
+{
+    return Job::query()
+        ->forEmployer($employer)
+        ->latest()
+        ->take(5)
+        ->get();
+}
 
     private function applicationQuery(User $employer)
     {

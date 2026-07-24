@@ -7,7 +7,7 @@
             <div class="card-body">
                 <h1 class="h4 mb-3">Edit Job</h1>
 
-                <form method="POST" action="{{ route('jobs.update', $job) }}">
+                <form method="POST" action="{{ route('employer.jobs.update', $job) }}">
                     @csrf
                     @method('PUT')
 

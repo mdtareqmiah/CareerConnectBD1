@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Company;
+use App\Models\Job;
 use App\Services\EmployerJobService;
 
 class EmployerDashboardController extends Controller
@@ -20,23 +20,100 @@ class EmployerDashboardController extends Controller
     public function index()
     {
         $user = auth()->user();
+
         $company = $user->company;
 
+        /*
+        |--------------------------------------------------------------------------
+        | Job Posting Count
+        |--------------------------------------------------------------------------
+        */
+
+        $jobPostings = $company
+            ? Job::where('company_id', $company->id)->count()
+            : 0;
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Job Statistics
+        |--------------------------------------------------------------------------
+        */
+
+        $jobStats = $company
+            ? $this->jobService->stats($user)
+            : [
+                'total_jobs' => 0,
+                'published_jobs' => 0,
+                'draft_jobs' => 0,
+                'closed_jobs' => 0,
+                'expired_jobs' => 0,
+            ];
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Recent Jobs
+        |--------------------------------------------------------------------------
+        */
+
+        $recentJobs = $company
+            ? Job::where('company_id', $company->id)
+                ->latest('created_at')
+                ->take(5)
+                ->get()
+            : collect();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Dashboard Statistics
+        |--------------------------------------------------------------------------
+        */
+
         $stats = [
-            'job_postings' => 0,
+            'job_postings' => $jobPostings,
+
             'total_applications' => 0,
+
             'profile_completion' => $company ? 100 : 0,
         ];
 
-        $applicationStats = $company ? $this->jobService->applicationStats($user) : [
-            'total_applications' => 0,
-            'pending_applications' => 0,
-            'reviewed_applications' => 0,
-            'shortlisted_applications' => 0,
-            'rejected_applications' => 0,
-            'hired_applications' => 0,
-        ];
 
-        return view('employer.dashboard', compact('user', 'company', 'stats', 'applicationStats'));
+        /*
+        |--------------------------------------------------------------------------
+        | Application Statistics
+        |--------------------------------------------------------------------------
+        */
+
+        $applicationStats = $company
+            ? $this->jobService->applicationStats($user)
+            : [
+                'total_applications' => 0,
+                'pending_applications' => 0,
+                'reviewed_applications' => 0,
+                'shortlisted_applications' => 0,
+                'rejected_applications' => 0,
+                'hired_applications' => 0,
+            ];
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Return Dashboard
+        |--------------------------------------------------------------------------
+        */
+
+        return view(
+            'employer.dashboard',
+            compact(
+                'user',
+                'company',
+                'stats',
+                'jobStats',
+                'applicationStats',
+                'recentJobs'
+            )
+        );
     }
 }
