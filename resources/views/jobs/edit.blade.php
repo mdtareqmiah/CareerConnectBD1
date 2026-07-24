@@ -9,6 +9,20 @@
                     <div class="d-inline-flex align-items-center gap-2 rounded-pill bg-primary-subtle text-primary px-3 py-2 mb-3">
                         <i class="bi bi-pencil-square"></i>
                         <span class="fw-semibold">Job update</span>
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h1 class="h4 mb-3">Edit Job</h1>
+
+                <form method="POST" action="{{ route('employer.jobs.update', $job) }}">
+                    @csrf
+                    @method('PUT')
+
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Job Title</label>
+                        <input id="title" type="text" name="title" value="{{ old('title', $job->title) }}" class="form-control @error('title') is-invalid @enderror" required>
+                        @error('title')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
                     <h1 class="h3 mb-1">Edit job</h1>
                     <p class="text-muted mb-0">Refine the role details and keep postings current.</p>

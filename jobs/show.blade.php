@@ -31,8 +31,8 @@
             <a href="{{ route('jobs.index') }}" class="btn btn-outline-secondary">Back to Jobs</a>
             @php
                 $user = auth()->user();
-                $alreadyApplied = $user && $user->role?->slug === 'job-seeker' && $job->alreadyAppliedBy($user);
-                $canApply = $job->isOpen() && (! $user || $user->role?->slug === 'job-seeker');
+                $alreadyApplied = $user ; $user->role?->slug === 'job-seeker' ; $job->alreadyAppliedBy($user);
+                $canApply = $job->isOpen() ; (! $user ; $user->role?->slug === 'job-seeker');
             @endphp
 
             @if ($alreadyApplied)
@@ -48,9 +48,7 @@
             @else
                 <form method="POST" action="{{ route('jobs.saved.toggle', $job) }}" class="d-inline">
                     @csrf
-                    <button type="submit" class="btn btn-outline-primary">
-                        {{ $saved ? 'Unsave Job' : 'Save Job' }}
-                    </button>
+                    <button type="submit" class="btn btn-outline-primary">{{ $saved ? 'Unsave Job' : 'Save Job' }}</button>
                 </form>
             @endif
 
@@ -204,47 +202,13 @@
 
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-body">
-                    <div class="row g-4">
-                        <div class="col-sm-6 col-lg-4">
-                            <div class="small text-muted">Vacancy</div>
-                            <div>{{ $job->vacancy }}</div>
-                        </div>
-                        <div class="col-sm-6 col-lg-4">
-                            <div class="small text-muted">Employment Type</div>
-                            <div>{{ $job->employment_status }}</div>
-                        </div>
-                        <div class="col-sm-6 col-lg-4">
-                            <div class="small text-muted">Workplace</div>
-                            <div>{{ $job->workplace }}</div>
-                        </div>
-                        <div class="col-sm-6 col-lg-4">
-                            <div class="small text-muted">Experience</div>
-                            <div>{{ $job->experience_level }}</div>
-                        </div>
-                        <div class="col-sm-6 col-lg-4">
-                            <div class="small text-muted">Education</div>
-                            <div>{{ $job->education_level }}</div>
-                        </div>
-                        <div class="col-sm-6 col-lg-4">
-                            <div class="small text-muted">Salary</div>
-                            <div>{{ $job->salary_type }} {{ number_format($job->salary_min) }} - {{ number_format($job->salary_max) }}</div>
-                        </div>
-                        <div class="col-sm-6 col-lg-4">
-                            <div class="small text-muted">Deadline</div>
-                            <div>{{ $job->deadline->format('F j, Y') }}</div>
-                        </div>
-                        <div class="col-sm-6 col-lg-4">
-                            <div class="small text-muted">Published</div>
-                            <div>{{ $job->published_at?->format('F j, Y') ?? 'N/A' }}</div>
-                        </div>
-                    </div>
+                    <h5 class="mb-3">Description</h5>
+                    <p class="mb-0">{{ $job->description }}</p>
                 </div>
             </div>
 
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-body">
-                    <h5 class="mb-3">Description</h5>
-                    <p class="mb-0">{{ $job->description }}</p>
                     <h5 class="mb-3">Manage Job</h5>
                     <div class="d-grid gap-2">
                         <a href="{{ route('employer.jobs.edit', $job) }}" class="btn btn-outline-primary">Edit Job</a>
@@ -313,30 +277,12 @@
                         <div>
                             <div class="small text-muted">Address</div>
                             <div>
-                                {{ optional($job->company)->address }}
-                                {{ optional($job->company)->city ? ', ' . $job->company->city : '' }}
-                                {{ optional($job->company)->country ? ', ' . $job->company->country : '' }}
+                                {{ optional($job->company)->address }}{{ optional($job->company)->city ? ', ' . $job->company->city : '' }}{{ optional($job->company)->country ? ', ' . $job->company->country : '' }}
                             </div>
                         </div>
                     @endif
                 </div>
             </div>
-
-            @can('update', $job)
-                <div class="card border-0 shadow-soft">
-                    <div class="card-body p-4">
-                        <h5 class="mb-3">Manage job</h5>
-                        <div class="d-grid gap-2">
-                            <a href="{{ route('jobs.edit', $job) }}" class="btn btn-outline-primary">Edit job</a>
-                            <form action="{{ route('jobs.destroy', $job) }}" method="POST">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger" onclick="return confirm('Delete this job?')">Delete job</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            @endcan
         </div>
     </div>
 </div>

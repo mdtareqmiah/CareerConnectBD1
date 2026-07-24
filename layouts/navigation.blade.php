@@ -3,11 +3,32 @@
     $roleSlug = $user?->role?->slug;
     $homeRoute = match ($roleSlug) {
         'job-seeker' => route('job-seeker.dashboard'),
-        'admin' => '/admin',
-        'employer' => '/employer',
+        'admin' => route('admin.dashboard'),
+        'employer' => route('employer.dashboard'),
         default => route('dashboard'),
     };
     $hasCustomLogo = file_exists(public_path('images/logo.png'));
+
+    $profileImage = asset('images/default-avatar.svg');
+
+    if ($user) {
+        if ($roleSlug === 'job-seeker') {
+            $profileImage = optional($user->jobSeekerProfile)->profile_photo_url
+                ?? asset('images/default-avatar.svg');
+        } elseif ($roleSlug === 'employer') {
+            $company = $user->company;
+
+            if ($company) {
+                if (! empty($company->logo_url)) {
+                    $profileImage = $company->logo_url;
+                } elseif (! empty($company->logo)) {
+                    $profileImage = asset('storage/' . ltrim($company->logo, '/'));
+                } elseif (! empty($company->logo_path)) {
+                    $profileImage = asset('storage/' . ltrim($company->logo_path, '/'));
+                }
+            }
+        }
+    }
 @endphp
 
 <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm" id="mainNavbar">
@@ -39,7 +60,7 @@
                 @auth
                     @if ($roleSlug === 'job-seeker')
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('job-seeker.dashboard') ? 'active' : '' }}" href="{{ route('job-seeker.dashboard') }}" @if (request()->routeIs('job-seeker.dashboard')) aria-current="page" @endif>Dashboard</a>
+                            <a class="nav-link {{ request()->routeIs('job-seeker.dashboard') ? 'active' : '' }}" href="{{ route('job-seeker.dashboard') }}">Dashboard</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('jobs.index') ? 'active' : '' }}" href="{{ route('jobs.index') }}">Jobs</a>
@@ -62,35 +83,20 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('job-seeker.profile.*') ? 'active' : '' }}" href="{{ route('job-seeker.profile.edit') }}" @if (request()->routeIs('job-seeker.profile.*')) aria-current="page" @endif>Profile</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('job-seeker.educations.*') ? 'active' : '' }}" href="{{ route('job-seeker.educations.index') }}" @if (request()->routeIs('job-seeker.educations.*')) aria-current="page" @endif>Education</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('job-seeker.experiences.*') ? 'active' : '' }}" href="{{ route('job-seeker.experiences.index') }}" @if (request()->routeIs('job-seeker.experiences.*')) aria-current="page" @endif>Experience</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('job-seeker.skills.*') ? 'active' : '' }}" href="{{ route('job-seeker.skills.index') }}" @if (request()->routeIs('job-seeker.skills.*')) aria-current="page" @endif>Skills</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('job-seeker.resumes.*') ? 'active' : '' }}" href="{{ route('job-seeker.resumes.index') }}" @if (request()->routeIs('job-seeker.resumes.*')) aria-current="page" @endif>Resume</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('job-seeker.resume-builders.*') ? 'active' : '' }}" href="{{ route('job-seeker.resume-builders.index') }}" @if (request()->routeIs('job-seeker.resume-builders.*')) aria-current="page" @endif>Resume Builder</a>
+                            <a class="nav-link {{ request()->routeIs('job-seeker.profile.*') ? 'active' : '' }}" href="{{ route('job-seeker.profile.edit') }}">Profile</a>
                         </li>
                     @elseif ($roleSlug === 'employer')
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">Dashboard</a>
+                            <a class="nav-link {{ request()->routeIs('employer.dashboard') ? 'active' : '' }}" href="{{ route('employer.dashboard') }}">Dashboard</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('jobs.index') ? 'active' : '' }}" href="{{ route('jobs.index') }}">Manage Jobs</a>
+                            <a class="nav-link {{ request()->routeIs('employer.jobs.*') ? 'active' : '' }}" href="{{ route('employer.jobs.index') }}">Manage Jobs</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('employer.applications.*') ? 'active' : '' }}" href="{{ route('employer.applications.index') }}">Applications</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('jobs.create') ? 'active' : '' }}" href="{{ route('jobs.create') }}">Post Job</a>
+                            <a class="nav-link {{ request()->routeIs('employer.jobs.create') ? 'active' : '' }}" href="{{ route('employer.jobs.create') }}">Post Job</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('feedback.*') ? 'active' : '' }}" href="{{ route('feedback.index') }}">Feedback</a>
@@ -99,11 +105,11 @@
                             <a class="nav-link {{ request()->routeIs('support-tickets.*') ? 'active' : '' }}" href="{{ route('support-tickets.index') }}">Support</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('company.*') ? 'active' : '' }}" href="{{ auth()->user()->company ? route('company.show', auth()->user()->company) : route('company.create') }}">Company</a>
+                            <a class="nav-link {{ request()->routeIs('company.*') ? 'active' : '' }}" href="{{ $user->company ? route('company.show', $user->company) : route('company.create') }}">Company</a>
                         </li>
                     @elseif ($roleSlug === 'admin')
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">Dashboard</a>
+                            <a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">Dashboard</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('roles.*') ? 'active' : '' }}" href="{{ route('roles.index') }}">Role Management</a>
@@ -113,7 +119,7 @@
                             <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">Dashboard</a>
                         </li>
                     @endif
-                @endauth
+                @endguest
 
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('contact.*') ? 'active' : '' }}" href="{{ route('contact.create') }}">Contact Us</a>
@@ -174,50 +180,28 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <span class="me-1 d-flex align-items-center">
-                                <img src="{{ optional($user->jobSeekerProfile)->profile_photo_url ?? asset('images/default-avatar.svg') }}" alt="Avatar" class="rounded-circle border shadow-sm" width="32" height="32" style="object-fit: cover;">
+                                <img src="{{ $profileImage }}" alt="{{ $user->name }}" class="rounded-circle border shadow-sm" width="32" height="32" style="object-fit: cover;">
                             </span>
                             <span class="me-1">{{ $user->name }}</span>
                             <span class="small text-muted">▼</span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="userDropdown">
-                            <li>
-                                <h6 class="dropdown-header">{{ $user->name }}</h6>
-                            </li>
-                            <li>
-                                <span class="dropdown-item-text small text-muted">{{ $user->email }}</span>
-                            </li>
+                            <li><h6 class="dropdown-header">{{ $user->name }}</h6></li>
+                            <li><span class="dropdown-item-text small text-muted">{{ $user->email }}</span></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <a class="dropdown-item" href="{{ route('notifications.index') }}">View all notifications</a>
-                            </li>
+                            <li><a class="dropdown-item" href="{{ route('notifications.index') }}">View all notifications</a></li>
                             <li><hr class="dropdown-divider"></li>
                             @if ($roleSlug === 'job-seeker')
-                                <li>
-                                    <a class="dropdown-item {{ request()->routeIs('job-seeker.dashboard') ? 'active' : '' }}" href="{{ route('job-seeker.dashboard') }}">Dashboard</a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item {{ request()->routeIs('jobs.index') ? 'active' : '' }}" href="{{ route('jobs.index') }}">Jobs</a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item {{ request()->routeIs('job-seeker.profile.*') ? 'active' : '' }}" href="{{ route('job-seeker.profile.edit') }}">Profile</a>
-                                </li>
+                                <li><a class="dropdown-item {{ request()->routeIs('job-seeker.dashboard') ? 'active' : '' }}" href="{{ route('job-seeker.dashboard') }}">Dashboard</a></li>
+                                <li><a class="dropdown-item {{ request()->routeIs('jobs.index') ? 'active' : '' }}" href="{{ route('jobs.index') }}">Jobs</a></li>
+                                <li><a class="dropdown-item {{ request()->routeIs('job-seeker.profile.*') ? 'active' : '' }}" href="{{ route('job-seeker.profile.edit') }}">Profile</a></li>
                             @elseif ($roleSlug === 'employer')
-                                <li>
-                                    <a class="dropdown-item {{ request()->routeIs('employer.dashboard') ? 'active' : '' }}" href="{{ route('employer.dashboard') }}">Dashboard</a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item {{ request()->routeIs('jobs.index') ? 'active' : '' }}" href="{{ route('jobs.index') }}">Manage Jobs</a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item {{ request()->routeIs('jobs.create') ? 'active' : '' }}" href="{{ route('jobs.create') }}">Post Job</a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item {{ request()->routeIs('company.*') ? 'active' : '' }}" href="{{ auth()->user()->company ? route('company.show', auth()->user()->company) : route('company.create') }}">Company</a>
-                                </li>
+                                <li><a class="dropdown-item {{ request()->routeIs('employer.dashboard') ? 'active' : '' }}" href="{{ route('employer.dashboard') }}">Dashboard</a></li>
+                                <li><a class="dropdown-item {{ request()->routeIs('employer.jobs.*') ? 'active' : '' }}" href="{{ route('employer.jobs.index') }}">Manage Jobs</a></li>
+                                <li><a class="dropdown-item {{ request()->routeIs('employer.jobs.create') ? 'active' : '' }}" href="{{ route('employer.jobs.create') }}">Post Job</a></li>
+                                <li><a class="dropdown-item {{ request()->routeIs('company.*') ? 'active' : '' }}" href="{{ $user->company ? route('company.show', $user->company) : route('company.create') }}">Company</a></li>
                             @else
-                                <li>
-                                    <a class="dropdown-item {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">Dashboard</a>
-                                </li>
+                                <li><a class="dropdown-item {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">Dashboard</a></li>
                             @endif
                             <li>
                                 <form method="POST" action="{{ route('logout') }}">
@@ -232,99 +216,3 @@
         </div>
     </div>
 </nav>
-
-<script>
-    // Mobile menu toggle
-    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
-    const mobileMenu = document.getElementById('mobileMenu');
-
-    if (mobileMenuToggle && mobileMenu) {
-        mobileMenuToggle.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
-        });
-    }
-
-    // Close mobile menu when a link is clicked
-    const mobileLinks = mobileMenu?.querySelectorAll('a');
-    mobileLinks?.forEach(link => {
-        link.addEventListener('click', () => {
-            mobileMenu.classList.add('hidden');
-        });
-    });
-
-    // User menu toggle
-    const userMenuButton = document.getElementById('userMenuButton');
-    const userMenuDropdown = document.getElementById('userMenuDropdown');
-
-    if (userMenuButton && userMenuDropdown) {
-        userMenuButton.addEventListener('click', (event) => {
-            event.stopPropagation();
-            const isOpen = userMenuDropdown.classList.contains('opacity-100');
-            userMenuDropdown.classList.toggle('opacity-100', !isOpen);
-            userMenuDropdown.classList.toggle('visible', !isOpen);
-            userMenuDropdown.classList.toggle('invisible', isOpen);
-            userMenuDropdown.classList.toggle('pointer-events-auto', !isOpen);
-            userMenuDropdown.classList.toggle('pointer-events-none', isOpen);
-            userMenuButton.setAttribute('aria-expanded', String(!isOpen));
-        });
-
-        document.addEventListener('click', (event) => {
-            if (!userMenuButton.contains(event.target) && !userMenuDropdown.contains(event.target)) {
-                userMenuDropdown.classList.remove('opacity-100');
-                userMenuDropdown.classList.add('invisible');
-                userMenuDropdown.classList.remove('visible');
-                userMenuDropdown.classList.remove('pointer-events-auto');
-                userMenuDropdown.classList.add('pointer-events-none');
-                userMenuButton.setAttribute('aria-expanded', 'false');
-            }
-        });
-    }
-</script>
-<style>
-    .careerconnect-brand-icon {
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    color: #2563eb;
-    font-size: 18px;
-    font-weight: 700;
-
-    flex-shrink: 0;
-}
-
-.careerconnect-brand-text {
-    margin-left: 10px;
-    color: #111827;
-    font-size: 1.25rem;
-    font-weight: 600;
-    white-space: nowrap;
-}
-
-.navbar-brand {
-    display: inline-flex !important;
-    align-items: center !important;
-    text-decoration: none;
-    position: relative;
-    z-index: 1000;
-}
-
-@media (max-width: 576px) {
-    .careerconnect-brand-icon {
-        width: 36px;
-        height: 36px;
-        font-size: 16px;
-    }
-
-    .careerconnect-brand-text {
-        font-size: 1.1rem;
-    }
-}
-</style>

@@ -167,7 +167,7 @@ class JobController extends Controller
 
         $copy = $this->jobService->duplicate($job);
 
-        return redirect()->route('jobs.edit', $copy)->with('success', 'Job duplicated as draft.');
+        return redirect()->route('employer.jobs.edit', $copy)->with('success', 'Job duplicated as draft.');
     }
 
     public function trash(EmployerJobTrashRequest $request): View

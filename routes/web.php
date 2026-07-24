@@ -214,24 +214,25 @@ Route::middleware(['auth', 'role:employer'])->group(function () {
         Route::delete('/company/{company}', [App\Http\Controllers\CompanyController::class, 'destroy'])
             ->name('company.destroy');
 
-        Route::prefix('employer')->group(function () {
-            Route::resource('jobs', App\Http\Controllers\JobController::class)
-                ->except(['index', 'show']);
+                Route::prefix('employer')->name('employer.')->group(function () {
 
-            Route::get('/applications', [App\Http\Controllers\EmployerApplicationController::class, 'index'])
-                ->name('employer.applications.index');
+            Route::get('/jobs', [App\Http\Controllers\JobController::class, 'index'])
+                ->name('jobs.index');
 
-            Route::get('/applications/{jobApplication}', [App\Http\Controllers\EmployerApplicationController::class, 'show'])
-                ->name('employer.applications.show');
+            Route::get('/jobs/create', [App\Http\Controllers\JobController::class, 'create'])
+                ->name('jobs.create');
 
-            Route::patch('/applications/{jobApplication}/status', [App\Http\Controllers\EmployerApplicationController::class, 'updateStatus'])
-                ->name('employer.applications.update_status');
+            Route::post('/jobs', [App\Http\Controllers\JobController::class, 'store'])
+                ->name('jobs.store');
 
-            Route::get('/applications/{jobApplication}/resume/preview', [App\Http\Controllers\EmployerApplicationController::class, 'previewResume'])
-                ->name('employer.applications.resume.preview');
+            Route::get('/jobs/{job}/edit', [App\Http\Controllers\JobController::class, 'edit'])
+                ->name('jobs.edit');
 
-            Route::get('/applications/{jobApplication}/resume', [App\Http\Controllers\EmployerApplicationController::class, 'downloadResume'])
-                ->name('employer.applications.resume.download');
+            Route::match(['put', 'patch'], '/jobs/{job}', [App\Http\Controllers\JobController::class, 'update'])
+                ->name('jobs.update');
+
+            Route::delete('/jobs/{job}', [App\Http\Controllers\JobController::class, 'destroy'])
+                ->name('jobs.destroy');
 
             Route::get('/jobs/trash', [App\Http\Controllers\JobController::class, 'trash'])
                 ->name('jobs.trash');
@@ -244,6 +245,22 @@ Route::middleware(['auth', 'role:employer'])->group(function () {
 
             Route::post('/jobs/{job}/duplicate', [App\Http\Controllers\JobController::class, 'duplicate'])
                 ->name('jobs.duplicate');
+
+            Route::get('/applications', [App\Http\Controllers\EmployerApplicationController::class, 'index'])
+                ->name('applications.index');
+
+            Route::get('/applications/{jobApplication}', [App\Http\Controllers\EmployerApplicationController::class, 'show'])
+                ->name('applications.show');
+
+            Route::patch('/applications/{jobApplication}/status', [App\Http\Controllers\EmployerApplicationController::class, 'updateStatus'])
+                ->name('applications.update_status');
+
+            Route::get('/applications/{jobApplication}/resume/preview', [App\Http\Controllers\EmployerApplicationController::class, 'previewResume'])
+                ->name('applications.resume.preview');
+
+            Route::get('/applications/{jobApplication}/resume', [App\Http\Controllers\EmployerApplicationController::class, 'downloadResume'])
+                ->name('applications.resume.download');
+
         });
     });
 });

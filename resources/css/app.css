@@ -1,6 +1,5 @@
 @import "bootstrap/dist/css/bootstrap.min.css";
 
-<<<<<<< HEAD
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -1312,7 +1311,9 @@ select {
     .jobs-search-card {
         padding: 1rem;
     }
- {
+}
+
+html {
     color-scheme: light;
 }
 

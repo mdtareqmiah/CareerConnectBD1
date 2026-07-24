@@ -1,100 +1,3 @@
-<<<<<<< HEAD
-        <div class="d-flex flex-wrap gap-2 align-items-center">
-            <a href="{{ route('jobs.index') }}" class="btn btn-outline-secondary">Back to Jobs</a>
-            @php
-                $user = auth()->user();
-                $alreadyApplied = $user && $user->role?->slug === 'job-seeker' && $job->alreadyAppliedBy($user);
-                $canApply = $job->isOpen() && (! $user || $user->role?->slug === 'job-seeker');
-            @endphp
-
-            @if ($alreadyApplied)
-                <button type="button" class="btn btn-secondary" disabled>Already applied</button>
-            @elseif ($canApply)
-                <a href="{{ route('jobs.apply', $job) }}" class="btn btn-primary">Apply now</a>
-            @endif
-
-<<<<<<< HEAD
-            <button type="button" class="btn btn-outline-primary" disabled>Save job</button>
-            <button type="button" class="btn btn-outline-secondary">Share</button>
-=======
-            @if (! $user)
-                <a href="{{ route('login') }}" class="btn btn-outline-primary">Login to Save</a>
-            @elseif ($user->role?->slug !== 'job-seeker')
-                <button type="button" class="btn btn-outline-secondary" disabled>Save Job</button>
-            @else
-                <form method="POST" action="{{ route('jobs.saved.toggle', $job) }}" class="d-inline">
-                    @csrf
-                    <button type="submit" class="btn btn-outline-primary">
-                        {{ $saved ? 'Unsave Job' : 'Save Job' }}
-                    </button>
-                </form>
-            @endif
-
-            <div class="dropdown">
-                <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="shareDropdownButton" data-bs-toggle="dropdown" aria-expanded="false">
-                    Share
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="shareDropdownButton">
-                    <li>
-                        <button type="button" id="copyLinkButton" class="dropdown-item">Copy Link</button>
-                    </li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li>
-                        <a class="dropdown-item" href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(route('jobs.show', $job)) }}" target="_blank" rel="noopener">Facebook</a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item" href="https://www.linkedin.com/sharing/share-offsite/?url={{ urlencode(route('jobs.show', $job)) }}" target="_blank" rel="noopener">LinkedIn</a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item" href="https://twitter.com/intent/tweet?url={{ urlencode(route('jobs.show', $job)) }}&text={{ urlencode('Check out this job: ' . $job->title) }}" target="_blank" rel="noopener">Twitter/X</a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item" href="mailto:?subject={{ urlencode('Job opportunity: ' . $job->title) }}&body={{ urlencode(route('jobs.show', $job)) }}">Email</a>
-                    </li>
-                </ul>
-            </div>
->>>>>>> develop
-        </div>
-    </div>
-
-<<<<<<< HEAD
-    <div class="row gy-4">
-        <div class="col-xl-8">
-            <div class="card border-0 shadow-soft mb-4">
-                <div class="card-body p-4">
-                    <div class="row g-4">
-                        <div class="col-sm-6 col-lg-4">
-                            <div class="small text-muted">Vacancy</div>
-                            <div>{{ $job->vacancy }}</div>
-                        </div>
-                        <div class="col-sm-6 col-lg-4">
-                            <div class="small text-muted">Employment type</div>
-                            <div>{{ $job->employment_status }}</div>
-                        </div>
-                        <div class="col-sm-6 col-lg-4">
-                            <div class="small text-muted">Workplace</div>
-                            <div>{{ $job->workplace }}</div>
-                        </div>
-                        <div class="col-sm-6 col-lg-4">
-                            <div class="small text-muted">Experience</div>
-                            <div>{{ $job->experience_level }}</div>
-                        </div>
-                        <div class="col-sm-6 col-lg-4">
-                            <div class="small text-muted">Education</div>
-                            <div>{{ $job->education_level }}</div>
-                        </div>
-                        <div class="col-sm-6 col-lg-4">
-                            <div class="small text-muted">Salary</div>
-                            <div>{{ $job->salary_type }} {{ number_format($job->salary_min) }} - {{ number_format($job->salary_max) }}</div>
-                        </div>
-                        <div class="col-sm-6 col-lg-4">
-                            <div class="small text-muted">Deadline</div>
-                            <div>{{ $job->deadline->format('F j, Y') }}</div>
-                        </div>
-                        <div class="col-sm-6 col-lg-4">
-                            <div class="small text-muted">Published</div>
-                            <div>{{ $job->published_at?->format('F j, Y') ?? 'N/A' }}</div>
-=======
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const copyLinkButton = document.getElementById('copyLinkButton');
@@ -322,4 +225,9 @@
                             {{ optional($job->company)->address }}
                             {{ optional($job->company)->city ? ', ' . $job->company->city : '' }}
                             {{ optional($job->company)->country ? ', ' . $job->company->country : '' }}
->>>>>>> develop
+                    </div>
+                @endif
+            </div>
+        </div>
+    </div>
+</div>
