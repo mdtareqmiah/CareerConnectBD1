@@ -3,10 +3,9 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
 
-class SystemNotification extends Notification implements ShouldQueue
+class SystemNotification extends Notification
 {
     use Queueable;
 
@@ -21,12 +20,12 @@ class SystemNotification extends Notification implements ShouldQueue
 
     public function toDatabase(object $notifiable): array
     {
-        return [
+        return array_merge([
             'type' => 'system',
             'title' => $this->data['title'] ?? 'System update',
             'message' => $this->data['message'] ?? 'A system notification is available.',
             'link' => $this->data['link'] ?? route('notifications.index'),
             'icon' => 'info-circle',
-        ];
+        ], $this->data);
     }
 }

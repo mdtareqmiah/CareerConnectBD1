@@ -83,6 +83,13 @@ class InterviewInvitationController extends Controller
             'title' => 'Interview invitation',
             'message' => 'You received a new interview invitation for '.$job->title,
             'link' => route('job-seeker.interview-invitations.show', $invitation),
+            'interview_invitation_id' => $invitation->id,
+            'job_id' => $job->id,
+            'job_title' => $job->title,
+            'employer_id' => $request->user()->id,
+            'employer_name' => $request->user()->name,
+            'company' => $request->user()->company?->company_name,
+            'interview_at' => $invitation->interview_at?->toISOString(),
         ]);
 
         return redirect()->route('employer.interview-invitations.index')->with('success', 'Interview invitation sent.');
@@ -119,10 +126,37 @@ class InterviewInvitationController extends Controller
             $response = 'accepted';
         }
 
+        $previousStatus = $invitation->status;
+
         $invitation->update([
             'status' => $response,
             'responded_at' => now(),
         ]);
+
+        if ($previousStatus !== $response) {
+            $employer = $invitation->employer()->with('company')->first();
+            $candidateName = $invitation->candidate()->value('name') ?? 'Candidate';
+            $jobTitle = $invitation->job()->value('title') ?? 'the interview job';
+
+            if ($employer) {
+                $this->notificationService->notifySystem($employer, [
+                'title' => 'Interview response received',
+                    'message' => $candidateName.' '.match ($response) {
+                    'accepted' => 'accepted the interview invitation.',
+                    'declined' => 'declined the interview invitation.',
+                    default => 'responded to the interview invitation.',
+                },
+                'link' => route('employer.interview-invitations.show', $invitation),
+                'interview_invitation_id' => $invitation->id,
+                'job_id' => $invitation->job_id,
+                'job_title' => $jobTitle,
+                'company' => $employer->company?->company_name,
+                'candidate_id' => $invitation->candidate_id,
+                'candidate_name' => $candidateName,
+                'response' => $response,
+                ]);
+            }
+        }
 
         return redirect()->route('job-seeker.interview-invitations.index')->with('success', 'Response recorded.');
     }

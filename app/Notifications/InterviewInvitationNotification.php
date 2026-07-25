@@ -3,10 +3,9 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
 
-class InterviewInvitationNotification extends Notification implements ShouldQueue
+class InterviewInvitationNotification extends Notification
 {
     use Queueable;
 
@@ -21,12 +20,12 @@ class InterviewInvitationNotification extends Notification implements ShouldQueu
 
     public function toDatabase(object $notifiable): array
     {
-        return [
+        return array_merge([
             'type' => 'interview_invitation',
             'title' => $this->data['title'] ?? 'Interview invitation',
             'message' => $this->data['message'] ?? 'You received an interview invitation.',
             'link' => $this->data['link'] ?? route('job-seeker.interview-invitations.index'),
             'icon' => 'calendar-event',
-        ];
+        ], $this->data);
     }
 }

@@ -3,10 +3,9 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
 
-class AdminAnnouncementNotification extends Notification implements ShouldQueue
+class AdminAnnouncementNotification extends Notification
 {
     use Queueable;
 
@@ -21,12 +20,12 @@ class AdminAnnouncementNotification extends Notification implements ShouldQueue
 
     public function toDatabase(object $notifiable): array
     {
-        return [
+        return array_merge([
             'type' => 'admin_announcement',
             'title' => $this->data['title'] ?? 'New announcement',
             'message' => $this->data['message'] ?? 'An administrator posted an announcement.',
             'link' => $this->data['link'] ?? route('notifications.index'),
             'icon' => 'megaphone',
-        ];
+        ], $this->data);
     }
 }

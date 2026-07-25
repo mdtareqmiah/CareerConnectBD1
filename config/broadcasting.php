@@ -15,6 +15,8 @@ return [
 
     'default' => env('BROADCAST_CONNECTION', 'log'),
 
+    'realtime_enabled' => env('BROADCAST_REALTIME', false),
+
     /*
     |--------------------------------------------------------------------------
     | Broadcast Connections

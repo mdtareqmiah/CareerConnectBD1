@@ -32,7 +32,7 @@ class NotificationRealtimeTest extends TestCase
 
     public function test_service_dispatches_realtime_event_when_notification_created(): void
     {
-        config(['broadcasting.default' => 'reverb']);
+        config(['broadcasting.default' => 'reverb', 'broadcasting.realtime_enabled' => true]);
         Event::fake([NotificationBroadcasted::class]);
 
         $user = $this->createUser();
@@ -53,7 +53,7 @@ class NotificationRealtimeTest extends TestCase
 
     public function test_service_dispatches_realtime_event_when_notifications_are_marked_read(): void
     {
-        config(['broadcasting.default' => 'reverb']);
+        config(['broadcasting.default' => 'reverb', 'broadcasting.realtime_enabled' => true]);
         Event::fake([NotificationBroadcasted::class]);
 
         $user = $this->createUser();

@@ -3,10 +3,9 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
 
-class JobAppliedNotification extends Notification implements ShouldQueue
+class JobAppliedNotification extends Notification
 {
     use Queueable;
 
@@ -21,12 +20,12 @@ class JobAppliedNotification extends Notification implements ShouldQueue
 
     public function toDatabase(object $notifiable): array
     {
-        return [
+        return array_merge([
             'type' => 'job_applied',
             'title' => $this->data['title'] ?? 'New job application',
             'message' => $this->data['message'] ?? 'A candidate applied for one of your jobs.',
             'link' => $this->data['link'] ?? route('employer.applications.index'),
             'icon' => 'briefcase',
-        ];
+        ], $this->data);
     }
 }

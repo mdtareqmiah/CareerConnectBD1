@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UpdateEmployerJobApplicationStatusRequest;
 use App\Services\EmployerJobService;
 use App\Models\JobApplication;
+use App\Services\NotificationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Storage;
 
@@ -14,7 +16,10 @@ class EmployerApplicationController extends Controller
 {
     private EmployerJobService $jobService;
 
-    public function __construct(EmployerJobService $jobService)
+    public function __construct(
+        EmployerJobService $jobService,
+        private readonly NotificationService $notificationService,
+    )
     {
         $this->jobService = $jobService;
     }
@@ -79,14 +84,35 @@ class EmployerApplicationController extends Controller
             abort(404);
         }
 
-        return Storage::disk('public')->response($resume->file_path, $resume->file_name ?: basename($resume->file_path));
+        /** @var FilesystemAdapter $disk */
+        $disk = Storage::disk('public');
+
+        return $disk->response($resume->file_path, $resume->file_name ?: basename($resume->file_path));
     }
 
     public function updateStatus(UpdateEmployerJobApplicationStatusRequest $request, JobApplication $jobApplication): RedirectResponse
     {
         $this->authorize('updateStatus', $jobApplication);
 
-        $jobApplication->update(['status' => $request->validated()['status']]);
+        $newStatus = $request->validated()['status'];
+        $previousStatus = $jobApplication->status;
+
+        if ($previousStatus !== $newStatus) {
+            $jobApplication->update(['status' => $newStatus]);
+
+            $jobApplication->loadMissing(['job.company', 'user']);
+
+            $this->notificationService->notifyApplicationStatusChanged($jobApplication->user, [
+                'title' => 'Application status updated',
+                'message' => 'Your application for '.$jobApplication->job->title.' has been updated to '.$jobApplication->status_label.'.',
+                'link' => route('job-seeker.applications.show', $jobApplication),
+                'application_id' => $jobApplication->id,
+                'job_id' => $jobApplication->job_id,
+                'job_title' => $jobApplication->job->title,
+                'status' => $jobApplication->status,
+                'status_label' => $jobApplication->status_label,
+            ]);
+        }
 
         return redirect()->route('employer.applications.show', $jobApplication)->with('success', 'Application status updated successfully.');
     }
@@ -101,7 +127,10 @@ class EmployerApplicationController extends Controller
             abort(404);
         }
 
-        return Storage::disk('public')->download($resume->file_path, $resume->file_name ?: basename($resume->file_path));
+        /** @var FilesystemAdapter $disk */
+        $disk = Storage::disk('public');
+
+        return $disk->download($resume->file_path, $resume->file_name ?: basename($resume->file_path));
     }
 
     private function calculateProfileCompletion(?\App\Models\JobSeekerProfile $profile): int

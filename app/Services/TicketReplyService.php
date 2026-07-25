@@ -33,9 +33,13 @@ class TicketReplyService
 
         if ($isAdmin) {
             $this->notificationService->notifySystem($ticket->user, [
-                'title' => 'Support ticket reply',
-                'message' => "New reply on {$ticket->ticket_number}.",
+                'title' => 'Admin replied to your support ticket',
+                'message' => 'Admin replied to your support ticket: '.$ticket->subject.'.',
                 'link' => route('support-tickets.show', $ticket),
+                'ticket_id' => $ticket->id,
+                'ticket_number' => $ticket->ticket_number,
+                'subject' => $ticket->subject,
+                'reply_id' => $reply->id,
             ]);
 
             $this->mailService->send('support_ticket_reply', $ticket->user->email, [
@@ -45,9 +49,13 @@ class TicketReplyService
             ], $sender);
         } else {
             $this->notificationService->notifyUsersByRole('admin', 'system', [
-                'title' => 'User replied to ticket',
+                'title' => 'Support ticket received new reply',
                 'message' => "{$ticket->ticket_number} has a new customer reply.",
                 'link' => route('admin.support-tickets.show', $ticket),
+                'ticket_id' => $ticket->id,
+                'ticket_number' => $ticket->ticket_number,
+                'subject' => $ticket->subject,
+                'reply_id' => $reply->id,
             ]);
         }
 

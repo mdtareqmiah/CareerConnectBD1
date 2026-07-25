@@ -34,9 +34,14 @@ class FeedbackService
         ]);
 
         $this->notificationService->notifyUsersByRole('admin', 'system', [
-            'title' => 'New feedback submitted',
-            'message' => $feedback->subject,
+            'title' => 'New feedback received',
+            'message' => 'New feedback received from '.$user->name.'.',
             'link' => route('admin.communications.index', ['tab' => 'feedback']),
+            'feedback_id' => $feedback->id,
+            'feedback_subject' => $feedback->subject,
+            'feedback_type' => $feedback->type,
+            'submitted_by_id' => $user->id,
+            'submitted_by_name' => $user->name,
         ]);
 
         return $feedback;
@@ -93,6 +98,9 @@ class FeedbackService
                 'title' => 'Feedback status updated',
                 'message' => "Your feedback '{$feedback->subject}' is now {$status}.",
                 'link' => route('feedback.show', $feedback),
+                'feedback_id' => $feedback->id,
+                'feedback_subject' => $feedback->subject,
+                'status' => $status,
             ]);
 
             $this->mailService->send('feedback_reply', $feedback->user->email, [

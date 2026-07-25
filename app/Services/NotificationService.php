@@ -12,9 +12,12 @@ use App\Notifications\JobAppliedNotification;
 use App\Notifications\ResumeReviewedNotification;
 use App\Notifications\SystemNotification;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Broadcasting\BroadcastException;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification as NotificationFacade;
+use Throwable;
 
 class NotificationService
 {
@@ -98,6 +101,8 @@ class NotificationService
     {
         $users = User::query()
             ->whereHas('role', fn ($query) => $query->where('slug', $roleSlug))
+            ->where('is_active', true)
+            ->whereNull('deleted_at')
             ->get();
 
         if ($users->isEmpty()) {
@@ -183,19 +188,23 @@ class NotificationService
 
         $data = is_array($notification->data) ? $notification->data : [];
 
-        event(new NotificationBroadcasted($user, [
-            'kind' => 'notification.created',
-            'unread_count' => $this->unreadCount($user),
-            'notification' => [
-                'id' => $notification->id,
-                'title' => $data['title'] ?? 'Notification',
-                'message' => $data['message'] ?? '',
-                'link' => $data['link'] ?? route('notifications.index'),
-                'is_unread' => $notification->read_at === null,
-                'created_at' => $notification->created_at?->toISOString(),
-                'created_human' => $notification->created_at?->diffForHumans(),
-            ],
-        ]));
+        try {
+            event(new NotificationBroadcasted($user, [
+                'kind' => 'notification.created',
+                'unread_count' => $this->unreadCount($user),
+                'notification' => [
+                    'id' => $notification->id,
+                    'title' => $data['title'] ?? 'Notification',
+                    'message' => $data['message'] ?? '',
+                    'link' => $data['link'] ?? route('notifications.index'),
+                    'is_unread' => $notification->read_at === null,
+                    'created_at' => $notification->created_at?->toISOString(),
+                    'created_human' => $notification->created_at?->diffForHumans(),
+                ],
+            ]));
+        } catch (Throwable $exception) {
+            $this->logBroadcastFailure($user, $exception, 'notification.created');
+        }
     }
 
     private function broadcastUserState(User $user, array $payload = []): void
@@ -204,15 +213,34 @@ class NotificationService
             return;
         }
 
-        event(new NotificationBroadcasted($user, array_merge([
-            'kind' => 'notification.state',
-            'unread_count' => $this->unreadCount($user),
-        ], $payload)));
+        try {
+            event(new NotificationBroadcasted($user, array_merge([
+                'kind' => 'notification.state',
+                'unread_count' => $this->unreadCount($user),
+            ], $payload)));
+        } catch (Throwable $exception) {
+            $this->logBroadcastFailure($user, $exception, 'notification.state');
+        }
     }
 
     private function shouldBroadcastRealtime(): bool
     {
-        return config('broadcasting.default') !== 'null';
+        return (bool) config('broadcasting.realtime_enabled', false)
+            && ! in_array(config('broadcasting.default'), ['null', 'log'], true);
+    }
+
+    private function logBroadcastFailure(User $user, Throwable $exception, string $kind): void
+    {
+        if (! $exception instanceof BroadcastException) {
+            throw $exception;
+        }
+
+        Log::warning('Realtime notification broadcast failed.', [
+            'user_id' => $user->id,
+            'kind' => $kind,
+            'exception' => $exception::class,
+            'message' => $exception->getMessage(),
+        ]);
     }
 
     private function makeNotification(string $type, array $data): object

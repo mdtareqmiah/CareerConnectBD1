@@ -5,11 +5,16 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreJobApplicationRequest;
 use App\Models\Job;
 use App\Models\JobApplication;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class JobApplicationController extends Controller
 {
+    public function __construct(private readonly NotificationService $notificationService)
+    {
+    }
+
     public function index()
     {
         //
@@ -40,7 +45,7 @@ class JobApplicationController extends Controller
                 ->with('error', 'This job is no longer accepting applications.');
         }
 
-        $user = auth()->user();
+        $user = $request->user();
 
         if ($job->alreadyAppliedBy($user)) {
             return redirect()->route('jobs.show', $job)
@@ -67,7 +72,7 @@ class JobApplicationController extends Controller
                 ->with('error', 'You have already applied for this job.');
         }
 
-        JobApplication::create([
+        $application = JobApplication::create([
             'job_id' => $job->id,
             'user_id' => $user->id,
             'resume_id' => $request->input('resume_id'),
@@ -75,6 +80,19 @@ class JobApplicationController extends Controller
             'status' => 'pending',
             'applied_at' => now(),
         ]);
+
+        if ($application && $job->company?->employer) {
+            $this->notificationService->notifyJobApplied($job->company->employer, [
+                'title' => 'New application received',
+                'message' => 'New application received for '.$job->title.'.',
+                'link' => route('employer.applications.show', $application),
+                'application_id' => $application->id,
+                'job_id' => $job->id,
+                'job_title' => $job->title,
+                'applicant_id' => $user->id,
+                'applicant_name' => $user->name,
+            ]);
+        }
 
         return redirect()->route('jobs.show', $job)
             ->with('status', 'Application submitted successfully.');

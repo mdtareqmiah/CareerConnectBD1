@@ -35,9 +35,14 @@ class SupportTicketService
         ]);
 
         $this->notificationService->notifyUsersByRole('admin', 'system', [
-            'title' => 'New support ticket',
-            'message' => "{$ticket->ticket_number} - {$ticket->subject}",
+            'title' => 'New support ticket received',
+            'message' => 'New support ticket received: '.$ticket->subject.'.',
             'link' => route('admin.support-tickets.show', $ticket),
+            'ticket_id' => $ticket->id,
+            'ticket_number' => $ticket->ticket_number,
+            'subject' => $ticket->subject,
+            'created_by_id' => $ticket->user_id,
+            'created_by_name' => $user->name,
         ]);
 
         return $ticket->load('messages.sender');
@@ -94,9 +99,13 @@ class SupportTicketService
 
         if ($previousStatus !== $status) {
             $this->notificationService->notifySystem($ticket->user, [
-                'title' => 'Support ticket updated',
-                'message' => "Ticket {$ticket->ticket_number} is now {$status}.",
+                'title' => 'Support ticket status updated',
+                'message' => "Your support ticket '{$ticket->subject}' is now {$status}.",
                 'link' => route('support-tickets.show', $ticket),
+                'ticket_id' => $ticket->id,
+                'ticket_number' => $ticket->ticket_number,
+                'subject' => $ticket->subject,
+                'status' => $status,
             ]);
         }
 

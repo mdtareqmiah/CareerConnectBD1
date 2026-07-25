@@ -11,13 +11,13 @@ class AdminAnnouncementMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
-    public function __construct(public array $data, public string $subject)
+    public function __construct(public array $data, public string $mailSubject)
     {
     }
 
     public function build(): self
     {
-        return $this->subject($this->subject)
+        return $this->subject($this->mailSubject)
             ->markdown('emails.admin-announcement');
     }
 }
